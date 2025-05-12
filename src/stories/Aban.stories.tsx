@@ -1,5 +1,5 @@
 import type {Meta, StoryObj} from '@storybook/react';
-import {Aban} from "../icons/components";
+import {Aban} from "../index";
 
 const meta: Meta<typeof Aban> = {
     title: 'Icons/Aban',

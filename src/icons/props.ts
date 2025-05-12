@@ -18,7 +18,7 @@ export interface IconMap {
     [key: string]: IconComponent;
 }
 
-export const trueSize = (size: string|number) => {
+export const trueSize = (size: string | number) => {
     if (typeof size === 'string') {
         // Allow zero without units
         if (size === '0') return size;

@@ -1,24 +1,28 @@
-import {defineConfig} from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import dts from 'vite-plugin-dts';
 
-// https://vite.dev/config/
 export default defineConfig({
-    plugins: [react()],
-    build: {
-        lib: {
-            entry: 'src/icons/components/index.ts',
-            name: 'ghicons',
-            fileName: (format) => `ghicons.${format}.js`,
-            formats: ['es', 'cjs'],
+  plugins: [
+    react(),
+    dts({
+      insertTypesEntry: true,
+    }),
+  ],
+  build: {
+    lib: {
+      entry: 'src/index.ts',
+      name: 'ghicons',
+      fileName: (format) => `index.${format}.js`,
+    },
+    rollupOptions: {
+      external: ['react', 'react-dom'],
+      output: {
+        globals: {
+          react: 'React',
+          'react-dom': 'ReactDOM',
         },
-        rollupOptions: {
-            external: ['react', 'react-dom'],
-            output: {
-                globals: {
-                    react: 'React',
-                    'react-dom': 'ReactDOM',
-                },
-            },
-        },
-    }
-})
+      },
+    },
+  },
+});

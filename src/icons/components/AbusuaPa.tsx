@@ -1,5 +1,5 @@
 import * as React from "react";
-import {type IconProps, trueSize} from "../props.ts";
+import {type IconProps, trueSize} from "../props";
 
 
 /**

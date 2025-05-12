@@ -1,5 +1,5 @@
 import * as React from "react";
-import {type IconProps, trueSize} from "../props.ts";
+import {type IconProps, trueSize} from "../props";
 
 /**
  * DameDame is a functional React component that renders an SVG icon.
