@@ -5,6 +5,7 @@ export interface IconProps extends React.SVGProps<SVGSVGElement> {
     color?: string;
     className?: string;
     style?: React.CSSProperties;
+    viewBox?: string;
     // onClick?: (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => void;
     // onMouseEnter?: (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => void;
     // onMouseLeave?: (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => void;

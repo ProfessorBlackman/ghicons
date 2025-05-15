@@ -1,5 +1,5 @@
 module.exports = {
   typescript: true,
-  template: require('./svgr-icon-template.js'),
+  template: require('./svgr_templates_dir/svgr-icon-template.cjs'),
   icon: true
 };
