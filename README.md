@@ -1,54 +1,52 @@
-# React + TypeScript + Vite
+# GHIcons
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+GHIcons is a React icon library that provides high-quality Ghanaian icons and symbols (such as Adinkra symbols) for use in React projects.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Adinkra Symbols**: A wide collection of traditional Adinkra symbols.
+- **Customizable**: Easy to change size, color, and apply custom styles.
+- **TypeScript Support**: Fully typed for a great developer experience.
+- **Lightweight**: Optimized SVG components.
+- **Storybook Integration**: Explore and test icons in isolation.
 
-## Expanding the ESLint configuration
+## Installation
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+npm install ghicons
+# or
+pnpm add ghicons
+# or
+yarn add ghicons
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Usage
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```tsx
+import { GyeNyame, GhanaCedisIcon } from 'ghicons';
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+function App() {
+  return (
+    <div>
+      <GyeNyame size={48} color="gold" />
+      <GhanaCedisIcon size="2rem" color="green" />
+    </div>
+  );
+}
 ```
+
+### Props
+
+All icons accept the following props:
+
+| Prop        | Type                  | Default          | Description                                           |
+|-------------|-----------------------|------------------|-------------------------------------------------------|
+| `size`      | `number \| string`    | `24`             | The size of the icon (numbers are treated as pixels). |
+| `color`     | `string`              | `'currentColor'` | The color of the icon.                                |
+| `viewBox`   | `string`              | `'0 0 24 24'`    | The SVG viewBox attribute.                            |
+| `className` | `string`              | `undefined`      | Additional CSS classes.                               |
+| `style`     | `React.CSSProperties` | `undefined`      | Inline styles.                                        |
+
+## License
+
+MIT © [Methuselah Nwodobeh](https://github.com/ProfessorBlackman/ghicons)

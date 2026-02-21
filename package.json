@@ -1,6 +1,9 @@
 {
   "name": "ghicons",
   "version": "0.0.0",
+  "description": "A collection of Ghanaian symbols and other cultural motifs components.",
+  "logo": "src/assets/logo.png",
+  "homepage": "ghicons.methuselah.site",
   "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -32,56 +35,58 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -p tsconfig.build.json && vite build",
-    "prepare": "npm run build",
-    "prepublishOnly": "npm run lint && npm test",
+    "prepare": "pnpm run build",
+    "prepublishOnly": "pnpm run lint",
+    "test": "vitest run",
     "lint": "eslint .",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "move:file": "shx mv",
     "dir:rename": "node custom_scripts/clean_filename.cjs",
-    "generate:adinkra": "node custom_scripts/build_components.cjs src/icons/svg/adinkra src/icons/components/adinkra",
-    "generate:brand-logos": "node custom_scripts/build_components.cjs src/icons/svg/brand/logos src/icons/components/brand/logos",
-    "generate:national": "node custom_scripts/build_components.cjs src/icons/svg/national src/icons/components/national",
-    "generate:general": "node custom_scripts/build_components.cjs src/icons/svg/general src/icons/components/general",
+    "generate:icons": "node custom_scripts/build_components.cjs",
+    "generate:adinkra": "node custom_scripts/build_components.cjs svg/adinkra src/icons/components/adinkra",
+    "generate:brand-logos": "node custom_scripts/build_components.cjs svg/brand/logos src/icons/components/brand/logos",
+    "generate:national": "node custom_scripts/build_components.cjs svg/national src/icons/components/national",
+    "generate:general": "node custom_scripts/build_components.cjs svg/general src/icons/components/general",
     "generate:stories": "node custom_scripts/build_stories.cjs"
   },
   "dependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
   },
   "devDependencies": {
-    "@chromatic-com/storybook": "^3.2.6",
-    "@eslint/js": "^9.25.0",
-    "@storybook/addon-essentials": "^8.6.12",
-    "@storybook/addon-onboarding": "^8.6.12",
-    "@storybook/blocks": "^8.6.12",
-    "@storybook/experimental-addon-test": "^8.6.12",
-    "@storybook/react": "^8.6.12",
-    "@storybook/react-vite": "^8.6.12",
-    "@storybook/test": "^8.6.12",
+    "@chromatic-com/storybook": "^3.2.7",
+    "@eslint/js": "^9.39.3",
+    "@storybook/addon-essentials": "^8.6.14",
+    "@storybook/addon-onboarding": "^8.6.17",
+    "@storybook/blocks": "^8.6.14",
+    "@storybook/experimental-addon-test": "^8.6.14",
+    "@storybook/react": "^8.6.17",
+    "@storybook/react-vite": "^8.6.17",
+    "@storybook/test": "^8.6.15",
     "@svgr/cli": "^8.1.0",
-    "@types/react": "^19.1.2",
-    "@types/react-dom": "^19.1.2",
-    "@vitejs/plugin-react": "^4.4.1",
-    "@vitest/browser": "^3.1.3",
-    "@vitest/coverage-v8": "^3.1.3",
-    "chalk": "^5.4.1",
-    "eslint": "^9.25.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^4.7.0",
+    "@vitest/browser": "^3.2.4",
+    "@vitest/coverage-v8": "^3.2.4",
+    "chalk": "^5.6.2",
+    "eslint": "^9.39.3",
     "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-refresh": "^0.4.19",
+    "eslint-plugin-react-refresh": "^0.4.26",
     "eslint-plugin-storybook": "^0.12.0",
-    "globals": "^16.0.0",
+    "globals": "^16.5.0",
     "picocolors": "^1.1.1",
-    "playwright": "^1.52.0",
+    "playwright": "^1.58.2",
     "shx": "^0.4.0",
-    "storybook": "^8.6.12",
+    "storybook": "^8.6.17",
     "svgo": "^3.3.2",
     "typescript": "~5.8.3",
-    "typescript-eslint": "^8.30.1",
-    "vite": "^6.3.5",
-    "vite-plugin-dts": "^4.5.3",
-    "vitest": "^3.1.3"
+    "typescript-eslint": "^8.56.0",
+    "vite": "^6.4.1",
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "^3.2.4"
   },
   "peerDependencies": {
     "react": "^19.0.0",
@@ -90,6 +95,12 @@
   "eslintConfig": {
     "extends": [
       "plugin:storybook/recommended"
+    ]
+  },
+  "packageManager": "pnpm@10.6.3+sha1.43e3aa4a371d889dfb0ffe7a9b5d4ca0668ccaa9",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
     ]
   }
 }

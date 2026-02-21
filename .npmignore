@@ -7,3 +7,17 @@ icons/svg
 .eslintrc
 tsconfig.json
 vite.config.ts
+/storybook-static/
+/svg/
+/custom_scripts/
+/svgr_templates_dir/
+/.svgrrc.cjs
+
+# Dev-only demo page (Vite app shell)
+ /src/App.tsx
+ /src/main.tsx
+ /src/App.css
+ /src/index.css
+ /index.html
+/.idea/
+/DEVELOPMENT.md

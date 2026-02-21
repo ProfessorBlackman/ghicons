@@ -24,3 +24,8 @@ dist-ssr
 *.sw?
 
 *storybook.log
+!/storybook-static/
+.storybook-static/*
+/storybook-static
+!/src/icons/components/
+src/stories/
