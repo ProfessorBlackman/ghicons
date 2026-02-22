@@ -81,6 +81,12 @@ async function addToIndexFile(componentName, targetDir) {
     let indexContent = "";
     if (fs.existsSync(indexPath)) {
         indexContent = await fsPromises.readFile(indexPath, 'utf-8');
+    } else {
+        const indexDir = path.dirname(indexPath);
+        if (!fs.existsSync(indexDir)) {
+            await fsPromises.mkdir(indexDir, { recursive: true });
+        }
+        await fsPromises.writeFile(indexPath, "", "utf-8");
     }
 
     if (indexContent.includes(exportStatement)) {
