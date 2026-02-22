@@ -14,7 +14,7 @@ dist-ssr
 
 # Editor directories and files
 .vscode/*
-!.vscode/extensions.json
+.vscode/extensions.json
 .idea
 .DS_Store
 *.suo
@@ -24,8 +24,8 @@ dist-ssr
 *.sw?
 
 *storybook.log
-!/storybook-static/
+storybook-static/
 .storybook-static/*
 /storybook-static
-!/src/icons/components/
+src/icons/components/
 src/stories/
