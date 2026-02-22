@@ -34,7 +34,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc -p tsconfig.build.json && vite build",
+    "build": "pnpm run generate:icons --overwrite && tsc -p tsconfig.build.json && vite build",
     "prepare": "pnpm run build",
     "prepublishOnly": "pnpm run lint",
     "test": "vitest run",
