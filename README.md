@@ -9,6 +9,15 @@ GHIcons is a React icon library that provides high-quality Ghanaian icons and sy
 - **TypeScript Support**: Fully typed for a great developer experience.
 - **Lightweight**: Optimized SVG components.
 - **Storybook Integration**: Explore and test icons in isolation.
+- **Contributor Documentation**: Detailed guide for developers to understand the project structure and generation pipeline.
+
+## 📚 Documentation
+
+For general usage and library overview, see our [General Documentation](DOCUMENTATION.md).
+
+## 📖 Contributor Guide
+
+If you're looking to contribute or understand the project's internals, please check out our [Contributor's Guide](CONTRIBUTING.md).
 
 ## Installation
 
