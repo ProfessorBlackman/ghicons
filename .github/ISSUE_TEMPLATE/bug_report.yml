@@ -1,0 +1,92 @@
+name: Bug Report
+description: Report a bug or unexpected behavior in GHIcons
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please fill out the sections below to help us resolve it quickly.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear and concise description of the bug.
+      placeholder: What went wrong?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: Steps to reproduce the behavior.
+      placeholder: |
+        1. Import icon '...'
+        2. Render with props '...'
+        3. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What you expected to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened. Include screenshots or error messages if applicable.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Minimal Reproduction
+      description: A minimal code snippet or link to a reproduction (CodeSandbox, StackBlitz, etc.).
+      render: tsx
+
+  - type: input
+    id: version
+    attributes:
+      label: GHIcons Version
+      placeholder: e.g. 1.2.0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: package_manager
+    attributes:
+      label: Package Manager
+      options:
+        - npm
+        - pnpm
+        - yarn
+        - bun
+    validations:
+      required: true
+
+  - type: input
+    id: react_version
+    attributes:
+      label: React Version
+      placeholder: e.g. 18.2.0
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Browser, Node version, OS, bundler (Vite, Webpack, etc.)
+      placeholder: e.g. Chrome 120, Node 20, Ubuntu 22.04, Vite 5
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other context about the problem.

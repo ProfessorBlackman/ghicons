@@ -1,0 +1,143 @@
+name: Validate SVGs
+
+on:
+  pull_request:
+    branches:
+      - dev
+    paths:
+      - 'svg/**/*.svg'
+
+jobs:
+  validate:
+    name: SVG Validation
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get changed SVG files
+        id: changed
+        run: |
+          git fetch origin ${{ github.base_ref }} --depth=1
+          CHANGED=$(git diff --name-only --diff-filter=ACM \
+            origin/${{ github.base_ref }}...HEAD -- 'svg/' \
+            | grep '\.svg$' || true)
+
+          if [ -z "$CHANGED" ]; then
+            echo "No SVG files changed."
+            echo "has_files=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "Changed SVG files:"
+            echo "$CHANGED"
+            echo "has_files=true" >> "$GITHUB_OUTPUT"
+            # Write file list to a temp file to avoid arg-length limits
+            echo "$CHANGED" > /tmp/changed_svgs.txt
+          fi
+
+      - name: Validate SVGs
+        if: steps.changed.outputs.has_files == 'true'
+        run: |
+          python3 - <<'EOF'
+          import sys, re, os, xml.etree.ElementTree as ET
+
+          with open('/tmp/changed_svgs.txt') as f:
+              files = [l.strip() for l in f if l.strip()]
+
+          results = []
+          overall_pass = True
+
+          for filepath in files:
+              if not os.path.exists(filepath):
+                  continue
+
+              basename = os.path.basename(filepath)
+              errors = []
+
+              try:
+                  content = open(filepath, encoding='utf-8').read()
+              except Exception as e:
+                  errors.append(f'could not read file: {e}')
+                  results.append((basename, errors))
+                  overall_pass = False
+                  continue
+
+              # 1. viewBox must be exactly "0 0 24 24"
+              try:
+                  tree = ET.parse(filepath)
+                  root = tree.getroot()
+                  vb = root.get('viewBox', '').strip()
+                  if vb != '0 0 24 24':
+                      errors.append(f'`viewBox` is `{vb or "(missing)"}` — expected `0 0 24 24`')
+              except ET.ParseError as e:
+                  errors.append(f'invalid XML: {e}')
+
+              # 2. No hardcoded fill colors — allow currentColor and none only
+              if re.search(
+                  r'fill\s*=\s*"(?!currentColor|none)([^"]+)"',
+                  content
+              ) or re.search(
+                  r'fill\s*:\s*(?!currentColor|none)[^;}"]+',
+                  content
+              ):
+                  errors.append('hardcoded `fill` color found (use `currentColor` or `none`)')
+
+              # 3. No embedded raster images or base64 data
+              if re.search(r'<image[\s>]|base64,', content, re.IGNORECASE):
+                  errors.append('embedded raster image or `base64` data found')
+
+              # 4. No <script> tags or external @import references
+              if re.search(r'<script[\s>/]|@import', content, re.IGNORECASE):
+                  errors.append('`<script>` tag or `@import` found')
+
+              # 5. Filename must be PascalCase (e.g. GyeNyame.svg)
+              if not re.match(r'^[A-Z][a-zA-Z0-9]+\.svg$', basename):
+                  errors.append(f'filename `{basename}` is not PascalCase (e.g. `GyeNyame.svg`)')
+
+              results.append((basename, errors))
+              if errors:
+                  overall_pass = False
+
+          # ── Write Step Summary ───────────────────────────────────────────
+          summary_path = os.environ.get('GITHUB_STEP_SUMMARY', '/dev/stdout')
+          passed = sum(1 for _, e in results if not e)
+          failed = sum(1 for _, e in results if e)
+
+          with open(summary_path, 'a') as f:
+              f.write('## SVG Validation Results\n\n')
+              f.write(f'**{passed} passed** &nbsp;|&nbsp; **{failed} failed** &nbsp;|&nbsp; **{len(results)} total**\n\n')
+
+              if results:
+                  f.write('| File | `viewBox` | No hardcoded fill | No raster / base64 | No `<script>` / `@import` | PascalCase name | Result |\n')
+                  f.write('|---|:---:|:---:|:---:|:---:|:---:|:---:|\n')
+
+                  for basename, errors in results:
+                      viewbox_ok  = '❌' if any('viewBox'  in e for e in errors) else '✅'
+                      fill_ok     = '❌' if any('fill'     in e for e in errors) else '✅'
+                      raster_ok   = '❌' if any('raster'   in e or 'base64' in e for e in errors) else '✅'
+                      script_ok   = '❌' if any('script'   in e or 'import' in e for e in errors) else '✅'
+                      pascal_ok   = '❌' if any('PascalCase' in e or 'filename' in e for e in errors) else '✅'
+                      result      = '✅ Pass' if not errors else '❌ Fail'
+
+                      f.write(f'| `{basename}` | {viewbox_ok} | {fill_ok} | {raster_ok} | {script_ok} | {pascal_ok} | {result} |\n')
+
+              failures = [(n, e) for n, e in results if e]
+              if failures:
+                  f.write('\n### Failure Details\n\n')
+                  for name, errs in failures:
+                      f.write(f'**`{name}`**\n')
+                      for err in errs:
+                          f.write(f'- {err}\n')
+                      f.write('\n')
+
+          if not overall_pass:
+              print('::error::SVG validation failed. See the Job Summary for details.')
+              sys.exit(1)
+          else:
+              print(f'All {len(results)} SVG file(s) passed validation.')
+          EOF

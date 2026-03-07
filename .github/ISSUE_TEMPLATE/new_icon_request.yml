@@ -1,0 +1,81 @@
+name: New Icon Request
+description: Request a new Ghanaian icon or symbol to be added to GHIcons
+title: "[Icon Request]: "
+labels: ["new icon"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Request a new icon to be added to the library. Please provide as much detail as possible to help us understand and implement it accurately.
+
+  - type: input
+    id: icon_name
+    attributes:
+      label: Icon Name
+      description: The name of the icon or symbol.
+      placeholder: e.g. Sankofa, Dwennimmen
+    validations:
+      required: true
+
+  - type: dropdown
+    id: icon_category
+    attributes:
+      label: Category
+      description: What category does this icon belong to?
+      options:
+        - Currency / Finance
+        - National Symbol
+        - Cultural / Traditional
+        - Religious / Spiritual
+        - Historical / Political
+        - Nature / Environment
+        - Food / Drink
+        - Clothing / Adornment
+        - Music / Arts
+        - Sports / Recreation
+        - Technology / Innovation
+        - Education / Knowledge
+        - Health / Wellness
+        - Community / Social
+        - Occupation / Profession
+        - Transportation / Travel
+        - Communication / Media
+        - Science / Mathematics
+        - Government / Law
+        - Military / Defense
+        - Family / Relationships
+        - Events / Celebrations
+        - Mythology / Folklore
+        - Brands / Logos
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe the icon and its cultural or symbolic meaning.
+      placeholder: Briefly explain what this symbol represents and its origin.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reference
+    attributes:
+      label: Reference / Source
+      description: Provide links, images, or references that show what the icon looks like. SVG files are especially welcome.
+    validations:
+      required: true
+
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Use Case
+      description: How do you plan to use this icon in your project?
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other notes, design considerations, or variant suggestions.
