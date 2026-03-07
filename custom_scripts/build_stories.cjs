@@ -74,7 +74,21 @@ export const SmallColored: Story = {
 };
 `;
 
-const generateStories = (componentsDir) => {
+const collectTsxFiles = (dir, results = []) => {
+    const entries = fs.readdirSync(dir);
+    entries.forEach((entry) => {
+        const entryPath = path.join(dir, entry);
+        const stat = fs.statSync(entryPath);
+        if (stat.isDirectory()) {
+            collectTsxFiles(entryPath, results);
+        } else if (stat.isFile() && entry.endsWith('.tsx')) {
+            results.push(entryPath);
+        }
+    });
+    return results;
+};
+
+const generateStories = (componentsDir, overwrite = false) => {
     if (!fs.existsSync(componentsDir)) {
         console.error(pc.red(`Directory "${componentsDir}" does not exist.`));
         process.exit(1);
@@ -84,33 +98,35 @@ const generateStories = (componentsDir) => {
         fs.mkdirSync(storiesDir, { recursive: true });
     }
 
-    const files = fs.readdirSync(componentsDir);
+    const tsxFiles = collectTsxFiles(componentsDir);
 
-    files.forEach((file) => {
-        const filePath = path.join(componentsDir, file);
-        const stat = fs.statSync(filePath);
+    tsxFiles.forEach((filePath) => {
+        const file = path.basename(filePath);
+        const componentName = path.basename(file, '.tsx');
+        const storyFilePath = path.join(storiesDir, `${componentName}.stories.tsx`);
 
-        if (stat.isFile() && file.endsWith('.tsx')) {
-            const componentName = path.basename(file, '.tsx');
-            const storyFilePath = path.join(storiesDir, `${componentName}.stories.tsx`);
-
-            if (fs.existsSync(storyFilePath)) {
+        if (fs.existsSync(storyFilePath)) {
+            if (!overwrite) {
                 console.log(pc.yellow(`Story for "${componentName}" already exists. Skipping...`));
                 return;
             }
-
-            const storyContent = generateStoryTemplate(componentName);
-            fs.writeFileSync(storyFilePath, storyContent);
-            console.log(pc.green(`Generated story for "${componentName}" at "${storyFilePath}".`));
+            console.log(pc.blue(`Overwriting existing story for "${componentName}"...`));
         }
+
+        const storyContent = generateStoryTemplate(componentName);
+        fs.writeFileSync(storyFilePath, storyContent);
+        console.log(pc.green(`Generated story for "${componentName}" at "${storyFilePath}".`));
     });
 };
 
 // CLI input handling
-const componentsDir = process.argv[2];
+const args = process.argv.slice(2);
+const overwrite = args.includes('--overwrite');
+const componentsDir = args.find((arg) => !arg.startsWith('--'));
+
 if (!componentsDir) {
     console.error(pc.red('Please provide the path to the components directory as an argument.'));
     process.exit(1);
 }
 
-generateStories(path.resolve(componentsDir));
+generateStories(path.resolve(componentsDir), overwrite);
