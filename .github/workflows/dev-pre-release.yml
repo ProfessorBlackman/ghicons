@@ -1,0 +1,88 @@
+name: Dev Pre-release
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  pre-release:
+    name: Build & Publish Pre-release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Read version
+        id: meta
+        run: |
+          VERSION=$(node -e "process.stdout.write(JSON.parse(require('fs').readFileSync('package.json','utf8')).version)")
+          TAG="dev-v${VERSION}-build.${{ github.run_number }}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG"         >> "$GITHUB_OUTPUT"
+
+      - name: Zip dist
+        run: zip -r dist.zip dist/
+
+      - name: Create pre-release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ steps.meta.outputs.tag }}"
+          VERSION="${{ steps.meta.outputs.version }}"
+          SHORT_SHA="${{ github.sha }}"
+          SHORT_SHA="${SHORT_SHA:0:7}"
+
+          gh release create "$TAG" dist.zip \
+            --prerelease \
+            --title "Dev Build: v${VERSION} (build #${{ github.run_number }})" \
+            --notes "## Dev Pre-release
+
+          > **Not intended for production.** This is an automated build from the \`dev\` branch.
+
+          | | |
+          |---|---|
+          | **Version** | \`${VERSION}\` |
+          | **Commit** | [\`${SHORT_SHA}\`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}) |
+          | **Triggered by** | @${{ github.actor }} |
+          | **Branch** | \`${{ github.ref_name }}\` |
+          | **Build** | [#${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) |
+
+          ## Install locally for testing
+
+          1. Download \`dist.zip\` from the assets below and unzip it.
+          2. Add the extracted folder as a local dependency in your project:
+             \`\`\`bash
+             # npm
+             npm install /path/to/dist
+
+             # pnpm
+             pnpm add /path/to/dist
+
+             # yarn
+             yarn add /path/to/dist
+             \`\`\`
+          3. Import as usual:
+             \`\`\`tsx
+             import { GyeNyame } from 'ghicons';
+             \`\`\`
+
+          > Maintainers: once validated, merge \`dev\` into \`master\` to trigger the production release."
