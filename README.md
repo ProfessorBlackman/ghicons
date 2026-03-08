@@ -1,5 +1,9 @@
 # GHIcons
 
+[![Build Status](https://img.shields.io/github/actions/workflow/status/ProfessorBlackman/ghicons/ci.yml?branch=master&label=build)](https://github.com/ProfessorBlackman/ghicons/actions)
+[![npm version](https://img.shields.io/npm/v/ghicons)](https://www.npmjs.com/package/ghicons)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/ProfessorBlackman/ghicons/blob/master/LICENSE)
+
 GHIcons is a React icon library that provides high-quality Ghanaian icons and symbols (such as Adinkra symbols) for use in React projects.
 
 ## Features
@@ -10,6 +14,10 @@ GHIcons is a React icon library that provides high-quality Ghanaian icons and sy
 - **Lightweight**: Optimized SVG components.
 - **Storybook Integration**: Explore and test icons in isolation.
 - **Contributor Documentation**: Detailed guide for developers to understand the project structure and generation pipeline.
+
+## 💬 Community
+
+Have questions or ideas? Join the conversation in [GitHub Discussions](https://github.com/ProfessorBlackman/ghicons/discussions).
 
 ## 📚 Documentation
 
