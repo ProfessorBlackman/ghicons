@@ -68,14 +68,35 @@ jobs:
       - name: Verify the packaged output
         run: node tools/verify-packages.mjs
 
-      # Order matters: the core carries the icons every adapter is generated
-      # from, so it must exist on the registry before an adapter references it.
-      - name: Publish ghicons (core)
-        run: pnpm --filter ghicons publish --no-git-checks --access public
+      # Order matters, and it is driven by blast radius rather than by
+      # dependencies — no adapter depends on the core at runtime, because
+      # components carry their own inlined paths.
+      #
+      # Adapters go first. If an adapter fails to publish, the core has not
+      # moved and existing consumers are untouched. If the core went first and
+      # an adapter then failed, every React consumer upgrading `ghicons` would
+      # break with no `@ghicons/react` to migrate to.
+      #
+      # If a future adapter ever declares a dependency on `ghicons`, that
+      # adapter must publish after it.
+      - name: Publish @ghicons/react
+        run: pnpm --filter @ghicons/react publish --no-git-checks --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish @ghicons/react
-        run: pnpm --filter @ghicons/react publish --no-git-checks --access public
+      - name: Verify the adapter resolves before releasing the core
+        run: |
+          VERSION=$(node -p "require('./packages/core/package.json').version")
+          for i in $(seq 1 10); do
+            if npm view "@ghicons/react@$VERSION" version >/dev/null 2>&1; then
+              echo "@ghicons/react is live on the registry"; exit 0
+            fi
+            echo "waiting for the registry to serve @ghicons/react ($i/10)"; sleep 6
+          done
+          echo "::error::@ghicons/react did not appear on the registry — not publishing the core"
+          exit 1
+
+      - name: Publish ghicons (core)
+        run: pnpm --filter ghicons publish --no-git-checks --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

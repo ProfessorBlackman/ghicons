@@ -405,7 +405,7 @@ No compilation in the usual sense — `tools/build-core.mjs` writes optimised SV
 
 Before anything is published, `tools/verify-packages.mjs` checks that the two packages agree: every icon has a registry entry and a component, every declared file exists, no development file leaked into `dist/`, slugs are unique, and the versions match. A build can pass while the packaging is wrong; this is the gate for that.
 
-Publishing order matters: `ghicons` first, then adapters, so an adapter never references a core version that is not yet on the registry. Full policy in the [Release Process](wiki/Release-Process.md).
+Publishing order matters, and it runs adapters first, core last. Nothing depends on the core at runtime — components inline their own paths — so the order is chosen by what a half-finished release leaves behind. An adapter failing is harmless; the core landing without its adapter would strand every React consumer mid-migration. Full policy in the [Release Process](wiki/Release-Process.md).
 
 ---
 

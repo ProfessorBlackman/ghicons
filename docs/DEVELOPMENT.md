@@ -430,8 +430,8 @@ A specification change that validation does not enforce is a comment, not a rule
 **`pnpm run build` fails on a missing module in `src/icons/`**
 You have not generated. Run `pnpm run generate`.
 
-**An icon renders cropped or off-centre**
-Its `viewBox` is not `0 0 24 24`. The React emitter substitutes that default, so an off-canvas icon renders cropped instead of failing loudly. Fix the SVG.
+**An icon renders cropped, off-centre, or blank**
+Its `viewBox` is not `0 0 24 24`. Emitters substitute that default, so an off-canvas icon is silently clipped to that window instead of failing loudly — and if none of its geometry falls inside, it renders as nothing. Fix the SVG; `pnpm run validate` catches it.
 
 **An icon renders invisible, or white on white**
 A hardcoded `fill`. Replace it with `currentColor`. `pnpm run validate` catches this.

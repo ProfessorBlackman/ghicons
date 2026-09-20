@@ -72,7 +72,9 @@ Two icons were renamed while the package boundary was already changing, because 
 
 ### `GhanaCedi` also looks different
 
-`GhanaCedisIcon` was drawn on a `0 0 345 511.44` canvas while the generated component declared `viewBox="0 0 24 24"`, so it rendered **cropped** in every 0.0.x install. It has been re-scoped to the standard 24×24 canvas and now renders correctly.
+`GhanaCedisIcon` was drawn on a `0 0 345 511.44` canvas while the generated component declared `viewBox="0 0 24 24"`. That window falls on an empty region of the artwork, so the icon rendered **completely blank** in every `0.0.x` install — not merely cropped. It has been re-scoped to the standard 24×24 canvas and now renders correctly.
+
+If you worked around this by hiding the icon or substituting your own, you can now use it as-is.
 
 If you worked around the old behaviour by passing a custom `viewBox`, remove that override.
 

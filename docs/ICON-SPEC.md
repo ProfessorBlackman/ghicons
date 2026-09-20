@@ -125,7 +125,7 @@ viewBox: 0 0 24 24
 
 **`viewBox` must be exactly `0 0 24 24`.** Any other value is invalid.
 
-This matters more than it looks. A generated React component substitutes its own `viewBox` default of `0 0 24 24`, so an icon drawn on a different canvas renders **cropped** rather than failing loudly. See [Known Exceptions](#-known-exceptions).
+This matters more than it looks. A generated component substitutes its own `viewBox` default of `0 0 24 24`, so an icon drawn on a different canvas is silently clipped to that window rather than failing loudly. Depending on where its geometry sits, the result can be a crop — or nothing at all. `GhanaCedisIcon` shipped **blank** for the whole life of the `0.0.x` line for exactly this reason.
 
 ### Why 24 × 24?
 
@@ -444,7 +444,7 @@ Exceptions are recorded in `tools/validate.mjs` as well as here, so they report 
 
 Resolved in the move to the framework-agnostic core, while the package boundary was already changing and renames cost least:
 
-- `GhanaCedisIcon` was drawn on a `0 0 345 511.44` canvas and rendered **cropped** in every published release, because the generator substitutes a `0 0 24 24` default. Re-scoped to the standard canvas and renamed to `GhanaCedi`.
+- `GhanaCedisIcon` was drawn on a `0 0 345 511.44` canvas and rendered **blank** in every published release, because the generator substitutes a `0 0 24 24` default and that window contains none of the artwork. Re-scoped to the standard canvas and renamed to `GhanaCedi`.
 - 103 of 106 icons carried a hardcoded `fill='#fff'`. Normalised to `currentColor`.
 - `Sankofa1` was the heart form of Sankofa carrying a numeric disambiguator. Renamed to `SankofaHeart`.
 

@@ -94,7 +94,7 @@ Everything else keeps its relative order. The stability work that used to define
 ### Bring the collection up to spec
 
 - [x] Normalise the 103 icons carrying a hardcoded `fill='#fff'` to `currentColor`
-- [x] Re-scope `GhanaCedisIcon` from `0 0 345 511.44` to the 24×24 canvas — it rendered cropped in every release
+- [x] Re-scope `GhanaCedisIcon` from `0 0 345 511.44` to the 24×24 canvas — it rendered blank in every release
 - [x] Resolve `Sankofa` / `Sankofa1` naming — two forms of the symbol, so `Sankofa1` became `SankofaHeart`
 - [x] Rename `GhanaCedisIcon` → `GhanaCedi`
 - [x] Validate the **entire** collection in CI, not only changed files (`pnpm run validate`)

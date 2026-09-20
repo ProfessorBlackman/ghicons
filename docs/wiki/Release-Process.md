@@ -65,7 +65,17 @@ A release publishes only when that pipeline completes end to end. That is what g
 
 > **`ghicons` changed meaning at `0.1.0`.** It was the React package through `0.0.1`; it is now the framework-agnostic core. React moved to `@ghicons/react`. See [MIGRATION.md](../MIGRATION.md).
 
-**Publish order is core first, then adapters.** An adapter must never reference a core version that is not yet on the registry.
+**Publish order is adapters first, then the core.**
+
+No adapter depends on the core at runtime — components carry their own inlined paths — so the order is chosen by what happens when a publish fails halfway, not by dependencies.
+
+- Adapter fails: the core has not moved, existing consumers are untouched, retry costs nothing.
+- Core fails *after* the adapter published: harmless, the adapter is simply available early.
+- Core published first and the adapter then fails: every React consumer upgrading `ghicons` breaks, with no `@ghicons/react` to migrate to. This is the state to design against.
+
+CI waits for each adapter to be resolvable on the registry before releasing the core.
+
+**If a future adapter ever declares a dependency on `ghicons`, it must publish after the core.** Dependency order wins wherever the two rules disagree.
 
 ---
 
@@ -174,9 +184,10 @@ Pre-releases are for verification, not general consumption. They let maintainers
 dev
   ▼  PR
 master
-  ▼  CI: lint → validate → generate → build
-  ▼  publish ghicons
-  ▼  publish @ghicons/*
+  ▼  CI: lint → validate → generate → build → verify packaging
+  ▼  publish @ghicons/*        (adapters)
+  ▼  wait for registry to serve them
+  ▼  publish ghicons           (core)
 npm
 ```
 
@@ -216,7 +227,7 @@ npm
 
 - [ ] Version selected according to the rules above
 - [ ] Versions aligned across packages
-- [ ] Publish order is core first
+- [ ] Publish order is adapters first, core last (unless an adapter depends on the core)
 
 ---
 
@@ -255,7 +266,7 @@ Write the release notes. Group by what the reader cares about:
 - Coat of Arms
 
 ## Fixed
-- GhanaCedi now renders on the 24×24 canvas (previously cropped)
+- GhanaCedi now renders on the 24×24 canvas (previously blank — its artwork sat outside the declared viewBox)
 
 ## Breaking
 - `GhanaCedisIcon` renamed to `GhanaCedi`
@@ -265,7 +276,7 @@ Write the release notes. Group by what the reader cares about:
 
 ### 8 — Publish
 
-CI publishes `ghicons`, then the adapters. Verify each landed before announcing.
+CI publishes the adapters, waits for them to resolve, then publishes the core. Verify each landed before announcing.
 
 ---
 
@@ -363,6 +374,8 @@ Find where it failed:
 | Publish | Credentials, registry, or naming. Check `NPM_TOKEN` and org permissions. |
 
 If a publish fails partway through a multi-package release, the registry is in a mixed state. Publish the remaining packages at the same version rather than rolling the first one back — npm versions cannot be reused, and an unpublish breaks anyone who already installed it.
+
+The publish order is designed so that a partial release is survivable: adapters land first, so a failure leaves existing consumers on a working version rather than stranded on a broken one.
 
 ---
 
