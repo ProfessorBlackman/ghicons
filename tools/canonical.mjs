@@ -11,9 +11,14 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { optimize } from 'svgo';
 
-export const SVG_DIR = 'svg';
+/** Repo root, so every tool works regardless of the directory it runs from. */
+export const ROOT = fileURLToPath(new URL('..', import.meta.url));
+export const fromRoot = (...p) => path.join(ROOT, ...p);
+
+export const SVG_DIR = fromRoot('svg');
 export const CANVAS = '0 0 24 24';
 
 /**

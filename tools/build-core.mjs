@@ -12,9 +12,9 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { loadIcons } from './canonical.mjs';
+import { loadIcons, fromRoot } from './canonical.mjs';
 
-const OUT = 'packages/core';
+const OUT = fromRoot('packages/core');
 const pkg = JSON.parse(fs.readFileSync(`${OUT}/package.json`, 'utf8'));
 
 // Rebuilt from scratch every run: an incremental update would leave artifacts

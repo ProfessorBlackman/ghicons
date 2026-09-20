@@ -12,7 +12,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { loadIcons } from './canonical.mjs';
+import { loadIcons, fromRoot } from './canonical.mjs';
 
 let failures = 0;
 const check = (label, ok, detail = '') => {
@@ -23,8 +23,8 @@ const check = (label, ok, detail = '') => {
 const read = (p) => JSON.parse(fs.readFileSync(p, 'utf8'));
 const icons = loadIcons();
 
-const core = read('packages/core/package.json');
-const react = read('packages/react/package.json');
+const core = read(fromRoot('packages/core/package.json'));
+const react = read(fromRoot('packages/react/package.json'));
 
 // ── Versions ──────────────────────────────────────────────────────────────────
 
@@ -36,15 +36,15 @@ check('core and react share a version', core.version === react.version, `${core.
 console.log('— ghicons (core) —');
 
 for (const f of core.files) {
-    check(`declared file exists: ${f}`, fs.existsSync(path.join('packages/core', f)));
+    check(`declared file exists: ${f}`, fs.existsSync(fromRoot('packages/core', f)));
 }
 
-const registry = read('packages/core/registry.json');
+const registry = read(fromRoot('packages/core/registry.json'));
 check('registry version matches package', registry.version === core.version, `${registry.version}`);
 check('registry lists every icon', registry.icons.length === icons.length, `${registry.icons.length} vs ${icons.length}`);
 check(
     'every registry entry resolves to a shipped SVG',
-    registry.icons.every((i) => fs.existsSync(path.join('packages/core', i.file)))
+    registry.icons.every((i) => fs.existsSync(fromRoot('packages/core', i.file)))
 );
 check(
     'no shipped SVG is missing from the registry',
@@ -54,10 +54,10 @@ check(
             for (const e of fs.readdirSync(d, { withFileTypes: true })) {
                 const f = path.join(d, e.name);
                 if (e.isDirectory()) walk(f);
-                else if (e.name.endsWith('.svg')) shipped.push(path.relative('packages/core', f).split(path.sep).join('/'));
+                else if (e.name.endsWith('.svg')) shipped.push(path.relative(fromRoot('packages/core'), f).split(path.sep).join('/'));
             }
         };
-        walk('packages/core/svg');
+        walk(fromRoot('packages/core/svg'));
         const known = new Set(registry.icons.map((i) => i.file));
         return shipped.every((f) => known.has(f)) && shipped.length === registry.icons.length;
     })()
@@ -66,7 +66,7 @@ check('slugs are unique', new Set(registry.icons.map((i) => i.slug)).size === re
 check(
     'every shipped SVG uses currentColor',
     registry.icons.every((i) =>
-        fs.readFileSync(path.join('packages/core', i.file), 'utf8').includes('fill="currentColor"')
+        fs.readFileSync(fromRoot('packages/core', i.file), 'utf8').includes('fill="currentColor"')
     )
 );
 check('core declares no dependencies', !core.dependencies || Object.keys(core.dependencies).length === 0);
@@ -76,14 +76,14 @@ check('core declares no dependencies', !core.dependencies || Object.keys(core.de
 console.log('— @ghicons/react —');
 
 for (const f of react.files) {
-    check(`declared file exists: ${f}`, fs.existsSync(path.join('packages/react', f)));
+    check(`declared file exists: ${f}`, fs.existsSync(fromRoot('packages/react', f)));
 }
 
 for (const entry of ['dist/index.es.js', 'dist/index.umd.js', 'dist/index.d.ts']) {
-    check(`entry point exists: ${entry}`, fs.existsSync(path.join('packages/react', entry)));
+    check(`entry point exists: ${entry}`, fs.existsSync(fromRoot('packages/react', entry)));
 }
 
-const bundle = fs.readFileSync('packages/react/dist/index.es.js', 'utf8');
+const bundle = fs.readFileSync(fromRoot('packages/react/dist/index.es.js'), 'utf8');
 check('bundle does not inline React', !/react\/jsx-runtime['"]\s*\)/.test(bundle) || bundle.includes('import'));
 check('react declares react as a peer dependency', Boolean(react.peerDependencies?.react));
 check('react declares no runtime dependencies', !react.dependencies || Object.keys(react.dependencies).length === 0);
@@ -97,14 +97,14 @@ const walkDist = (d) => {
         else if (/(^|\/)(App|main)\.|\.stories\./.test(f)) leaked.push(f);
     }
 };
-walkDist('packages/react/dist');
+walkDist(fromRoot('packages/react/dist'));
 check('no playground or story files in dist', leaked.length === 0, leaked.join(', '));
 
 // ── Cross-package agreement ───────────────────────────────────────────────────
 
 console.log('— cross-package —');
 
-const barrel = fs.readFileSync('packages/react/src/index.ts', 'utf8');
+const barrel = fs.readFileSync(fromRoot('packages/react/src/index.ts'), 'utf8');
 const exported = [...barrel.matchAll(/export \{ default as (\w+) \}/g)].map((m) => m[1]);
 
 check('react exports one component per icon', exported.length === icons.length, `${exported.length} vs ${icons.length}`);

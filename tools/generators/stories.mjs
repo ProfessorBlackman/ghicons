@@ -11,9 +11,9 @@
  */
 
 import fs from 'node:fs';
-import { loadIcons } from '../canonical.mjs';
+import { loadIcons, fromRoot } from '../canonical.mjs';
 
-const OUT = 'packages/react/stories';
+const OUT = fromRoot('packages/react/stories');
 
 const story = (icon) => `import type { Meta, StoryObj } from '@storybook/react';
 import { ${icon.name} } from '../src';

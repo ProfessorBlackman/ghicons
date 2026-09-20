@@ -5,6 +5,7 @@
  */
 
 import fs from 'node:fs';
+import { fromRoot } from './canonical.mjs';
 
 const GENERATED = [
     'packages/core/svg',
@@ -19,9 +20,10 @@ const GENERATED = [
     'storybook-static',
 ];
 
-for (const target of GENERATED) {
+for (const name of GENERATED) {
+    const target = fromRoot(name);
     if (fs.existsSync(target)) {
         fs.rmSync(target, { recursive: true, force: true });
-        console.log(`removed ${target}`);
+        console.log(`removed ${name}`);
     }
 }

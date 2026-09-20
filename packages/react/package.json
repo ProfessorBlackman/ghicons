@@ -35,6 +35,9 @@
       "require": "./dist/index.umd.js"
     }
   },
+  "scripts": {
+    "prepack": "node ../../tools/verify-packages.mjs"
+  },
   "files": [
     "dist",
     "README.md"

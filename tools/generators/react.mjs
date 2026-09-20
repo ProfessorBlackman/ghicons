@@ -15,7 +15,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { loadIcons } from '../canonical.mjs';
+import { loadIcons, fromRoot } from '../canonical.mjs';
 
 /**
  * SVG carries hyphenated presentation attributes (`fill-rule`, `stroke-width`);
@@ -34,9 +34,9 @@ function toJsxAttributes(body) {
     );
 }
 
-const PKG = 'packages/react';
-const ICONS_DIR = `${PKG}/src/icons`;
-const BARREL = `${PKG}/src/index.ts`;
+const PKG = fromRoot('packages/react');
+const ICONS_DIR = path.join(PKG, 'src/icons');
+const BARREL = path.join(PKG, 'src/index.ts');
 
 function component(icon, propsImport) {
     return `import * as React from "react";
@@ -69,7 +69,7 @@ for (const icon of icons) {
     fs.mkdirSync(dir, { recursive: true });
 
     const propsImport = path
-        .relative(dir, `${PKG}/src/props`)
+        .relative(dir, path.join(PKG, 'src/props'))
         .split(path.sep)
         .join('/');
 

@@ -38,6 +38,9 @@
     "./svg/*": "./svg/*",
     "./package.json": "./package.json"
   },
+  "scripts": {
+    "prepack": "node ../../tools/verify-packages.mjs"
+  },
   "files": [
     "svg",
     "registry.json",
