@@ -1,8 +1,10 @@
 # Contributing to GHIcons — How You Can Help
 
-GHIcons is a community-driven project. Its goal is to bring Ghanaian cultural symbols — Adinkra, national icons, and more — into the React ecosystem so developers everywhere can use them. The library grows through contributions from people like you.
+GHIcons is a community-driven project. Its goal is to bring Ghanaian cultural symbols — Adinkra, national emblems, and more — into software everywhere, whatever framework developers happen to use. The collection grows through contributions from people like you.
 
 You don't need to be an expert developer to contribute. There are meaningful roles for designers, researchers, cultural enthusiasts, and coders of all experience levels.
+
+**Contributing an icon means contributing an SVG.** The SVG collection is the canonical source of truth, and the project generates every package from it — so you never need to write framework code to add a symbol.
 
 ---
 
@@ -53,7 +55,7 @@ Every icon submitted needs to be checked before it's accepted into the library. 
 - Comparing the submitted icon against a reference image of the symbol
 - Leaving clear, constructive feedback on PRs
 
-**Skills helpful:** A good eye for detail. Basic understanding of SVG structure is helpful but not required — the [SVG requirements checklist](../blob/dev/docs/CONTRIBUTING.md#svg-requirements) in `CONTRIBUTING.md` guides you through exactly what to look for.
+**Skills helpful:** A good eye for detail. Basic understanding of SVG structure is helpful but not required — the [Icon Specification](../blob/dev/docs/ICON-SPEC.md) tells you exactly what to look for, and `pnpm run validate` checks the technical rules for you, leaving you free to judge the things a script cannot.
 
 **How to get started:** Browse [open Pull Requests](../pulls) and leave a review comment on any icon submission.
 
@@ -112,6 +114,41 @@ A library is only useful if people know about it. Spreading the word in develope
 
 ---
 
+## 🗃️ Metadata & Registry Contributors
+
+**What's needed:** Structured information about the icons already in the collection.
+
+Every GHIcon carries a registry entry — its name, slug, category, and where researched, its meaning, keywords and alternate names. The derived fields generate automatically; the meaningful ones need people. This metadata is what will power icon search, symbol descriptions on the website, and the icon picker tools built on top of GHIcons.
+
+**What you'll be doing:**
+- Writing accurate, well-sourced meanings for symbols in the collection
+- Adding search keywords so people can find a symbol without knowing its Akan name
+- Recording alternate and vernacular names
+- Flagging entries where sources disagree, rather than picking one silently
+
+**Skills helpful:** Careful research and clear writing. No coding required — entries are plain structured text.
+
+**How to get started:** Pick a symbol you know well, check the [Cultural Guidelines](Cultural-Guidelines), and open a PR or a Discussion with what you find.
+
+---
+
+## 🌐 Framework Integration Developers
+
+**What's needed:** Developers who can build and maintain adapters for frameworks beyond React.
+
+GHIcons is architected so that adding a framework means writing one generator against the canonical icon collection — not re-drawing a single icon. Vue, Svelte, Web Components and Flutter are all planned, and Web Components in particular would make GHIcons usable in plain HTML, Django, Laravel, WordPress, Astro and Angular in one stroke.
+
+**What you'll be doing:**
+- Building a generator that emits idiomatic components for your framework
+- Designing an API that fits your ecosystem's conventions while preserving the GHIcons icon contract
+- Helping maintain that integration once it ships
+
+**Skills helpful:** Deep familiarity with one target ecosystem. Knowing how its users expect an icon library to behave matters more than knowing GHIcons internals.
+
+**How to get started:** Read the [Architecture](../blob/dev/docs/ARCHITECTURE.md) and the [Roadmap](Roadmap), then open a Discussion about the framework you want to take on. An integration becomes official when someone can maintain it reliably, so say hello before building.
+
+---
+
 ## Quick Reference
 
 | Role | Skills needed | Where to start |
@@ -120,7 +157,9 @@ A library is only useful if people know about it. Spreading the word in develope
 | Cultural Researcher | Knowledge of Ghanaian symbols | [Icon Ideas](../discussions/categories/icon-ideas) |
 | Quality Reviewer | Eye for detail | [Open PRs](../pulls) |
 | SVG Conversion Volunteer | Inkscape or similar | [`needs-conversion` issues](../issues?q=label%3Aneeds-conversion) |
-| Developer | React, TypeScript | [`good first issue`](../issues?q=label%3A%22good+first+issue%22) |
+| Metadata Contributor | Research and clear writing | [Cultural Guidelines](Cultural-Guidelines) |
+| Developer | TypeScript, Node | [`good first issue`](../issues?q=label%3A%22good+first+issue%22) |
+| Framework Integrator | Vue, Svelte, Flutter, Web Components | [Architecture](../blob/dev/docs/ARCHITECTURE.md) |
 | Community Advocate | Enthusiasm | [Show & Tell](../discussions/categories/show-and-tell) |
 
 ---

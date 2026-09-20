@@ -6,31 +6,48 @@ Answers to the most common questions about using and contributing to GHIcons.
 
 ## Using GHIcons
 
-**How do I install GHIcons?**
+**Which package do I install?**
+
+Depends what you are building with.
 
 ```bash
+# React
+npm install @ghicons/react
+
+# anything else — Vue, Svelte, Angular, Astro, Django, Laravel,
+# WordPress, plain HTML — or if you just want the SVG files
 npm install ghicons
-# or
-pnpm add ghicons
-# or
-yarn add ghicons
 ```
+
+> ⚠️ **`ghicons` changed meaning at `0.1.0`.** It used to be the React package; it is
+> now the framework-agnostic core. Upgrading from `0.0.x`? See the
+> [migration guide](../blob/dev/docs/MIGRATION.md).
 
 ---
 
 **How do I use an icon in my project?**
 
+In React:
+
 ```tsx
-import { GyeNyame } from 'ghicons';
+import { GyeNyame } from '@ghicons/react';
 
 function App() {
   return <GyeNyame size={48} color="gold" />;
 }
 ```
 
+Anywhere else, use the SVG files from the core package:
+
+```html
+<img src="node_modules/ghicons/svg/adinkra/GyeNyame.svg" alt="Gye Nyame">
+```
+
+Inline the SVG rather than using `<img>` if you want CSS to control its colour.
+
 ---
 
-**What props do icons accept?**
+**What props do React icons accept?**
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
@@ -44,9 +61,32 @@ function App() {
 
 **Can I use GHIcons outside of React?**
 
-Not directly — GHIcons exports React components. If you need plain SVG files, the raw SVGs are available in the `/svg` directory of the [GitHub repository](https://github.com/ProfessorBlackman/ghicons/tree/master/svg) and can be used directly in any project.
+Yes. That is what the `ghicons` core package is for — optimised SVG files plus a
+machine-readable registry, with no dependencies and no framework code.
 
-Support for framework-agnostic distribution is on the [Roadmap](Roadmap).
+```bash
+npm install ghicons
+```
+
+```js
+import registry from 'ghicons/registry.json';
+// [{ name, slug, category, viewBox, file, meaning?, keywords? }, ...]
+```
+
+Use the SVGs directly, inline them, feed the registry into your own generator, or build
+an icon picker from it.
+
+Dedicated Vue, Svelte, Web Components and Flutter adapters are on the [Roadmap](Roadmap).
+
+---
+
+**What is `registry.json` for?**
+
+It describes the whole collection — every icon's name, slug, category, viewBox and file
+path, plus meanings and keywords where they have been researched.
+
+It is what lets one index serve icon search, pickers, documentation, downloads and code
+generators, instead of each tool re-deriving the collection for itself.
 
 ---
 
@@ -84,7 +124,7 @@ Or use the `color` prop directly:
 **Why is my icon not showing up after installing?**
 
 A few things to check:
-- Make sure you are importing from `'ghicons'` (not a subpath)
+- Make sure you are importing from `'@ghicons/react'` — importing components from `'ghicons'` stopped working at `0.1.0`, see the [migration guide](../blob/dev/docs/MIGRATION.md)
 - Check that the icon name is spelled correctly and is PascalCase — e.g. `GyeNyame`, not `gyeNyame` or `gye-nyame`
 - Browse the [icon preview](https://ghicons.methuselah.site) to confirm the icon exists in the library
 - If the icon exists but the import fails, it may not be exported from the main entry point — [open a bug report](../issues/new?template=bug_report.md)
@@ -101,7 +141,11 @@ Yes — there are several non-code roles. See [Who We Need](Who-We-Need) for a f
 
 **How do I submit an SVG icon?**
 
-See the [SVG Style Guide](SVG-Style-Guide) for requirements, then follow the [submission instructions](../blob/dev/docs/CONTRIBUTING.md#submitting-an-icon-svg) in `CONTRIBUTING.md`.
+Read the [Icon Specification](../blob/dev/docs/ICON-SPEC.md) for the rules and the
+[SVG Style Guide](SVG-Style-Guide) for how to draw one in practice, then follow
+[CONTRIBUTING.md](../blob/dev/docs/CONTRIBUTING.md).
+
+You only ever need to supply an SVG — the pipeline generates every framework output.
 
 ---
 
@@ -121,7 +165,10 @@ The validation workflow will show you exactly which checks failed in the PR's **
 - `viewBox` is not `0 0 24 24` — update the SVG
 - File name is not PascalCase — rename the file
 
-See the [SVG Style Guide](SVG-Style-Guide) for full requirements. If you fix the issues and push to your branch, the workflow will re-run automatically.
+See the [Icon Specification](../blob/dev/docs/ICON-SPEC.md) for the full rules. If you fix the issues and push to your branch, the workflow re-runs automatically.
+
+Validation covers the **whole collection**, not just your changes, so you may occasionally
+see a failure on an icon you did not touch. Flag it rather than working around it.
 
 ---
 

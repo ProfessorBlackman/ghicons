@@ -1,159 +1,322 @@
 # GHIcons Project Structure & Architecture
 
-This document explains how GHIcons is put together: where everything lives, how an SVG
-becomes a published React component, and which parts of the tree are hand-written versus
-machine-generated.
+This document explains how GHIcons is put together: where everything lives, how an SVG becomes a published artifact, and which parts of the tree are hand-written versus generated.
 
-It is aimed at contributors and maintainers. If you only want to *use* the library, read
-[DOCUMENTATION.md](DOCUMENTATION.md) instead.
+It is aimed at maintainers and contributors. If you only want to *use* GHIcons, read [DOCUMENTATION.md](DOCUMENTATION.md).
+
+For the rules an icon itself must satisfy, read [ICON-SPEC.md](ICON-SPEC.md). This document covers the machinery around that specification.
+
+---
 
 ## 📋 Table of Contents
 
+- [The Core Principle](#-the-core-principle)
 - [Design Goals](#-design-goals)
 - [The Big Picture](#-the-big-picture)
 - [Repository Layout](#-repository-layout)
-- [Source of Truth: the `svg/` Directory](#-source-of-truth-the-svg-directory)
-- [The Icon Component Contract](#-the-icon-component-contract)
-- [The Generation Pipeline](#-the-generation-pipeline)
-- [Build & Packaging](#-build--packaging)
-- [Storybook & the Dev Playground](#-storybook--the-dev-playground)
-- [Quality Gates (CI)](#-quality-gates-ci)
+- [The Packages](#-the-packages)
+- [Source of Truth: `svg/`](#-source-of-truth-svg)
+- [The Pipeline](#-the-pipeline)
+- [The Registry](#-the-registry)
+- [The React Integration](#-the-react-integration)
+- [Build & Publishing](#-build--publishing)
+- [Storybook & the Playground](#-storybook--the-playground)
+- [Quality Gates](#-quality-gates)
 - [The Website](#-the-website)
 - [Design Decisions & Trade-offs](#-design-decisions--trade-offs)
-- [Known Rough Edges](#-known-rough-edges)
+- [Current State vs. Target State](#-current-state-vs-target-state)
 - [Where Do I Make My Change?](#-where-do-i-make-my-change)
+
+---
+
+## 🧭 The Core Principle
+
+Everything in this document follows from one rule:
+
+> **The SVG collection is the canonical source of truth. Everything else is a generated consumer of it.**
+
+GHIcons is not a React library that happens to contain SVGs. It is a collection of Ghanaian symbols that happens to ship a React adapter.
+
+```text
+                         GHIcons
+                            │
+                     Canonical Icons
+                            │
+                    ┌───────┴───────┐
+                    ▼               ▼
+                  SVGs           Registry
+                    └───────┬───────┘
+                            ▼
+                      Icon Pipeline
+                            │
+     ┌──────────┬───────────┼───────────┬──────────┐
+     ▼          ▼           ▼           ▼          ▼
+  Raw SVG     React        Vue       Svelte      CDN
+```
+
+React is an integration, not the definition of GHIcons. This distinction decides almost every structural question below.
 
 ---
 
 ## 🎯 Design Goals
 
-The architecture is shaped by four constraints:
+1. **The collection is independent of any framework.** The canonical icon set and its specification do not know what React is.
+2. **Contributors work only with source assets.** Adding an icon means adding an SVG. It never means writing framework code.
+3. **Every implementation represents the same icon.** React, Vue, raw SVG or CDN — all derived from one source, all conforming to one specification.
+4. **The icon specification is stable independently of framework APIs.** Canvas, colour behaviour, naming and metadata belong to the icon. Framework APIs are adapters around them.
+5. **Generated code is disposable.** Components, stories, registries and manifests are reproducible from source. None of them is a second source of truth.
+6. **Each package ships only what its consumers need.** A React app should not download a Vue adapter, and a plain-HTML user should not download React.
+7. **One contribution reaches every platform.** Add an icon once; the pipeline makes it available everywhere GHIcons is supported.
 
-1. **Contributors should only ever touch SVGs.** Adding an icon must not require writing
-   React. The pipeline turns a validated `.svg` file into a typed component, a Storybook
-   story, and a public export with no hand-editing.
-2. **Every icon behaves identically.** One props interface (`IconProps`), one sizing
-   helper (`trueSize`), one colouring rule (`currentColor`). Consumers learn the API once.
-3. **The published package stays small.** SVGs are optimised at generation time, React is
-   a peer dependency, and everything that is not the compiled library is excluded from the
-   npm tarball.
-4. **Generated code is disposable.** Components, stories, and the barrel file can be
-   deleted and rebuilt from `svg/` at any time. They are not the source of truth.
+---
 
 ## 🗺️ The Big Picture
 
+```text
+  Contributor
+      │  adds / edits
+      ▼
+┌──────────────────────┐        ┌──────────────────────┐
+│   svg/**/*.svg       │        │  metadata/**/*.json  │
+│  canonical artwork   │        │  authored meanings,  │
+│                      │        │  keywords, aliases   │
+└──────────┬───────────┘        └──────────┬───────────┘
+           └───────────────┬───────────────┘
+                           ▼
+              ┌────────────────────────┐
+              │      Icon Pipeline     │
+              │  1. Validate           │
+              │  2. Optimise           │
+              │  3. Normalise          │
+              │  4. Build registry     │
+              │  5. Generate outputs   │
+              └───────────┬────────────┘
+                          ▼
+              ┌────────────────────────┐
+              │   Canonical Icon Set   │
+              │  assets + registry     │
+              └───────────┬────────────┘
+                          │
+         ┌────────────────┴────────────────┐
+         ▼                                 ▼
+┌──────────────────┐            ┌──────────────────────┐
+│     ghicons      │            │   @ghicons/react     │
+│  (core package)  │            │  generated .tsx      │
+│  SVG + registry  │            │  components          │
+└────────┬─────────┘            └──────────┬───────────┘
+         │                                 │
+         ▼                                 ▼
+  CDN · downloads · website          React apps · Storybook
+  any framework, any language
 ```
-  Contributor                Generation                 Build                Consumer
- ─────────────      ───────────────────────────    ────────────────      ──────────────
 
-  svg/adinkra/          custom_scripts/                 tsc                npm i ghicons
-   Aban.svg      ──►    build_components.cjs     ──►  (types)      ──►     import { Aban }
-                         │  • svgo optimise            +                    from 'ghicons'
-                         │  • wrap in template       vite build
-                         │  • append to barrel       (lib mode)
-                         ▼                               │
-              src/icons/components/adinkra/               ▼
-                      Aban.tsx                          dist/
-                        +                          index.es.js
-                    src/index.ts                    index.umd.js
-                        │                            index.d.ts
-                        │
-                        ▼
-                custom_scripts/
-                build_stories.cjs   ──►   src/stories/Aban.stories.tsx   ──►   Storybook
-```
+The only human-authored inputs in that diagram are the SVG and its metadata. Everything downstream is produced by the pipeline.
 
-Read left to right: the only human-authored artefact in that chain is the SVG file.
-Everything from `src/icons/components/` onwards is produced by scripts.
+---
 
 ## 📁 Repository Layout
 
-```
+GHIcons is a **pnpm monorepo**. The canonical collection sits at the root, outside any package, because it belongs to all of them equally.
+
+```text
 ghicons/
-├── svg/                        ← SOURCE OF TRUTH. Raw, hand-authored SVGs.
-│   ├── adinkra/                  Traditional Adinkra symbols (~103 files)
-│   ├── general/                  Everyday Ghanaian-context icons (e.g. Cedi sign)
-│   └── national/                 National emblems (flag, black star)
+├── svg/                        ← CANONICAL SOURCE OF TRUTH
+│   ├── adinkra/                  Traditional Adinkra symbols
+│   ├── general/                  Everyday Ghanaian-context icons
+│   └── national/                 National emblems
 │
-├── custom_scripts/             ← The generation pipeline (plain CommonJS, no build step)
-│   ├── build_components.cjs      svg/ → src/icons/components/ + src/index.ts
-│   ├── build_stories.cjs         components → src/stories/
-│   ├── clean_filename.cjs        Normalises SVG filenames to PascalCase
-│   └── upload_to_cloudinary.cjs  Placeholder for asset hosting (currently empty)
+├── metadata/                   ← Hand-authored icon metadata
+│                                 meanings, keywords, aliases, references
 │
-├── src/
-│   ├── icons/
-│   │   ├── props.ts            ← HAND-WRITTEN. The shared icon contract.
-│   │   └── components/         ← GENERATED. git-ignored. Mirrors svg/ structure.
-│   │       ├── adinkra/
-│   │       ├── general/
-│   │       └── national/
-│   ├── stories/                ← GENERATED. git-ignored. One story per component.
-│   ├── index.ts                ← GENERATED. The public barrel / package entry point.
-│   ├── App.tsx, App.css        ← Dev-only playground (icon browser), not published.
-│   ├── main.tsx, index.css     ← Vite dev entry for the playground.
-│   └── assets/                   Logo and static assets for the playground.
+├── tools/                      ← The pipeline. Framework-neutral.
+│   ├── validate.mjs              Spec enforcement (local + CI)
+│   ├── canonical.mjs             SVG → canonical icon representation
+│   ├── registry.mjs              Canonical icons → registry.json
+│   └── generators/
+│       └── react.mjs             Canonical icons → .tsx components
 │
-├── svgr_templates_dir/
-│   └── svgr-icon-template.cjs  ← SVGR component template (see note below)
-├── .svgrrc.cjs                 ← SVGR config pointing at that template
+├── packages/
+│   ├── core/                   → npm: ghicons
+│   │   ├── dist/                 Optimised SVGs + registry (generated)
+│   │   └── package.json
+│   │
+│   └── react/                  → npm: @ghicons/react
+│       ├── src/
+│       │   ├── props.ts          HAND-WRITTEN. The React icon contract.
+│       │   ├── icons/            GENERATED components
+│       │   └── index.ts          GENERATED barrel
+│       ├── stories/              GENERATED Storybook stories
+│       └── package.json
 │
-├── .storybook/                 ← Storybook config (main.ts, preview.ts)
+├── playground/                 ← Vite dev app: searchable icon browser
+├── .storybook/                 ← Storybook config (React integration)
+│
 ├── .github/
-│   ├── workflows/                CI: SVG validation, release, dev pre-release
-│   ├── ISSUE_TEMPLATE/           Icon requests, bug reports, non-SVG submissions
-│   └── PULL_REQUEST_TEMPLATE/    Per-type PR templates
+│   ├── workflows/                Validation, release, pre-release
+│   ├── ISSUE_TEMPLATE/
+│   └── PULL_REQUEST_TEMPLATE/
 │
-├── docs/                       ← All project documentation (you are here)
+├── docs/                       ← You are here
 │   └── wiki/                     Pages mirrored to the GitHub wiki
 │
-├── ghicons_website/            ← Separate Next.js site (its own git repo, see below)
+├── ghicons_website/            ← Public site (separate git repository)
 │
-├── dist/                       ← Build output. git-ignored. The only thing npm ships.
-├── index.html                  ← Vite dev shell for the playground
-├── vite.config.ts              ← Library build config (lib mode + dts plugin)
-├── tsconfig*.json              ← Split configs: base / app / node / build
-├── eslint.config.js
-├── .npmignore                  ← Keeps everything except dist/ out of the tarball
-└── package.json
+├── pnpm-workspace.yaml
+└── LICENSE
 ```
 
 ### Hand-written vs. generated
 
 | Path | Status | Committed? |
 |---|---|---|
-| `svg/**/*.svg` | Hand-authored | ✅ Yes |
-| `src/icons/props.ts` | Hand-authored | ✅ Yes |
-| `src/App.tsx`, `src/main.tsx` | Hand-authored (dev only) | ✅ Yes |
-| `custom_scripts/*.cjs` | Hand-authored | ✅ Yes |
-| `src/icons/components/**` | Generated | ❌ git-ignored |
-| `src/stories/**` | Generated | ❌ git-ignored |
-| `src/index.ts` | Generated (append-only) | ⚠️ See [Known Rough Edges](#-known-rough-edges) |
-| `dist/**` | Built | ❌ git-ignored |
+| `svg/**/*.svg` | Hand-authored | ✅ |
+| `metadata/**` | Hand-authored | ✅ |
+| `tools/**` | Hand-authored | ✅ |
+| `packages/react/src/props.ts` | Hand-authored | ✅ |
+| `playground/**` | Hand-authored | ✅ |
+| `packages/core/dist/**` | Generated | ❌ |
+| `packages/react/src/icons/**` | Generated | ❌ |
+| `packages/react/src/index.ts` | Generated | ❌ |
+| `packages/react/stories/**` | Generated | ❌ |
 
-Because the generated tree is git-ignored, **a fresh clone has no components until you run
-`pnpm run generate:icons`**. The `build` script does this for you, and CI runs it explicitly
-before every build and publish.
+Because the generated tree is git-ignored, **a fresh clone has no components or registry until the pipeline runs**. CI regenerates everything before each build and publish, so generated output can never drift from source.
 
-## 🖋️ Source of Truth: the `svg/` Directory
+---
 
-Each subdirectory of `svg/` is a **category**, and the directory structure is preserved
-verbatim through the whole pipeline:
+## 📦 The Packages
 
+### `ghicons` — the core
+
+The framework-agnostic package. No runtime dependencies, no framework code.
+
+```text
+ghicons/
+├── svg/
+│   ├── adinkra/GyeNyame.svg      optimised, spec-conformant
+│   ├── general/…
+│   └── national/…
+├── registry.json                  the machine-readable index
+├── index.js                       exports the registry
+└── index.d.ts
 ```
-svg/adinkra/Aban.svg  →  src/icons/components/adinkra/Aban.tsx  →  export { Aban }
+
+Use it from anything:
+
+```js
+import registry from "ghicons/registry.json";
+```
+```html
+<img src="node_modules/ghicons/svg/adinkra/GyeNyame.svg" alt="Gye Nyame">
 ```
 
-Adding a new category is therefore just a matter of creating a new folder under `svg/` —
-no script changes required. The generator recurses through whatever it finds.
+This package is what makes the "framework-agnostic" claim real rather than aspirational. It is also what the CDN, the download pages, the website search and every future adapter are built on.
 
-The filename determines the component name. `clean_filename.cjs` normalises names
-(`gye-nyame.svg` → `GyeNyame.svg`), and CI enforces PascalCase so the generated identifier
-is always a valid React component name.
+> **`ghicons` used to be the React package.** As of `0.1.0` the name belongs to the core, and React moved to `@ghicons/react`. See [MIGRATION.md](MIGRATION.md).
 
-## 🧩 The Icon Component Contract
+### `@ghicons/react` — the React integration
 
-Every generated component conforms to the same shape, defined in `src/icons/props.ts`:
+Generated `.tsx` components plus the shared `IconProps` contract. Depends on `react` as a peer dependency only.
+
+```tsx
+import { GyeNyame } from "@ghicons/react";
+```
+
+### Future packages
+
+`@ghicons/vue`, `@ghicons/svelte`, `@ghicons/web-components`, and a Flutter package on pub.dev. Each is an adapter over the same canonical collection — never its own copy of the artwork. See the [Roadmap](wiki/Roadmap.md).
+
+---
+
+## 🖋️ Source of Truth: `svg/`
+
+Each subdirectory of `svg/` is a **category**, and that structure is preserved through the whole pipeline:
+
+```text
+svg/adinkra/GyeNyame.svg
+     │
+     ├── ghicons          → svg/adinkra/GyeNyame.svg  (optimised)
+     ├── ghicons          → registry entry "gye-nyame"
+     └── @ghicons/react   → GyeNyame.tsx, exported as GyeNyame
+```
+
+Adding a category is creating a directory. The pipeline recurses over whatever it finds, so no generator change is needed.
+
+The filename determines the identifier everywhere. `clean_filename` normalises names to PascalCase, and validation enforces it, so the generated identifier is always valid in every target language.
+
+---
+
+## ⚙️ The Pipeline
+
+The pipeline is deliberately staged, and every stage is framework-neutral except the last.
+
+```text
+   svg/*.svg + metadata/*.json
+              │
+              ▼
+    ┌──────────────────┐
+    │  1. VALIDATE     │  Enforce ICON-SPEC across the whole collection.
+    └────────┬─────────┘  Fails the build on any violation.
+             ▼
+    ┌──────────────────┐
+    │  2. OPTIMISE     │  SVGO. Must not change appearance.
+    └────────┬─────────┘
+             ▼
+    ┌──────────────────┐
+    │  3. NORMALISE    │  Produce the canonical icon representation:
+    └────────┬─────────┘  { name, slug, category, viewBox, body, metadata }
+             ▼
+    ┌──────────────────┐
+    │  4. REGISTRY     │  Rebuild registry.json from scratch.
+    └────────┬─────────┘
+             ▼
+    ┌──────────────────┐
+    │  5. GENERATE     │  Per-target emitters consume the canonical
+    └──────────────────┘  representation. React today; others later.
+```
+
+### Why the staging matters
+
+Stages 1–4 know nothing about any framework. That is the whole point: adding Vue means writing one emitter against the canonical representation, not a second pipeline.
+
+Two properties the pipeline must hold:
+
+- **Reproducible.** Deleting every generated artifact and re-running must produce byte-identical output. CI relies on this.
+- **Complete.** Generated indexes are *rebuilt*, never appended to. An append-only barrel leaves stale exports pointing at deleted icons — a bug GHIcons has already been bitten by.
+
+---
+
+## 🗃️ The Registry
+
+`registry.json` is the machine-readable index of the collection, generated at stage 4 and published inside `ghicons`.
+
+```json
+{
+  "version": "0.1.0",
+  "icons": [
+    {
+      "name": "GyeNyame",
+      "slug": "gye-nyame",
+      "category": "adinkra",
+      "viewBox": "0 0 24 24",
+      "file": "svg/adinkra/GyeNyame.svg",
+      "meaning": "Except God — the supremacy of God",
+      "keywords": ["god", "supremacy", "faith"]
+    }
+  ]
+}
+```
+
+Required fields are derived automatically from the filename, directory and SVG, so every icon gets a valid entry with no authoring effort. Optional fields come from `metadata/` and can arrive later.
+
+The registry is what lets one index serve the website's search, the CDN's manifest, the download pages, the docs, and every framework generator — instead of each of them re-deriving the collection independently. The playground currently hardcodes its own name-to-category map; that goes away once it reads the registry.
+
+The registry describes icons. It never holds a second editable copy of the artwork. Full schema in [ICON-SPEC.md](ICON-SPEC.md#-the-icon-registry).
+
+---
+
+## ⚛️ The React Integration
+
+Every generated component conforms to `IconProps`, defined in `packages/react/src/props.ts`:
 
 ```ts
 export interface IconProps extends React.SVGProps<SVGSVGElement> {
@@ -165,9 +328,7 @@ export interface IconProps extends React.SVGProps<SVGSVGElement> {
 }
 ```
 
-`props.ts` also exports `trueSize(size)`, the sizing helper. It normalises the `size` prop
-so that bare numbers and unitless strings become pixels, while valid CSS units
-(`rem`, `em`, `%`, `vh`, …) pass through untouched:
+Alongside it, `trueSize(size)` normalises the `size` prop — bare numbers and unitless strings become pixels, valid CSS units pass through:
 
 ```ts
 trueSize(24)        // "24px"
@@ -175,10 +336,10 @@ trueSize("2.5rem")  // "2.5rem"
 trueSize("32")      // "32px"
 ```
 
-A generated component is a thin, dependency-free function:
+A generated component is thin and dependency-free:
 
 ```tsx
-const Aban: React.FC<IconProps> = ({ size = 24, color = 'currentColor', viewBox = "0 0 24 24", ...props }) => (
+const GyeNyame: React.FC<IconProps> = ({ size = 24, color = 'currentColor', viewBox = "0 0 24 24", ...props }) => (
   <svg xmlns='http://www.w3.org/2000/svg'
        width={trueSize(size)} height={trueSize(size)}
        fill={color} viewBox={viewBox} {...props}>
@@ -187,104 +348,31 @@ const Aban: React.FC<IconProps> = ({ size = 24, color = 'currentColor', viewBox 
 );
 ```
 
-Three consequences worth noting:
+Three consequences:
 
-- **`fill={color}` sits before `{...props}`**, so a consumer can still override `fill`
-  directly through spread props.
-- **Paths are inlined**, not fetched. There is no runtime sprite sheet, no CSS file to
-  import, and no network request per icon.
-- **`currentColor` is the default**, so icons inherit text colour unless told otherwise.
-  This is also why CI rejects hardcoded fills in source SVGs — a baked-in colour would
-  silently defeat the `color` prop.
+- **`fill={color}` precedes `{...props}`**, so a consumer can still override `fill` directly.
+- **Paths are inlined.** No sprite sheet, no stylesheet, no network request per icon.
+- **`currentColor` is the default**, so icons inherit text colour. This is also why the spec forbids hardcoded fills — a baked-in colour silently defeats the `color` prop.
 
-## ⚙️ The Generation Pipeline
+---
 
-### `build_components.cjs` — the core generator
+## 🏗️ Build & Publishing
 
-```bash
-node custom_scripts/build_components.cjs [svgDir] [componentsDir] [--overwrite|-o]
-# defaults: svg → src/icons/components
-# exposed as: pnpm run generate:icons
+Each package builds independently; the pipeline runs once, up front.
+
+```text
+pnpm run validate      → whole-collection spec check
+pnpm run generate      → registry + all framework outputs
+pnpm run build         → build every package
 ```
 
-For each `.svg` file it finds, recursively:
+### `ghicons` (core)
 
-1. **Skip or overwrite.** If the target `.tsx` already exists and `--overwrite` was not
-   passed, the file is skipped. This makes regeneration cheap during local development;
-   CI always passes `--overwrite` so the output can never drift from the SVG.
-2. **Optimise** the SVG with [SVGO](https://github.com/svg/svgo), then extract the
-   `<svg>…</svg>` element with a regex.
-3. **Rewrite the opening tag**, replacing whatever the source declared with the
-   prop-driven attributes (`width`, `height`, `fill`, `viewBox`, `{...props}`).
-4. **Emit the component** into the mirrored category directory, computing a relative
-   import path back to `src/icons/props` so nesting depth does not matter.
-5. **Append the export** to `src/index.ts`, unless that exact export line is already
-   present.
+No compilation in the usual sense — the build copies optimised SVGs and writes `registry.json` plus a tiny JS/TS entry point. No dependencies, so nothing to bundle or externalise.
 
-### `build_stories.cjs` — Storybook story generator
+### `@ghicons/react`
 
-```bash
-node custom_scripts/build_stories.cjs <componentsDir> [--overwrite]
-# exposed as: pnpm run generate:stories
-```
-
-Walks a components directory and writes one `*.stories.tsx` per component into
-`src/stories/`, each with four variants (`Default`, `Large`, `Colored`, `SmallColored`)
-and `argTypes` wired to the `IconProps` fields. Stories import from `../index`, so a
-missing export in the barrel surfaces immediately as a broken story.
-
-Note the argument shape differs from the icon generator: the components directory is
-**required**, and the flag is `--overwrite` only (no `-o` short form).
-
-### `clean_filename.cjs` — filename normaliser
-
-```bash
-node custom_scripts/clean_filename.cjs <folder>
-# exposed as: pnpm run dir:rename
-```
-
-Renames every file in a folder to PascalCase, stripping characters that are illegal in a
-JS identifier. Run this on a batch of freshly downloaded SVGs before generating.
-
-### A note on SVGR
-
-`.svgrrc.cjs` and `svgr_templates_dir/svgr-icon-template.cjs` configure
-[`@svgr/cli`](https://react-svgr.com/) with a template that produces the same component
-shape. **No npm script currently invokes SVGR** — `build_components.cjs` does the
-conversion itself with SVGO plus string templating. Treat the SVGR setup as the earlier
-approach that is kept around as a fallback; if you change the component shape, change both
-so they do not diverge.
-
-## 📦 Build & Packaging
-
-`pnpm run build` is three steps:
-
-```jsonc
-"build": "pnpm run generate:icons --overwrite && tsc -p tsconfig.build.json && vite build"
-```
-
-1. **`generate:icons --overwrite`** — rebuild every component from `svg/`, guaranteeing the
-   build reflects current SVGs.
-2. **`tsc -p tsconfig.build.json`** — type-checks and emits declarations into `dist/`.
-   Stories and tests are excluded from this pass.
-3. **`vite build`** — Vite library mode (`vite.config.ts`) bundles `src/index.ts` into
-   `dist/index.es.js` and `dist/index.umd.js`. `react` and `react-dom` are marked
-   `external`, so they are never bundled, and `vite-plugin-dts` emits the types entry.
-
-### TypeScript config layout
-
-| File | Used for |
-|---|---|
-| `tsconfig.json` | Base/editor config, references `tsconfig.node.json` |
-| `tsconfig.build.json` | Library build — emits declarations, excludes stories & tests |
-| `tsconfig.app.json` | Strict no-emit checking for the Vite playground |
-| `tsconfig.node.json` | Config files that run in Node (Vite config, etc.) |
-
-### What ships to npm
-
-`package.json` declares `"files": ["dist"]`, and `.npmignore` additionally strips `src/`,
-`svg/`, `custom_scripts/`, `.storybook/`, `.github/`, and the playground entry points. The
-published surface is the `exports` map:
+`tsc` emits declarations; Vite library mode bundles `src/index.ts` into ESM and UMD. `react` and `react-dom` are `external`, so they are never bundled and there is no duplicate-React hazard.
 
 ```jsonc
 "exports": {
@@ -296,126 +384,124 @@ published surface is the `exports` map:
 }
 ```
 
-React is a **peer dependency** (`^19.0.0`), so consumers supply their own copy and there is
-no duplicate-React hazard.
+Publishing order matters: `ghicons` first, then adapters, so an adapter never references a core version that is not yet on the registry. Full policy in the [Release Process](wiki/Release-Process.md).
 
-## 📚 Storybook & the Dev Playground
+---
 
-Two independent ways to look at icons while developing:
+## 📚 Storybook & the Playground
 
-- **Storybook** (`pnpm run storybook`, port 6006) — the per-icon reference. Config lives in
-  `.storybook/`, picking up `src/**/*.stories.@(js|jsx|mjs|ts|tsx)` and `src/**/*.mdx`.
-  Stories are generated, so the gallery grows automatically with the library.
-  `pnpm run build-storybook` produces the static site in `storybook-static/`.
-- **Vite playground** (`pnpm run dev`) — `index.html` → `src/main.tsx` → `src/App.tsx`, a
-  searchable, category-filtered browser over `import * as Icons from './index'`. It is a
-  development tool only and is excluded from the package.
+Two ways to look at icons while developing. Both are React-side tooling, not part of the canonical system.
 
-`vitest` is wired up as `pnpm test`, but there are no test files in the repository yet.
+- **Storybook** (`pnpm run storybook`) — the per-icon reference. Stories are generated, so the gallery grows with the collection. Variants: Default, Large, Colored, SmallColored.
+- **Playground** (`pnpm run dev`) — a searchable, category-filtered browser over the whole collection, with a docs page. Development-only; never published.
 
-## ✅ Quality Gates (CI)
+As GHIcons becomes framework-neutral, the public website takes over as *the* icon browser, and these two narrow to what they are good at: React integration development.
 
-Three GitHub Actions workflows in `.github/workflows/`:
+---
+
+## ✅ Quality Gates
 
 | Workflow | Trigger | What it does |
 |---|---|---|
-| `validate-svgs.yml` | PR to `dev` touching `svg/**/*.svg` | Validates only the changed SVGs and writes a pass/fail table to the job summary |
-| `release.yml` | Push/PR to `master` | Installs, lints, regenerates icons, builds; on push to `master` also publishes to npm |
-| `dev-pre-release.yml` | Push to `dev` | Builds and publishes a GitHub pre-release |
+| `validate-svgs.yml` | Every PR | Validates the **entire** collection against ICON-SPEC |
+| `release.yml` | Push/PR to `master` | Lint, validate, generate, build; publishes on push |
+| `dev-pre-release.yml` | Push to `dev` | Builds and publishes a pre-release |
 
-The SVG validator is an inline Python script enforcing the five rules that the pipeline
-depends on:
+Validation enforces the spec: `viewBox` exactly `0 0 24 24`, no colour but `currentColor`/`none`, no raster or base64, no scripts or imports, PascalCase filenames. Each rule protects a pipeline assumption — see [ICON-SPEC.md](ICON-SPEC.md#-validation).
 
-1. `viewBox` is exactly `0 0 24 24`
-2. No hardcoded `fill` colours — only `currentColor` or `none`
-3. No embedded raster images or `base64` data
-4. No `<script>` tags or `@import`
-5. Filename is PascalCase (`GyeNyame.svg`)
+> **Validating only changed files is not enough.** The original workflow checked only the SVGs touched by a PR, and 103 of 106 icons drifted to a hardcoded `fill='#fff'` without a single failing build. The sweep runs over everything now.
 
-These are not stylistic preferences. Rules 1–2 are what make the `size`/`color`/`viewBox`
-props work; rules 3–4 keep the bundle small and the output safe to inline; rule 5 is what
-makes the generated identifier valid.
+---
 
 ## 🌐 The Website
 
-`ghicons_website/` is the public icon browser at
-[ghicons.methuselah.site](https://ghicons.methuselah.site). It is a **Next.js 16 +
-Tailwind 4 app with its own git repository and lockfile**, nested inside this directory but
-not tracked by the library repo.
+`ghicons_website/` is the public browser at [ghicons.methuselah.site](https://ghicons.methuselah.site) — a Next.js + Tailwind app with **its own git repository**, nested in this directory but not tracked here.
 
-Importantly, it consumes `ghicons` as a **published npm dependency** (`"ghicons": "^0.0.1"`),
-not via a workspace link. A change to the library only reaches the website after a release
-and a dependency bump there.
+It consumes GHIcons as a published npm dependency, not a workspace link, so a library change reaches it only after a release and a dependency bump.
 
-## 🧭 Design Decisions & Trade-offs
+Once the registry ships, the site consumes it directly instead of maintaining parallel metadata — that is what unlocks search, meanings, per-icon pages and downloads. The website is a consumer of the collection, never a source of truth for it.
+
+---
+
+## 🧠 Design Decisions & Trade-offs
+
+**A monorepo with the collection at the root.**
+`svg/` deliberately sits outside `packages/`. If it lived inside the core package, the core would own the collection and every other adapter would consume it second-hand. At the root, all packages are peers over a shared source — which is what the architecture claims.
+*Cost:* workspace tooling, multi-package release coordination, and a longer contributor path than a single-package repo.
+
+**`ghicons` names the core, not React.**
+The headline name should mean the icon collection, because that is what the project is. Leaving it attached to React would have kept the old framing alive in the most visible place.
+*Cost:* a real breaking change for existing installs. Taken deliberately while the number was still small, rather than after 1.0 when it would be expensive. See [MIGRATION.md](MIGRATION.md).
 
 **Generate components instead of committing them.**
-103+ near-identical `.tsx` files would swamp every diff and invite hand-edits that drift
-from the SVG. Keeping them git-ignored makes `svg/` unambiguously the source of truth. The
-cost: a clone is not immediately buildable-by-inspection — you must run the generator
-first, and the generated tree cannot be reviewed in a PR.
+A hundred near-identical `.tsx` files would swamp every diff and invite hand-edits that drift from the SVG. Keeping them git-ignored makes `svg/` unambiguously authoritative.
+*Cost:* a clone is not buildable by inspection, and generated output cannot be reviewed in a PR.
 
-**String templating instead of SVGR at build time.**
-`build_components.cjs` gives full control over the emitted file (doc comment, relative
-import path, exact prop ordering) with one fewer moving part in CI. The cost is a
-regex-based extraction of the `<svg>` element, which assumes well-formed single-root SVGs —
-precisely what the CI validator guarantees.
+**A staged pipeline rather than one script.**
+Splitting validate / optimise / normalise / registry / generate means adding a framework is one new emitter, not a second pipeline.
+*Cost:* more moving parts than the single generator it replaces.
 
-**A single flat barrel export.**
-Every icon is a named export from one entry point. This keeps the import ergonomics simple
-(`import { Aban, Sankofa } from 'ghicons'`) and relies on ESM tree-shaking to drop unused
-icons. There are no per-category subpath exports, so bundlers that cannot tree-shake will
-pull in everything.
+**A single flat barrel per framework package.**
+`import { GyeNyame, Sankofa } from "@ghicons/react"` is the ergonomic default, relying on ESM tree-shaking to drop unused icons.
+*Cost:* bundlers that cannot tree-shake pull in everything. Those consumers should use the core package's raw SVGs.
 
-**Categories as directories, not metadata.**
-Category lives in the folder structure rather than in a manifest. Cheap to extend and
-impossible to get out of sync — but it also means there is no machine-readable index of
-icons with tags, meanings, or search keywords. `src/App.tsx` currently hardcodes its own
-name-to-category sets to work around this.
+**Categories as directories, with the registry for everything else.**
+Category lives in the filesystem: cheap to extend, impossible to desync. Richer classification — keywords, aliases, meanings — belongs in the registry rather than being forced into the directory tree.
 
-**`currentColor` by default.**
-Icons behave like text. This is the single decision most visible to consumers, and the one
-the SVG validator protects most aggressively.
+**Monochrome `currentColor` by default.**
+Icons behave like text. This is the single most visible decision for consumers, and the one validation protects most aggressively. Multicolour is a deliberate future extension, not an oversight.
 
-## ⚠️ Known Rough Edges
+---
 
-Documented so nobody rediscovers them the hard way:
+## 🚦 Current State vs. Target State
 
-- **`src/index.ts` is append-only.** `addToIndexFile` appends an export if the exact line is
-  absent, but nothing ever removes one. Deleting or renaming an SVG leaves a stale export
-  pointing at a file that will not be regenerated, breaking the build. Delete `src/index.ts`
-  and regenerate after any removal or rename.
-- **`src/index.ts` is generated but not git-ignored,** unlike the rest of the generated tree.
-  It shows up as an untracked/modified file depending on local history.
-- **`package.json` field mismatches.** `"types": "dist/index.d.js"` has a typo (`.d.js`
-  should be `.d.ts`), and `"main": "dist/index.js"` points at the raw `tsc` output rather
-  than the bundle. Modern resolvers use the `exports` map, which is correct, so this only
-  bites older tooling.
-- **`tsc` emits more than the library.** `tsconfig.build.json` excludes stories from the
-  type-check pass, but `dist/` still ends up containing `App.js`, `main.js`, and
-  `dist/stories/` declarations from the playground. Harmless, but it inflates the tarball.
-- **`custom_scripts/upload_to_cloudinary.cjs` is empty.** Referenced nowhere; a placeholder.
+This document describes the architecture GHIcons is being restructured into. Being explicit about the gap:
+
+| Area | Today | Target |
+|---|---|---|
+| Repo shape | Single package, `src/` is React | pnpm monorepo, `packages/core` + `packages/react` |
+| `ghicons` on npm | The React package (`0.0.1`) | The framework-agnostic core (`0.1.0`) |
+| React package | — | `@ghicons/react` |
+| Pipeline | One script: SVGO + React templating inline | Staged: validate → optimise → normalise → registry → generate |
+| Registry | None; category derived ad hoc, playground hardcodes its own map | Generated `registry.json` shipped in the core |
+| Barrel | Append-only; stale exports survive deletions | Rebuilt from source every run |
+| Validation | Changed files only, PRs to `dev` | Whole collection, every PR |
+| Collection | 103/106 icons off-spec (`fill='#fff'`); `GhanaCedisIcon` off-canvas | Fully spec-conformant |
+| Raw SVG distribution | Not available | Shipped in the core package |
+
+Progress against this table is tracked in the [Roadmap](wiki/Roadmap.md).
+
+---
 
 ## 🔧 Where Do I Make My Change?
 
 | I want to… | Touch this |
 |---|---|
-| Add an icon | Drop the `.svg` into the right `svg/<category>/` folder, then `pnpm run generate:icons` |
-| Add a whole category | Create `svg/<new-category>/` — the generator picks it up automatically |
-| Change the props every icon accepts | `src/icons/props.ts` **and** the template string in `custom_scripts/build_components.cjs` (and `svgr_templates_dir/svgr-icon-template.cjs` to keep them aligned) |
-| Change how components are emitted | `custom_scripts/build_components.cjs` |
-| Change the Storybook stories | The template in `custom_scripts/build_stories.cjs`, then regenerate with `--overwrite` |
-| Change bundling, externals, or output formats | `vite.config.ts` |
-| Change what ships to npm | `package.json` (`files`, `exports`) and `.npmignore` |
-| Change the SVG rules contributors must meet | `.github/workflows/validate-svgs.yml` **and** [`CONTRIBUTING.md`](CONTRIBUTING.md) / the [SVG Style Guide](wiki/SVG-Style-Guide.md) |
+| Add an icon | `svg/<category>/<Name>.svg`, then run the pipeline |
+| Correct an icon's artwork | Its canonical SVG. Never the generated component |
+| Add a category | Create `svg/<new-category>/` — discovered automatically |
+| Add meanings, keywords or aliases | `metadata/` |
+| Change what makes a valid icon | [`ICON-SPEC.md`](ICON-SPEC.md) **and** `tools/validate.mjs` |
+| Change SVG validation in CI | `.github/workflows/validate-svgs.yml` |
+| Change the registry schema | `tools/registry.mjs` and [`ICON-SPEC.md`](ICON-SPEC.md) |
+| Change the React props API | `packages/react/src/props.ts` **and** `tools/generators/react.mjs` |
+| Change how React components are emitted | `tools/generators/react.mjs` |
+| Change Storybook stories | The story generator, then regenerate |
+| Add a new framework integration | A new emitter in `tools/generators/` + a new package |
+| Change what ships in a package | That package's `package.json` and ignore rules |
 | Change the release flow | `.github/workflows/release.yml`, `dev-pre-release.yml` |
-| Change the icon browser site | `ghicons_website/` (separate repo — and it consumes the *published* package) |
+| Change the public website | `ghicons_website/` (separate repo, consumes the *published* package) |
+
+The guiding rule:
+
+> **If the change describes what an icon *is*, it belongs to the canonical icon system. If it describes how a platform *uses* an icon, it belongs to that platform's integration.**
 
 ---
 
 ## See Also
 
-- [DEVELOPMENT.md](DEVELOPMENT.md) — day-to-day commands and workflows
+- [ICON-SPEC.md](ICON-SPEC.md) — what makes a valid GHIcon
+- [DEVELOPMENT.md](DEVELOPMENT.md) — commands and day-to-day workflow
 - [CONTRIBUTING.md](CONTRIBUTING.md) — how to submit icons and code
-- [DOCUMENTATION.md](DOCUMENTATION.md) — consumer-facing usage guide
-- [SVG Style Guide](wiki/SVG-Style-Guide.md) — how to draw and prepare icons
+- [MIGRATION.md](MIGRATION.md) — moving from `ghicons` 0.0.x to the new packages
+- [Roadmap](wiki/Roadmap.md) — what is planned and in what order

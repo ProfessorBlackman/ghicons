@@ -4,6 +4,8 @@ GHIcons exists to represent Ghanaian cultural heritage accurately and respectful
 
 Cultural accuracy is as important as technical quality. An SVG with perfect paths but the wrong meaning — or the wrong name — does more harm than good.
 
+This matters more than it used to. The research you contribute does not stay in a pull request comment: it becomes structured metadata in the published icon registry, which feeds the website, search, icon pickers and any tool built on GHIcons. An inaccurate meaning propagates everywhere the icon does.
+
 ---
 
 ## Why This Matters
@@ -33,6 +35,29 @@ See the list of trusted sources below. A Wikipedia link alone is not sufficient 
 
 **4. Any known variations**
 Some symbols have regional variations or have evolved over time. If your version differs from other depictions, note why.
+
+**5. Search keywords**
+Words someone might search for when looking for this symbol without knowing its Akan name — concepts, themes, related objects. These go into the registry and are how most people will actually find the icon.
+
+---
+
+## Where This Information Lives
+
+Cultural information is stored as structured metadata alongside the icon, and published in the registry that ships with the `ghicons` package:
+
+```json
+{
+  "name": "GyeNyame",
+  "slug": "gye-nyame",
+  "category": "adinkra",
+  "meaning": "Except God — the supremacy of God",
+  "keywords": ["god", "supremacy", "faith", "omnipotence"],
+  "aliases": ["Gye Nyame"],
+  "references": ["…"]
+}
+```
+
+You do not need to write JSON to contribute this — provide the information in your pull request or issue and a maintainer will record it. But knowing where it ends up explains why the sourcing standards below are strict.
 
 ---
 
@@ -106,3 +131,7 @@ If you are unsure whether a symbol is appropriate to include, raise it in [💬 
 ## Questions?
 
 Cultural accuracy is a community effort. If you have questions about a symbol, its meaning, or how to represent it correctly, bring it to [Discussions](../discussions). The community includes Ghanaian developers, researchers, and cultural enthusiasts who are glad to help.
+
+You do not need to draw anything to contribute here. Researching and correcting the meanings of symbols already in the collection is one of the most valuable contributions available — see [Who We Need](Who-We-Need).
+
+See also: [SVG Style Guide](SVG-Style-Guide) · [Icon Specification](../blob/dev/docs/ICON-SPEC.md) · [Contributing](../blob/dev/docs/CONTRIBUTING.md)

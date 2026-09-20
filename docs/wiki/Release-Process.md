@@ -1,130 +1,419 @@
-# Release Process
+# GHIcons Release Process
 
-This page documents how GHIcons moves from day-to-day development to a published release on npm. It is intended for maintainers and contributors who want to understand how the project is versioned and shipped.
+How changes move from a contribution to a published package.
 
----
-
-## Branch Structure
-
-```
-feature branches / contributor PRs
-          ↓
-        dev        ← all active development happens here
-          ↓  (deliberate merge when ready to release)
-        main       ← triggers npm publish
-```
-
-| Branch | Purpose |
-|---|---|
-| `dev` | Default branch. All PRs from contributors target `dev`. Merges here trigger a dev build released on GitHub for testing. |
-| `main` | Stable, production branch. Only updated intentionally by a maintainer. Merges here trigger a release to npm. |
-| `feature/*` | Optional short-lived branches for larger batches of work (e.g. `feature/adinkra-batch-2`) |
+GHIcons publishes **multiple packages from one repository**, all generated from one canonical icon collection. This document covers how that is versioned, validated and shipped.
 
 ---
 
-## Versioning
+## 📋 Table of Contents
 
-GHIcons follows [Semantic Versioning](https://semver.org/) (`MAJOR.MINOR.PATCH`):
+- [Release Philosophy](#-release-philosophy)
+- [What Gets Published](#-what-gets-published)
+- [Branch Strategy](#-branch-strategy)
+- [Release Types](#-release-types)
+- [Versioning](#-versioning)
+- [Version Alignment Across Packages](#-version-alignment-across-packages)
+- [Development Releases](#-development-releases)
+- [Stable Releases](#-stable-releases)
+- [Release Checklist](#-release-checklist)
+- [Release Workflow](#-release-workflow)
+- [Icon Collection Changes](#-icon-collection-changes)
+- [Breaking Changes](#-breaking-changes)
+- [Hotfixes](#-hotfixes)
+- [Pre-1.0 Releases](#-pre-10-releases)
+- [Failed Releases](#-failed-releases)
+- [Verifying a Release](#-verifying-a-release)
+- [Responsibilities](#-responsibilities)
 
-| Change type | Version bump | Example |
+---
+
+## 🧭 Release Philosophy
+
+GHIcons does not publish hand-written packages. It publishes the **output of a pipeline** run against a canonical collection.
+
+```text
+Canonical SVGs + metadata
+        ▼
+    Validation
+        ▼
+   Optimisation
+        ▼
+    Normalisation
+        ▼
+  Registry generation
+        ▼
+  Framework generation
+        ▼
+       Build
+        ▼
+  Package / distribute
+```
+
+A release publishes only when that pipeline completes end to end. That is what guarantees published artifacts match the canonical source — nobody can ship a component that no longer corresponds to its SVG.
+
+---
+
+## 📦 What Gets Published
+
+| Package | npm | Contents |
 |---|---|---|
-| Bug fix, SVG correction on an existing icon | Patch | `1.0.1` |
-| New icons added (backwards compatible) | Minor | `1.1.0` |
-| Breaking API change (renamed props, removed components) | Major | `2.0.0` |
+| Core | `ghicons` | Optimised SVGs + `registry.json`. No dependencies. |
+| React | `@ghicons/react` | Generated components. `react` as a peer dependency. |
+| *Future* | `@ghicons/vue`, `@ghicons/svelte`, `@ghicons/web-components` | Generated adapters |
+| *Future* | pub.dev | Flutter package |
 
-The project is currently in pre-1.0 (`0.x.x`), which signals that the API may still change. The first stable release will be `1.0.0`.
+> **`ghicons` changed meaning at `0.1.0`.** It was the React package through `0.0.1`; it is now the framework-agnostic core. React moved to `@ghicons/react`. See [MIGRATION.md](../MIGRATION.md).
+
+**Publish order is core first, then adapters.** An adapter must never reference a core version that is not yet on the registry.
 
 ---
 
-## Dev Builds (GitHub Releases)
+## 🌿 Branch Strategy
 
-Every push to `dev` automatically triggers the **Dev Release** GitHub Actions workflow. This:
+```text
+feature branch
+      ▼
+     dev          → pre-releases
+      ▼
+   master         → stable releases to npm
+```
 
-1. Builds the project
-2. Packages the `dist/` output as a `.zip`
-3. Publishes a **pre-release** on GitHub tagged `dev-v{version}-build.{run_number}`
+### `dev`
 
-These builds are for **maintainer testing only** — not for end users. They allow you to verify changes work correctly in a real React project before merging to `main`.
+Where completed contributions integrate before becoming stable: new icons, tooling, documentation, framework work, fixes, upcoming API changes.
 
-### Installing a dev build locally
+Pushes to `dev` publish a GitHub pre-release.
 
-1. Go to [Releases](../releases) and download the latest `ghicons-dev-*.zip`
-2. Extract the zip
-3. In your test project, run:
+### `master`
+
+The stable branch. A merge into `master` turns a release candidate into a published release, so it should only ever contain changes that are ready for users.
+
+Pushes to `master` publish to npm.
+
+> The configured workflows use `master`. Some older documentation says `main` — the workflows are authoritative.
+
+---
+
+## 📦 Release Types
+
+**Development release** — a pre-release from `dev`, for testing upcoming changes, reviewing new icons and validating tooling before a stable release.
+
+**Stable release** — a production release published to npm.
+
+**Hotfix release** — a focused stable release carrying an urgent fix.
+
+---
+
+## 🔢 Versioning
+
+GHIcons follows **Semantic Versioning**: `MAJOR.MINOR.PATCH`.
+
+### Major
+
+Breaking changes:
+
+- removing or renaming an icon
+- changing a public framework API
+- changing package names or exports
+- changing a stable icon-specification rule in a way that affects consumers
+- tightening validation such that existing published icons become invalid
+
+### Minor
+
+Backwards-compatible additions:
+
+- new icons
+- new categories
+- new optional props or features
+- a new framework integration
+- new registry fields that consumers can ignore
+
+**Adding icons is a minor release.** Existing consumers are unaffected.
+
+### Patch
+
+Backwards-compatible fixes:
+
+- correcting an icon's geometry
+- fixing an SVG technical issue
+- correcting generated output
+- documentation and packaging fixes
+
+---
+
+## 🔗 Version Alignment Across Packages
+
+**All packages share one version number and release together.**
+
+When `ghicons` goes to `0.3.0`, `@ghicons/react` goes to `0.3.0` on the same commit, even if nothing in the React adapter changed.
+
+Why: adapters are generated from the core's collection, so "which core does this adapter correspond to?" must have an obvious answer. Matching numbers make that free, and they let an adapter declare an exact core dependency without a lookup table.
+
+*Cost:* packages get version bumps for changes that did not affect them, and a consumer who reads only the React changelog sees releases with no React-visible changes. That is an acceptable trade while the number of packages is small. If the ecosystem grows enough that it stops being acceptable, independent versioning gets revisited before 1.0 — not after.
+
+---
+
+## 🧪 Development Releases
+
+```text
+feature branch
+      ▼  PR
+     dev
+      ▼  CI: validate → generate → build → pre-release
+GitHub pre-release
+```
+
+Pre-releases are for verification, not general consumption. They let maintainers and contributors check a change against real code before it becomes stable.
+
+---
+
+## 🚀 Stable Releases
+
+```text
+dev
+  ▼  PR
+master
+  ▼  CI: lint → validate → generate → build
+  ▼  publish ghicons
+  ▼  publish @ghicons/*
+npm
+```
+
+---
+
+## ✅ Release Checklist
+
+### Source
+
+- [ ] All SVGs pass whole-collection validation
+- [ ] No off-spec icons, including ones not touched by this release
+- [ ] New icons have been culturally reviewed
+- [ ] Metadata is accurate for anything added or changed
+
+### Icon system
+
+- [ ] The registry regenerates cleanly from source
+- [ ] No stale entries for deleted or renamed icons
+- [ ] Generated output is reproducible — a clean regeneration produces identical results
+- [ ] Naming follows the specification
+
+### Code
+
+- [ ] Lint passes
+- [ ] Tests pass
+- [ ] Every package builds
+- [ ] Build output contains only intended artifacts
+
+### Documentation
+
+- [ ] README reflects the current API
+- [ ] Icon specification matches what validation enforces
+- [ ] Breaking changes documented with an upgrade path
+- [ ] Release notes drafted
+
+### Release
+
+- [ ] Version selected according to the rules above
+- [ ] Versions aligned across packages
+- [ ] Publish order is core first
+
+---
+
+## 🔄 Release Workflow
+
+### 1 — Complete development
+
+Work lands on a feature branch and opens a PR into `dev`.
+
+### 2 — CI validation
+
+CI validates the entire collection, regenerates outputs, and builds every package. A failure here blocks the merge.
+
+### 3 — Merge into `dev`
+
+A pre-release publishes automatically.
+
+### 4 — Validate the complete build
+
+From a clean checkout, delete all generated artifacts, regenerate, and build. Output must be identical to CI's. If it is not, generation is not reproducible and the release stops.
+
+### 5 — Select the version
+
+Apply the [versioning rules](#-versioning) to the full set of changes since the last release — the highest-severity change decides. One rename in a release full of additions still makes it a major.
+
+### 6 — Update release information
+
+Write the release notes. Group by what the reader cares about:
+
+```markdown
+## Added
+### Adinkra
+- Nkyinkyim — symbol of initiative and dynamism
+
+### National
+- Coat of Arms
+
+## Fixed
+- GhanaCedi now renders on the 24×24 canvas (previously cropped)
+
+## Breaking
+- `GhanaCedisIcon` renamed to `GhanaCedi`
+```
+
+### 7 — Merge into `master`
+
+### 8 — Publish
+
+CI publishes `ghicons`, then the adapters. Verify each landed before announcing.
+
+---
+
+## 🎨 Icon Collection Changes
+
+### Adding icons
+
+Minor release. Add the SVG, regenerate, review, ship.
+
+### Fixing icons
+
+Patch release — as long as the icon keeps its name and contract. Note the visual change in the release notes; consumers who pinned a version deserve to know their icon looks different.
+
+### Removing icons
+
+Major release. Removal breaks anyone importing that icon.
+
+Prefer deprecation: announce it, keep the icon for at least one minor release, then remove it in the next major.
+
+---
+
+## 💥 Breaking Changes
+
+Anything that can break a consumer's build or visibly change their UI without their action.
+
+A breaking change must ship with:
+
+1. A clear statement of what changed
+2. Why it changed
+3. What consumers must do
+4. A copy-pasteable before/after
+
+### Example
+
+```markdown
+## Breaking: `GhanaCedisIcon` renamed to `GhanaCedi`
+
+The `Icon` suffix was redundant — every entry in the collection is an icon —
+and the specification now forbids it.
+
+Before:
+  import { GhanaCedisIcon } from "@ghicons/react";
+After:
+  import { GhanaCedi } from "@ghicons/react";
+```
+
+---
+
+## 🔥 Hotfixes
+
+For an urgent problem in a published release — a broken build, a badly wrong icon, a packaging failure.
+
+```text
+master
+   ▼  hotfix branch
+   ▼  fix + validate + build
+master
+   ▼  patch release
+   ▼  back-merge into dev
+```
+
+Keep a hotfix narrow: the fix and nothing else. Always back-merge into `dev`, or the next stable release silently reintroduces the bug.
+
+---
+
+## 0️⃣ Pre-1.0 Releases
+
+GHIcons is pre-1.0. The public API and architecture are still moving, so changes that would be disruptive during a `1.x` lifecycle can happen on a minor bump.
+
+This is not licence to break things casually. The project still:
+
+- documents every API change
+- communicates breaking changes clearly
+- avoids unnecessary churn
+- maintains the icon specification
+- preserves existing integrations where practical
+
+The `0.1.0` handover of the `ghicons` name is the clearest example: a genuine break, taken deliberately while the cost was low, documented with a migration path. Pre-1.0 is exactly when structural corrections should happen — the alternative is carrying them past 1.0, when they get much more expensive.
+
+The goal of `1.0.0` is a stable foundation for the icon system and its integrations.
+
+---
+
+## ❌ Failed Releases
+
+If the pipeline fails, do not manually publish as a workaround.
+
+Find where it failed:
+
+| Stage | Meaning |
+|---|---|
+| Validation | An icon violates the specification. Fix the SVG. |
+| Generation | The pipeline cannot process a source file. Fix the source or the generator. |
+| Build | A package does not compile. |
+| Publish | Credentials, registry, or naming. Check `NPM_TOKEN` and org permissions. |
+
+If a publish fails partway through a multi-package release, the registry is in a mixed state. Publish the remaining packages at the same version rather than rolling the first one back — npm versions cannot be reused, and an unpublish breaks anyone who already installed it.
+
+---
+
+## 🔎 Verifying a Release
+
+After publishing, verify from a clean project — not from the monorepo.
+
+**Install**
+
 ```bash
-npm install /path/to/extracted/folder
+npm install ghicons @ghicons/react
 ```
+
+**Core**
+
+```js
+import registry from "ghicons/registry.json";
+console.log(registry.icons.length);
+```
+
+Confirm the SVGs are present at their documented paths and render with a colour applied.
+
+**React**
+
+```tsx
+import { GyeNyame } from "@ghicons/react";
+<GyeNyame size={48} color="gold" />
+```
+
+Check that it renders, scales, inherits colour, and that types resolve.
+
+**Package metadata** — version, exports, files, license and repository fields are correct on npm.
+
+**Website** — still builds against the new version.
 
 ---
 
-## Production Releases (npm)
+## 👥 Responsibilities
 
-A production release is triggered by **merging `dev` into `main`**. This should be a deliberate, intentional action — not a casual merge.
+**Contributors** — follow the icon specification, keep PRs focused, respond to review, never hand-edit generated files.
 
-### Steps to cut a release
+**Maintainers** — review for cultural accuracy and technical conformance, decide versions, write release notes, verify published packages, communicate breaking changes.
 
-1. **Ensure `dev` is stable** — all passing CI checks, no known regressions
-2. **Bump the version** in `package.json` on the `dev` branch:
-```bash
-# Example: bumping from 0.3.0 to 0.4.0
-npm version minor --no-git-tag-version
-# or edit package.json manually
-```
-3. **Commit the version bump** to `dev`:
-```bash
-git add package.json pnpm-lock.yaml
-git commit -m "chore: bump version to 0.4.0"
-git push origin dev
-```
-4. **Open a PR from `dev` → `main`** and merge it
-5. The **npm release GitHub Actions workflow** triggers automatically and publishes to npm
-6. **Tag the release** on GitHub with release notes summarising what changed
-
-### Release notes format
-
-When tagging a release on GitHub, use this format:
-
-```
-## What's new in v0.4.0
-
-### New Icons
-- GyeNyame — "Except God" (Adinkra)
-- Sankofa — "Return and fetch it" (Adinkra)
-- GhanaCedis — Ghana Cedis currency symbol
-
-### Improvements
-- Added `aria-label` support to all icon components
-- Improved TypeScript types
-
-### Bug Fixes
-- Fixed incorrect viewBox on AkomaIcon
-```
+**CI/CD** — validate the whole collection, regenerate from source, build every package, publish in order, refuse to publish on any failure.
 
 ---
 
-## npm Publishing
+## 🧭 Release Principle
 
-The npm publish workflow uses an `NPM_TOKEN` stored as a GitHub Actions secret. This token is scoped to the `ghicons` package on npm and is only accessible to repository maintainers.
+```text
+Contribute → Review → Validate → Generate → Build → Release → Distribute
+```
 
-If the publish fails, check:
-- The `NPM_TOKEN` secret is set and has not expired (Settings → Secrets and variables → Actions)
-- The version in `package.json` has been bumped — npm rejects publishing the same version twice
-- The build step completed successfully before the publish step
-
----
-
-## Hotfixes
-
-For urgent fixes to a production release (e.g. a broken icon or missing export that slipped through):
-
-1. Branch off `main` directly: `git checkout -b hotfix/fix-description main`
-2. Make the minimal fix
-3. Bump the **patch** version
-4. PR directly into `main`
-5. After merging, backport the fix to `dev` as well to keep branches in sync
-
----
-
-## Who Can Release
-
-Only maintainers with write access to `main` can trigger a production release. If you are a contributor and believe a fix is urgent enough to warrant a release, flag it by commenting on the relevant issue or opening a discussion.
+> **One canonical icon collection. Reproducible outputs. Multiple ways to consume GHIcons.**
