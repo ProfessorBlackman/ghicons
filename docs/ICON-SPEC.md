@@ -438,13 +438,16 @@ If a framework needs special behaviour, it belongs in that framework's integrati
 
 Icons in the collection that do not currently satisfy this specification, and what happens to them.
 
-| Icon | Violation | Resolution |
+| Icon | Violation | Status |
 |---|---|---|
-| `GhanaCedisIcon` | `viewBox="0 0 345 511.44"` — and therefore **renders cropped today** in the published React package, because the generator substitutes a `0 0 24 24` default | Re-scope the artwork to the 24×24 canvas |
-| `GhanaCedisIcon` | Redundant `Icon` suffix | Rename to `GhanaCedi` |
-| `Sankofa` / `Sankofa1` | Numeric disambiguator; unclear whether these are two symbols or two variants of one | Resolve to distinct descriptive names, or fold into one icon |
+| `Sankofa` / `Sankofa1` | Numeric disambiguator; unclear whether these are two distinct symbols or two variants of one | **Open.** Needs a decision on the artwork before it can be renamed |
 
-These are being cleared as part of the move to the framework-agnostic core, while the package boundary is already changing and renames cost least.
+Exceptions are recorded in `tools/validate.mjs` as well as here, so they report as warnings rather than silently passing — and any *new* violation of the same rule still fails the build. Removing an entry from that list is the last step of actually fixing the icon.
+
+Resolved in the move to the framework-agnostic core, while the package boundary was already changing and renames cost least:
+
+- `GhanaCedisIcon` was drawn on a `0 0 345 511.44` canvas and rendered **cropped** in every published release, because the generator substitutes a `0 0 24 24` default. Re-scoped to the standard canvas and renamed to `GhanaCedi`.
+- 103 of 106 icons carried a hardcoded `fill='#fff'`. Normalised to `currentColor`.
 
 ---
 

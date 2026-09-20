@@ -22,28 +22,14 @@ interface IconEntry {
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
-// Map every export to its category (derived from index.ts order)
+// Map every export to its category.
+//
+// These sets are duplicated data: the real category is the SVG's directory in
+// svg/, and nothing keeps them in step with it. They go away once the generated
+// icon registry ships and the playground can read the category from there —
+// see docs/wiki/Roadmap.md (v0.2). Until then, anything not listed is adinkra.
 // ──────────────────────────────────────────────────────────────────────────────
-const ADINKRA_NAMES = new Set([
-  'Aban', 'AbeDua', 'AbusuaPa', 'Adinkrahene', 'Adwo', 'Agyindawuru', 'Akoben', 'Akofena',
-  'AkokoNan', 'Akoma', 'AkomaNtoso', 'AnanseNtontan', 'AniBereaEnsoGya', 'AnyiMeAyeA',
-  'Asaawa', 'AsaseYeDuru', 'AsetenaPa', 'AwuradeBaatanfo', 'Aya', 'BeseSaka', 'BiNkaBi',
-  'BoaMeNaMeMmoaWo', 'BoafoYeNa', 'DameDame', 'Denkyem', 'Dono', 'DonoNtoaso', 'Duafe',
-  'Dwennimmen', 'Eban', 'Epa', 'EseNeTekrema', 'EsonoAnantam', 'Fafanto', 'Fawohodie',
-  'Fihankra', 'Fofo', 'FuntunfunefuDenkyemfunefu', 'GyeNyame', 'GyeWAni', 'HweMuDua',
-  'HyeWonHye', 'KetePa', 'Kintinkantan', 'Kokuromotie', 'KramoBoneAmmaYeanhuKramoPa',
-  'KurontiNeAkwamu', 'KwatakyeAtiko', 'Kyemfere', 'Mako', 'MateMasie', 'MeWareWo',
-  'MekyiaWo', 'MensoWoKenten', 'Mframadan', 'MmereDane', 'Mmusuyidee', 'MoNoYo',
-  'Mpatapo', 'Mpuannum', 'Mrammuo', 'NanteYie', 'NeaOnnim', 'NeaOpeSeObediHene',
-  'Nkonsonkonson', 'NkotimsefoMpua', 'Nkrabea', 'Nkyimu', 'Nkyinkyim', 'NnampoPaBaanu',
-  'Nokore', 'Nsaa', 'Nserewa', 'Nsoromma', 'Nteasee', 'NyaGyidie', 'NyameBiribiWoSoro',
-  'NyameDua', 'NyameNti', 'NyameNwuNaMawu', 'NyameYeOhene', 'Nyansapo', 'Obohemmaa',
-  'OdoNyeraFieKwan', 'OkodeeMmowere', 'OkuafoPa', 'OnyankoponAdomNtiBiribiaraBeyeYie',
-  'Osramnensoromma', 'OwoForoAdobe', 'OwuoAtwedee', 'Pempamsie', 'Sankofa', 'Sankofa1',
-  'Sepow', 'SesaWoSuban', 'SomOnyankopon', 'Sunsum', 'Tabono', 'TamfoBebre', 'UACNkanea',
-  'WawaAba', 'WoforoDuaPaa', 'Wonsadamu',
-])
-const GENERAL_NAMES = new Set(['GhanaCedisIcon'])
+const GENERAL_NAMES = new Set(['GhanaCedi'])
 const NATIONAL_NAMES = new Set(['BlackStar', 'GhanaFlag'])
 
 const ALL_ICONS: IconEntry[] = Object.entries(Icons)
