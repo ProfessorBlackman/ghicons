@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "declarationDir": "./dist",
+    "outDir": "./dist"
+  },
+  /* Vite builds the JavaScript; tsc only emits the declarations, so nothing
+     from the playground or Storybook can leak into the published package. */
+  "include": ["src"]
+}

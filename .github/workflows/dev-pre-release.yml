@@ -34,13 +34,19 @@ jobs:
       - name: Read version
         id: meta
         run: |
-          VERSION=$(node -e "process.stdout.write(JSON.parse(require('fs').readFileSync('package.json','utf8')).version)")
+          # The workspace root is private and unversioned; the core package
+          # carries the version every package is released at.
+          VERSION=$(node -e "process.stdout.write(JSON.parse(require('fs').readFileSync('packages/core/package.json','utf8')).version)")
           TAG="dev-v${VERSION}-build.${{ github.run_number }}"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "tag=$TAG"         >> "$GITHUB_OUTPUT"
 
-      - name: Zip dist
-        run: zip -r dist.zip dist/
+      # Pack the real tarballs rather than zipping a build directory, so what
+      # reviewers install is byte-for-byte what a release would publish.
+      - name: Pack the packages
+        run: |
+          pnpm --filter ghicons pack --pack-destination .
+          pnpm --filter @ghicons/react pack --pack-destination .
 
       - name: Create pre-release
         env:
@@ -51,7 +57,7 @@ jobs:
           SHORT_SHA="${{ github.sha }}"
           SHORT_SHA="${SHORT_SHA:0:7}"
 
-          gh release create "$TAG" dist.zip \
+          gh release create "$TAG" ./*.tgz \
             --prerelease \
             --title "Dev Build: v${VERSION} (build #${{ github.run_number }})" \
             --notes "## Dev Pre-release
@@ -68,21 +74,19 @@ jobs:
 
           ## Install locally for testing
 
-          1. Download \`dist.zip\` from the assets below and unzip it.
-          2. Add the extracted folder as a local dependency in your project:
-             \`\`\`bash
-             # npm
-             npm install /path/to/dist
+          Download the tarballs below, then install the ones you need:
 
-             # pnpm
-             pnpm add /path/to/dist
+          \`\`\`bash
+          # framework-agnostic core: SVG files + registry
+          npm install ./ghicons-${VERSION}.tgz
 
-             # yarn
-             yarn add /path/to/dist
-             \`\`\`
-          3. Import as usual:
-             \`\`\`tsx
-             import { GyeNyame } from 'ghicons';
-             \`\`\`
+          # React components
+          npm install ./ghicons-react-${VERSION}.tgz
+          \`\`\`
+
+          \`\`\`tsx
+          import { GyeNyame } from '@ghicons/react';
+          import { getIcon } from 'ghicons';
+          \`\`\`
 
           > Maintainers: once validated, merge \`dev\` into \`master\` to trigger the production release."

@@ -1,6 +1,6 @@
 import * as React from 'react'
 import './App.css'
-import * as Icons from './index'
+import * as Icons from '@ghicons/react'
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Types

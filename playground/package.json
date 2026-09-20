@@ -1,0 +1,10 @@
+{
+  "name": "@ghicons/playground",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Development-only icon browser. Never published.",
+  "type": "module",
+  "dependencies": {
+    "@ghicons/react": "workspace:*"
+  }
+}

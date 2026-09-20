@@ -1,5 +1,15 @@
-const fs = require('fs');
-const path = require('path');
+#!/usr/bin/env node
+/**
+ * Normalises SVG filenames in a folder to PascalCase.
+ *
+ *   node tools/clean-filenames.mjs svg/adinkra
+ *
+ * Useful on a batch of freshly downloaded files before adding them to the
+ * collection. Naming rules: docs/ICON-SPEC.md
+ */
+
+import fs from 'node:fs';
+import path from 'node:path';
 
 // Get the folder path from the command-line argument
 const svgFolder = process.argv[2];

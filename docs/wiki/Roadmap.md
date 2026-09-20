@@ -37,7 +37,7 @@ GHIcons is in active pre-1.0 development.
 - npm distribution and automated release workflows
 - A public icon browser
 
-**In progress — the framework-agnostic core.** See [v0.1](#-v01--the-framework-agnostic-core).
+**Built, not yet published — the framework-agnostic core.** The monorepo, both packages, the registry and the pipeline are done and verified; publishing waits on the npm organisation. See [v0.1](#-v01--the-framework-agnostic-core).
 
 ### A note on sequencing
 
@@ -73,23 +73,23 @@ Everything else keeps its relative order. The stability work that used to define
 
 ### Packaging
 
-- [ ] Restructure into a pnpm monorepo
-- [ ] `ghicons` becomes the framework-agnostic core — optimised SVGs + registry, zero dependencies
-- [ ] React moves to `@ghicons/react`
-- [ ] Publish `@ghicons/*` under the `ghicons` npm organisation
-- [ ] Document the breaking change and the upgrade path
+- [x] Restructure into a pnpm monorepo
+- [x] `ghicons` becomes the framework-agnostic core — optimised SVGs + registry, zero dependencies
+- [x] React moves to `@ghicons/react`
+- [ ] Publish `@ghicons/*` under the `ghicons` npm organisation — built and verified, awaiting the org
+- [x] Document the breaking change and the upgrade path
 
 ### Raw SVG distribution
 
-- [ ] Ship optimised, spec-conformant SVGs in the core package
-- [ ] Predictable, stable asset paths (`svg/<category>/<Name>.svg`)
-- [ ] Document plain-HTML and non-JavaScript usage
+- [x] Ship optimised, spec-conformant SVGs in the core package
+- [x] Predictable, stable asset paths (`svg/<category>/<Name>.svg`)
+- [x] Document plain-HTML and non-JavaScript usage
 
 ### The registry
 
-- [ ] Generate `registry.json` with the derived fields — name, slug, category, viewBox, file
-- [ ] Ship it inside the core package
-- [ ] Define the schema in the icon specification
+- [x] Generate `registry.json` with the derived fields — name, slug, category, viewBox, file
+- [x] Ship it inside the core package
+- [x] Define the schema in the icon specification
 
 ### Bring the collection up to spec
 
@@ -103,8 +103,8 @@ Everything else keeps its relative order. The stability work that used to define
 
 - [x] Add the missing `LICENSE` file
 - [x] Fix the `types` entry field (pointed at `.d.js`)
-- [ ] Point `main` at the bundle rather than raw `tsc` output — deferred to the package restructure
-- [ ] Ensure build output contains only intended package artifacts
+- [x] Point `main` at the bundle rather than raw `tsc` output
+- [x] Ensure build output contains only intended package artifacts
 
 ---
 
@@ -114,14 +114,14 @@ With the core shipped, make the machinery behind it match the architecture.
 
 ### Pipeline
 
-- [ ] Separate the stages: validate → optimise → normalise → registry → generate
-- [ ] Introduce a reusable canonical icon representation
-- [ ] Rebuild barrel exports from source instead of appending to them
-- [ ] Handle icon deletion and renames cleanly
-- [ ] Guarantee generated output is reproducible from source
-- [ ] Add local validation tooling that mirrors CI exactly
-- [ ] Document the generator contracts
-- [ ] Remove or implement the placeholder Cloudinary script
+- [x] Separate the stages: validate → optimise → normalise → registry → generate
+- [x] Introduce a reusable canonical icon representation
+- [x] Rebuild barrel exports from source instead of appending to them
+- [x] Handle icon deletion and renames cleanly
+- [x] Guarantee generated output is reproducible from source
+- [x] Add local validation tooling that mirrors CI exactly
+- [x] Document the generator contracts
+- [x] Remove the placeholder Cloudinary script and the unused SVGR config
 
 ### Metadata
 

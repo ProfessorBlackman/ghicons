@@ -31,14 +31,12 @@ jobs:
       - name: Lint
         run: pnpm run lint
 
-      - name: Validate the icon collection
-        run: pnpm run validate
-
-      - name: Generate Icons
-        run: pnpm run generate:icons --overwrite
-
+      # `build` runs validate -> generate -> build for every package.
       - name: Build
         run: pnpm run build
+
+      - name: Verify the packaged output
+        run: node tools/verify-packages.mjs
 
   release:
     needs: build
@@ -64,13 +62,20 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Validate the icon collection
-        run: pnpm run validate
+      - name: Build
+        run: pnpm run build
 
-      - name: Generate Icons
-        run: pnpm run generate:icons --overwrite
+      - name: Verify the packaged output
+        run: node tools/verify-packages.mjs
 
-      - name: Publish to NPM
-        run: pnpm publish --no-git-checks
+      # Order matters: the core carries the icons every adapter is generated
+      # from, so it must exist on the registry before an adapter references it.
+      - name: Publish ghicons (core)
+        run: pnpm --filter ghicons publish --no-git-checks --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish @ghicons/react
+        run: pnpm --filter @ghicons/react publish --no-git-checks --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

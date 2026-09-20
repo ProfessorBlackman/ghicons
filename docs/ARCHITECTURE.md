@@ -125,20 +125,25 @@ ghicons/
 │   ├── general/                  Everyday Ghanaian-context icons
 │   └── national/                 National emblems
 │
-├── metadata/                   ← Hand-authored icon metadata
+├── metadata/                   ← Hand-authored icon metadata (PLANNED, v0.2)
 │                                 meanings, keywords, aliases, references
 │
 ├── tools/                      ← The pipeline. Framework-neutral.
-│   ├── validate.mjs              Spec enforcement (local + CI)     ✅ built
 │   ├── canonical.mjs             SVG → canonical icon representation
-│   ├── registry.mjs              Canonical icons → registry.json
+│   ├── validate.mjs              Spec enforcement (local + CI)
+│   ├── build-core.mjs            Canonical icons → the ghicons package
+│   ├── verify-packages.mjs       Release gate: is this safe to publish?
+│   ├── clean.mjs                 Remove every generated artifact
+│   ├── clean-filenames.mjs       Normalise filenames to PascalCase
 │   └── generators/
-│       └── react.mjs             Canonical icons → .tsx components
-│                                 (today: custom_scripts/build_components.cjs)
+│       ├── react.mjs             Canonical icons → .tsx components
+│       └── stories.mjs           Canonical icons → Storybook stories
 │
 ├── packages/
 │   ├── core/                   → npm: ghicons
-│   │   ├── dist/                 Optimised SVGs + registry (generated)
+│   │   ├── svg/                  GENERATED optimised artwork
+│   │   ├── registry.json         GENERATED index
+│   │   ├── index.js/.cjs/.d.ts   GENERATED accessors
 │   │   └── package.json
 │   │
 │   └── react/                  → npm: @ghicons/react
@@ -175,10 +180,11 @@ ghicons/
 | `tools/**` | Hand-authored | ✅ |
 | `packages/react/src/props.ts` | Hand-authored | ✅ |
 | `playground/**` | Hand-authored | ✅ |
-| `packages/core/dist/**` | Generated | ❌ |
+| `packages/core/svg/**`, `registry.json`, `index.*` | Generated | ❌ |
 | `packages/react/src/icons/**` | Generated | ❌ |
 | `packages/react/src/index.ts` | Generated | ❌ |
 | `packages/react/stories/**` | Generated | ❌ |
+| `packages/react/dist/**` | Built | ❌ |
 
 Because the generated tree is git-ignored, **a fresh clone has no components or registry until the pipeline runs**. CI regenerates everything before each build and publish, so generated output can never drift from source.
 
@@ -197,13 +203,19 @@ ghicons/
 │   ├── general/…
 │   └── national/…
 ├── registry.json                  the machine-readable index
-├── index.js                       exports the registry
+├── index.js                       ESM accessors
+├── index.cjs                      CommonJS accessors
 └── index.d.ts
 ```
+
+The accessors inline the registry rather than reading `registry.json` at
+runtime, so they work in a browser bundle as well as in Node. `registry.json`
+stays the canonical file for consumers that are not running JavaScript.
 
 Use it from anything:
 
 ```js
+import { getIcon, iconsByCategory } from "ghicons";
 import registry from "ghicons/registry.json";
 ```
 ```html
@@ -363,13 +375,19 @@ Each package builds independently; the pipeline runs once, up front.
 
 ```text
 pnpm run validate      → whole-collection spec check
-pnpm run generate      → registry + all framework outputs
-pnpm run build         → build every package
+pnpm run generate      → core package + every framework output
+pnpm run build         → validate, generate, then compile each package
+pnpm run clean         → delete every generated artifact
 ```
+
+Build tooling lives in the root package, so every workspace shares one
+dependency set and one lockfile, and builds are orchestrated from the root
+rather than per package. Package manifests declare only what their consumers
+need: runtime and peer dependencies, and publishing metadata.
 
 ### `ghicons` (core)
 
-No compilation in the usual sense — the build copies optimised SVGs and writes `registry.json` plus a tiny JS/TS entry point. No dependencies, so nothing to bundle or externalise.
+No compilation in the usual sense — `tools/build-core.mjs` writes optimised SVGs, `registry.json` and the entry points. No dependencies, so nothing to bundle or externalise.
 
 ### `@ghicons/react`
 
@@ -384,6 +402,8 @@ No compilation in the usual sense — the build copies optimised SVGs and writes
   }
 }
 ```
+
+Before anything is published, `tools/verify-packages.mjs` checks that the two packages agree: every icon has a registry entry and a component, every declared file exists, no development file leaked into `dist/`, slugs are unique, and the versions match. A build can pass while the packaging is wrong; this is the gate for that.
 
 Publishing order matters: `ghicons` first, then adapters, so an adapter never references a core version that is not yet on the registry. Full policy in the [Release Process](wiki/Release-Process.md).
 
@@ -460,17 +480,25 @@ This document describes the architecture GHIcons is being restructured into. Bei
 
 | Area | Today | Target |
 |---|---|---|
-| Repo shape | Single package, `src/` is React | pnpm monorepo, `packages/core` + `packages/react` |
-| `ghicons` on npm | The React package (`0.0.1`) | The framework-agnostic core (`0.1.0`) |
-| React package | — | `@ghicons/react` |
-| Pipeline | Validation is a real standalone stage (`tools/validate.mjs`); optimise/normalise/generate are still one inline script | Staged: validate → optimise → normalise → registry → generate |
-| Registry | None; category derived ad hoc, playground hardcodes its own map | Generated `registry.json` shipped in the core |
-| Barrel | Append-only; stale exports survive deletions | Rebuilt from source every run |
-| Validation | ✅ Whole collection, every PR, via `pnpm run validate` | — |
+| Repo shape | ✅ pnpm monorepo, `packages/core` + `packages/react` | — |
+| Pipeline | ✅ Staged: validate → optimise → normalise → registry → generate | — |
+| Registry | ✅ Generated `registry.json` shipped in the core | — |
+| Barrel | ✅ Rebuilt from source every run | — |
+| Validation | ✅ Whole collection, every PR | — |
 | Collection | ✅ Fully spec-conformant — no known exceptions | — |
-| Raw SVG distribution | Not available | Shipped in the core package |
+| Raw SVG distribution | ✅ Shipped in the core package | — |
+| Reproducibility | ✅ Clean regeneration is byte-identical | — |
+| `ghicons` on npm | ⏳ Still the React package (`0.0.1`) — `0.1.0` is built but unpublished | The framework-agnostic core |
+| `@ghicons/react` on npm | ⏳ Built and verified, not yet published | Published |
+| Authored metadata | ✗ Registry carries derived fields only | Meanings, keywords and aliases |
+| Playground categories | ✗ Still a hardcoded name map | Read from the registry |
+| Tests | ✗ None | Pipeline invariants covered |
 
 Progress against this table is tracked in the [Roadmap](wiki/Roadmap.md).
+
+> **Nothing is published yet.** The working tree contains breaking changes —
+> two renamed icons, a re-scoped `GhanaCedi`, and the `ghicons` name changing
+> meaning. They must land together as `0.1.0`, or consumers break twice.
 
 ---
 

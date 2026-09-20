@@ -27,14 +27,18 @@ dist-ssr
 storybook-static/
 .storybook-static/*
 /storybook-static
-src/icons/components/
-src/stories/
+# Generated — rebuilt from svg/ by `pnpm run generate`
+packages/core/svg/
+packages/core/registry.json
+packages/core/index.js
+packages/core/index.cjs
+packages/core/index.d.ts
+packages/react/src/icons/
+packages/react/src/index.ts
+packages/react/stories/
 
 # Captured script output
 .output.txt
-
-# Generated barrel file (rebuilt by generate:icons)
-src/index.ts
 
 # Website lives in its own git repository
 ghicons_website/
