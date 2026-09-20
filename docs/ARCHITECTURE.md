@@ -467,7 +467,7 @@ This document describes the architecture GHIcons is being restructured into. Bei
 | Registry | None; category derived ad hoc, playground hardcodes its own map | Generated `registry.json` shipped in the core |
 | Barrel | Append-only; stale exports survive deletions | Rebuilt from source every run |
 | Validation | ✅ Whole collection, every PR, via `pnpm run validate` | — |
-| Collection | ✅ Spec-conformant, bar one tracked naming exception (`Sankofa1`) | Fully spec-conformant |
+| Collection | ✅ Fully spec-conformant — no known exceptions | — |
 | Raw SVG distribution | Not available | Shipped in the core package |
 
 Progress against this table is tracked in the [Roadmap](wiki/Roadmap.md).

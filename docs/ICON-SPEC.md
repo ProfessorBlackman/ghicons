@@ -233,7 +233,7 @@ A name should:
 
 A name must **not**:
 
-- carry a numeric disambiguator (`Sankofa1`) — if two icons are genuinely different symbols, name them differently; if they are variants of one symbol, they belong in the [variants](#-future-extensions) system, which does not exist yet
+- carry a numeric disambiguator (`Sankofa1`) — name the symbol, do not number it. Two genuinely different symbols get two descriptive names; two forms of one symbol are [variants](#-future-extensions), which the specification does not model yet
 - carry a redundant `Icon` suffix (`GhanaCedisIcon`) — every entry in the collection is an icon
 
 Renaming a published icon is a **breaking change**. See [Known Exceptions](#-known-exceptions) for the names currently violating these rules.
@@ -438,9 +438,7 @@ If a framework needs special behaviour, it belongs in that framework's integrati
 
 Icons in the collection that do not currently satisfy this specification, and what happens to them.
 
-| Icon | Violation | Status |
-|---|---|---|
-| `Sankofa` / `Sankofa1` | Numeric disambiguator; unclear whether these are two distinct symbols or two variants of one | **Open.** Needs a decision on the artwork before it can be renamed |
+**There are currently no known exceptions.** Every icon in the collection satisfies this specification.
 
 Exceptions are recorded in `tools/validate.mjs` as well as here, so they report as warnings rather than silently passing — and any *new* violation of the same rule still fails the build. Removing an entry from that list is the last step of actually fixing the icon.
 
@@ -448,6 +446,7 @@ Resolved in the move to the framework-agnostic core, while the package boundary 
 
 - `GhanaCedisIcon` was drawn on a `0 0 345 511.44` canvas and rendered **cropped** in every published release, because the generator substitutes a `0 0 24 24` default. Re-scoped to the standard canvas and renamed to `GhanaCedi`.
 - 103 of 106 icons carried a hardcoded `fill='#fff'`. Normalised to `currentColor`.
+- `Sankofa1` was the heart form of Sankofa carrying a numeric disambiguator. Renamed to `SankofaHeart`.
 
 ---
 
@@ -474,7 +473,7 @@ Planned, in rough priority order. Each must land without invalidating existing i
 - **Authored metadata at scale** — meanings, keywords and references for the full collection
 - **Aliases** — alternate and vernacular names, feeding search
 - **Multicolour and duotone** — an explicit opt-in with a declared palette, plus a registry flag so consumers can tell monochrome and multicolour icons apart. Required before the coat of arms and Kente motifs can be represented faithfully
-- **Variants** — filled/outline/weight, with unambiguous canonical naming
+- **Variants** — filled/outline/weight, with unambiguous canonical naming. The collection already contains one genuine variant pair: `Sankofa` is the standard bird form and `SankofaHeart` the stylised heart form. They ship as two independently named icons because the specification cannot yet express the relationship; when it can, that pair is the case to model, and their names should not need to change
 - **Additional canvas sizes** — a 16px-optimised set, if the 24px artwork proves insufficient at small sizes
 - **Cultural provenance** — structured source citations
 - **Localisation** — symbol names and meanings in Ghanaian languages

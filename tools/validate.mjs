@@ -31,7 +31,9 @@ const SPEC = 'docs/ICON-SPEC.md';
  * Removing an entry here is the last step of actually fixing the icon.
  */
 const KNOWN_EXCEPTIONS = {
-    'svg/adinkra/Sankofa1.svg': ['naming/numeric-suffix'],
+    // Currently empty — the whole collection conforms. Add an entry only for an
+    // icon that predates a rule and is recorded in the specification's
+    // "Known Exceptions" table, never to silence a new violation.
 };
 
 const args = process.argv.slice(2);

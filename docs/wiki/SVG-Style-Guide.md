@@ -182,7 +182,7 @@ Before opening a PR, verify:
 - [ ] No embedded raster images or base64 data
 - [ ] No `<script>` tags or external references
 - [ ] Editor metadata stripped
-- [ ] File name is PascalCase (e.g. `GyeNyame.svg`), with no numeric suffix (`Sankofa1`) and no `Icon` suffix (`GyeNyameIcon`)
+- [ ] File name is PascalCase (e.g. `GyeNyame.svg`), with no numeric suffix (`Sankofa1`) and no `Icon` suffix (`GyeNyameIcon`) — name the symbol, do not number it
 - [ ] File is placed in the right category: `svg/adinkra/`, `svg/general/` or `svg/national/`
 - [ ] Icon looks correct at 24px and 48px
 

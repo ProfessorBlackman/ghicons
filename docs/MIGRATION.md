@@ -63,7 +63,7 @@ Two icons were renamed while the package boundary was already changing, because 
 | Before | After | Why |
 |---|---|---|
 | `GhanaCedisIcon` | `GhanaCedi` | The `Icon` suffix was redundant — the specification now forbids it |
-| `Sankofa1` | *see release notes* | Numeric disambiguators are no longer permitted |
+| `Sankofa1` | `SankofaHeart` | Numeric disambiguators are no longer permitted. This is the stylised heart form of Sankofa; `Sankofa` remains the standard bird form and is unchanged |
 
 ```diff
 - import { GhanaCedisIcon } from "ghicons";
