@@ -2,6 +2,9 @@ import * as React from 'react'
 import './App.css'
 import * as Icons from './index'
 
+// ──────────────────────────────────────────────────────────────────────────────
+// Types
+// ──────────────────────────────────────────────────────────────────────────────
 type IconComponent = React.ComponentType<{
   size?: number | string
   color?: string
@@ -10,73 +13,375 @@ type IconComponent = React.ComponentType<{
   style?: React.CSSProperties
 }>
 
-const ALL_ICONS = Object.entries(Icons)
-  .filter(([, value]) => typeof value === 'function')
-  .map(([name, value]) => [name, value as IconComponent] as const)
-  .sort(([a], [b]) => a.localeCompare(b))
+type Category = 'all' | 'adinkra' | 'general' | 'national'
 
+interface IconEntry {
+  name: string
+  component: IconComponent
+  category: Category
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Map every export to its category (derived from index.ts order)
+// ──────────────────────────────────────────────────────────────────────────────
+const ADINKRA_NAMES = new Set([
+  'Aban', 'AbeDua', 'AbusuaPa', 'Adinkrahene', 'Adwo', 'Agyindawuru', 'Akoben', 'Akofena',
+  'AkokoNan', 'Akoma', 'AkomaNtoso', 'AnanseNtontan', 'AniBereaEnsoGya', 'AnyiMeAyeA',
+  'Asaawa', 'AsaseYeDuru', 'AsetenaPa', 'AwuradeBaatanfo', 'Aya', 'BeseSaka', 'BiNkaBi',
+  'BoaMeNaMeMmoaWo', 'BoafoYeNa', 'DameDame', 'Denkyem', 'Dono', 'DonoNtoaso', 'Duafe',
+  'Dwennimmen', 'Eban', 'Epa', 'EseNeTekrema', 'EsonoAnantam', 'Fafanto', 'Fawohodie',
+  'Fihankra', 'Fofo', 'FuntunfunefuDenkyemfunefu', 'GyeNyame', 'GyeWAni', 'HweMuDua',
+  'HyeWonHye', 'KetePa', 'Kintinkantan', 'Kokuromotie', 'KramoBoneAmmaYeanhuKramoPa',
+  'KurontiNeAkwamu', 'KwatakyeAtiko', 'Kyemfere', 'Mako', 'MateMasie', 'MeWareWo',
+  'MekyiaWo', 'MensoWoKenten', 'Mframadan', 'MmereDane', 'Mmusuyidee', 'MoNoYo',
+  'Mpatapo', 'Mpuannum', 'Mrammuo', 'NanteYie', 'NeaOnnim', 'NeaOpeSeObediHene',
+  'Nkonsonkonson', 'NkotimsefoMpua', 'Nkrabea', 'Nkyimu', 'Nkyinkyim', 'NnampoPaBaanu',
+  'Nokore', 'Nsaa', 'Nserewa', 'Nsoromma', 'Nteasee', 'NyaGyidie', 'NyameBiribiWoSoro',
+  'NyameDua', 'NyameNti', 'NyameNwuNaMawu', 'NyameYeOhene', 'Nyansapo', 'Obohemmaa',
+  'OdoNyeraFieKwan', 'OkodeeMmowere', 'OkuafoPa', 'OnyankoponAdomNtiBiribiaraBeyeYie',
+  'Osramnensoromma', 'OwoForoAdobe', 'OwuoAtwedee', 'Pempamsie', 'Sankofa', 'Sankofa1',
+  'Sepow', 'SesaWoSuban', 'SomOnyankopon', 'Sunsum', 'Tabono', 'TamfoBebre', 'UACNkanea',
+  'WawaAba', 'WoforoDuaPaa', 'Wonsadamu',
+])
+const GENERAL_NAMES = new Set(['GhanaCedisIcon'])
+const NATIONAL_NAMES = new Set(['BlackStar', 'GhanaFlag'])
+
+const ALL_ICONS: IconEntry[] = Object.entries(Icons)
+  .filter(([, v]) => typeof v === 'function')
+  .map(([name, v]) => {
+    let category: Category = 'adinkra'
+    if (GENERAL_NAMES.has(name)) category = 'general'
+    else if (NATIONAL_NAMES.has(name)) category = 'national'
+    return { name, component: v as IconComponent, category }
+  })
+  .sort((a, b) => a.name.localeCompare(b.name))
+
+const CATEGORIES: { id: Category; label: string; emoji: string }[] = [
+  { id: 'all', label: 'All Icons', emoji: '⊞' },
+  { id: 'adinkra', label: 'Adinkra', emoji: '✦' },
+  { id: 'general', label: 'General', emoji: '◈' },
+  { id: 'national', label: 'National', emoji: '⚑' },
+]
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Helpers
+// ──────────────────────────────────────────────────────────────────────────────
 function buildUsageCode(name: string, size: number, color: string) {
   return `<${name} size={${size}} color="${color}" />`
 }
 
-function App() {
+function useHash() {
+  const [hash, setHash] = React.useState(() => window.location.hash || '#/')
+  React.useEffect(() => {
+    const onHashChange = () => setHash(window.location.hash || '#/')
+    window.addEventListener('hashchange', onHashChange)
+    return () => window.removeEventListener('hashchange', onHashChange)
+  }, [])
+  return hash
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Docs / Installation page
+// ──────────────────────────────────────────────────────────────────────────────
+function DocsPage({ bg }: { bg: 'light' | 'dark' }) {
+  const [copied, setCopied] = React.useState<string | null>(null)
+
+  const copy = async (text: string, key: string) => {
+    try { await navigator.clipboard.writeText(text) } catch { /* noop */ }
+    setCopied(key)
+    setTimeout(() => setCopied(null), 1500)
+  }
+
+  const CodeBlock = ({ id, code }: { id: string; code: string }) => (
+    <div className="docsCodeBlock">
+      <pre className="docsCode mono">{code}</pre>
+      <button
+        type="button"
+        className={`docsCopyBtn ${copied === id ? 'copied' : ''}`}
+        onClick={() => copy(code, id)}
+      >
+        {copied === id ? '✓ Copied' : 'Copy'}
+      </button>
+    </div>
+  )
+
+  return (
+    <div className={`docsPage ${bg === 'dark' ? 'isDark' : 'isLight'}`}>
+      <div className="docsContainer">
+
+        {/* Hero */}
+        <div className="docsHero">
+          <h1 className="docsHeroTitle">ghicons</h1>
+          <p className="docsHeroSub">
+            A React icon library of Ghanaian cultural symbols — Adinkra symbols, national icons, and more.
+          </p>
+          <div className="docsHeroBadges">
+            <a
+              className="docsBadge npm"
+              href="https://www.npmjs.com/package/ghicons"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              📦 View on npm
+            </a>
+            <a
+              className="docsBadge github"
+              href="https://github.com/ProfessorBlackman/ghicons"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              ⭐ GitHub Repository
+            </a>
+            <a
+              className="docsBadge issues"
+              href="https://github.com/ProfessorBlackman/ghicons/issues"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              🐛 Report an Issue
+            </a>
+          </div>
+        </div>
+
+        {/* Installation */}
+        <section className="docsSection">
+          <h2 className="docsSectionTitle">Installation</h2>
+          <p className="docsSectionBody">
+            Install <code className="inlineCode">ghicons</code> from npm using your preferred package manager:
+          </p>
+          <CodeBlock id="npm" code="npm install ghicons" />
+          <CodeBlock id="pnpm" code="pnpm add ghicons" />
+          <CodeBlock id="yarn" code="yarn add ghicons" />
+          <p className="docsSectionBody">
+            <strong>Peer dependency:</strong> ghicons requires React 19+.
+          </p>
+        </section>
+
+        {/* Usage */}
+        <section className="docsSection">
+          <h2 className="docsSectionTitle">Basic Usage</h2>
+          <p className="docsSectionBody">
+            Import any icon by name and render it as a React component. Each icon accepts
+            the <code className="inlineCode">size</code>, <code className="inlineCode">color</code>,{' '}
+            <code className="inlineCode">title</code>, <code className="inlineCode">className</code>, and{' '}
+            <code className="inlineCode">style</code> props.
+          </p>
+          <CodeBlock
+            id="usage-basic"
+            code={`import { Sankofa } from 'ghicons'
+
+export default function App() {
+  return <Sankofa size={48} color="#006B3F" />
+}`}
+          />
+        </section>
+
+        {/* Props */}
+        <section className="docsSection">
+          <h2 className="docsSectionTitle">Props</h2>
+          <div className="docsTable">
+            <div className="docsTableHead">
+              <span>Prop</span>
+              <span>Type</span>
+              <span>Default</span>
+              <span>Description</span>
+            </div>
+            {[
+              { prop: 'size', type: 'number | string', def: '24', desc: 'Width & height of the SVG in px' },
+              { prop: 'color', type: 'string', def: '"currentColor"', desc: 'Fill / stroke colour' },
+              { prop: 'title', type: 'string', def: '—', desc: 'Accessible SVG title (aria)' },
+              { prop: 'className', type: 'string', def: '—', desc: 'Extra CSS class names' },
+              { prop: 'style', type: 'CSSProperties', def: '—', desc: 'Inline style object' },
+            ].map(r => (
+              <div key={r.prop} className="docsTableRow">
+                <code className="inlineCode">{r.prop}</code>
+                <code className="inlineCode">{r.type}</code>
+                <code className="inlineCode">{r.def}</code>
+                <span>{r.desc}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Icon categories */}
+        <section className="docsSection">
+          <h2 className="docsSectionTitle">Icon Categories</h2>
+          <div className="docsCatCards">
+            <div className="docsCatCard">
+              <span className="docsCatIcon">✦</span>
+              <strong>Adinkra</strong>
+              <p>103 traditional Akan symbols from Ghana, each carrying a philosophical meaning.</p>
+            </div>
+            <div className="docsCatCard">
+              <span className="docsCatIcon">⚑</span>
+              <strong>National</strong>
+              <p>Symbols of Ghana's national identity — the Black Star and the flag.</p>
+            </div>
+            <div className="docsCatCard">
+              <span className="docsCatIcon">◈</span>
+              <strong>General</strong>
+              <p>General Ghanaian symbols such as the Ghana Cedis currency icon.</p>
+            </div>
+          </div>
+        </section>
+
+        {/* Contributing */}
+        <section className="docsSection">
+          <h2 className="docsSectionTitle">Contributing &amp; Issues</h2>
+          <p className="docsSectionBody">
+            Found a bug or want to request a new icon? Open an issue on GitHub — all contributions
+            are welcome!
+          </p>
+          <div className="docsLinkRow">
+            <a
+              className="docsLink"
+              href="https://github.com/ProfessorBlackman/ghicons/issues/new"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              🐛 Open a Bug Report
+            </a>
+            <a
+              className="docsLink"
+              href="https://github.com/ProfessorBlackman/ghicons/issues/new?labels=feature-request"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              💡 Request a Feature / Icon
+            </a>
+            <a
+              className="docsLink"
+              href="https://github.com/ProfessorBlackman/ghicons"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              📖 Read the README
+            </a>
+          </div>
+        </section>
+
+        {/* License */}
+        <section className="docsSection docsLicenseSection">
+          <p className="docsSectionBody">
+            Released under the <strong>MIT License</strong> · Built by{' '}
+            <a className="docsInlineLink" href="https://github.com/ProfessorBlackman" target="_blank" rel="noopener noreferrer">
+              Methuselah Nwodobeh
+            </a>
+          </p>
+        </section>
+      </div>
+    </div>
+  )
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Icon gallery page
+// ──────────────────────────────────────────────────────────────────────────────
+function GalleryPage({ bg }: { bg: 'light' | 'dark' }) {
   const [query, setQuery] = React.useState('')
   const [size, setSize] = React.useState<number>(32)
-  const [color, setColor] = React.useState<string>('#111827') // slate-900-ish
-  const [bg, setBg] = React.useState<'light' | 'dark'>('light')
-  const [selectedName, setSelectedName] = React.useState<string>(() => ALL_ICONS[0]?.[0] ?? '')
+  const [color, setColor] = React.useState<string>('#111827')
+  const [category, setCategory] = React.useState<Category>('all')
+  const [selectedName, setSelectedName] = React.useState<string>(() => ALL_ICONS[0]?.name ?? '')
+  const [sidebarOpen, setSidebarOpen] = React.useState(true)
 
   const filtered = React.useMemo(() => {
     const q = query.trim().toLowerCase()
-    if (!q) return ALL_ICONS
-    return ALL_ICONS.filter(([name]) => name.toLowerCase().includes(q))
-  }, [query])
+    return ALL_ICONS.filter(entry => {
+      const matchCat = category === 'all' || entry.category === category
+      const matchQ = !q || entry.name.toLowerCase().includes(q)
+      return matchCat && matchQ
+    })
+  }, [query, category])
 
   React.useEffect(() => {
-    if (!selectedName) return
-    const stillVisible = filtered.some(([name]) => name === selectedName)
-    if (!stillVisible && filtered[0]) setSelectedName(filtered[0][0])
+    const stillVisible = filtered.some(e => e.name === selectedName)
+    if (!stillVisible && filtered[0]) setSelectedName(filtered[0].name)
   }, [filtered, selectedName])
 
-  const selectedIcon = React.useMemo(() => {
-    const entry = ALL_ICONS.find(([name]) => name === selectedName)
-    return entry?.[1]
-  }, [selectedName])
+  const selectedEntry = React.useMemo(() => ALL_ICONS.find(e => e.name === selectedName), [selectedName])
+  const SelectedIcon = selectedEntry?.component
 
-  const usageCode = React.useMemo(() => buildUsageCode(selectedName || 'Icon', size, color), [
-    selectedName,
-    size,
-    color,
-  ])
+  const usageCode = React.useMemo(
+    () => buildUsageCode(selectedName || 'Icon', size, color),
+    [selectedName, size, color]
+  )
 
   const copyUsageCode = async () => {
-    try {
-      await navigator.clipboard.writeText(usageCode)
-    } catch {
-      // clipboard may be blocked; no big deal for a demo page
-    }
+    try { await navigator.clipboard.writeText(usageCode) } catch { /* noop */ }
   }
 
-  return (
-    <div className={`demoRoot ${bg === 'dark' ? 'isDark' : 'isLight'}`}>
-      <header className="demoHeader">
-        <div className="titleBlock">
-          <h1 className="title">ghicons demo</h1>
-          <p className="subtitle">Pick an icon, tweak props, and copy the exact JSX you’re previewing.</p>
-        </div>
+  const catCounts = React.useMemo(() => {
+    const counts: Record<Category, number> = { all: ALL_ICONS.length, adinkra: 0, general: 0, national: 0 }
+    ALL_ICONS.forEach(e => { counts[e.category]++ })
+    return counts
+  }, [])
 
-        <div className="controls">
+  return (
+    <div className="galleryRoot">
+      {/* Left sidebar */}
+      <aside className={`categorySidebar ${sidebarOpen ? 'open' : 'collapsed'} ${bg === 'dark' ? 'isDark' : 'isLight'}`}>
+        <button
+          type="button"
+          className="sidebarToggle"
+          onClick={() => setSidebarOpen(o => !o)}
+          title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+          aria-label="Toggle sidebar"
+        >
+          {sidebarOpen ? '◀' : '▶'}
+        </button>
+
+        {sidebarOpen && (
+          <>
+            <div className="sidebarTitle">Categories</div>
+            <nav className="sidebarNav" aria-label="Icon categories">
+              {CATEGORIES.map(cat => (
+                <button
+                  key={cat.id}
+                  type="button"
+                  className={`sidebarItem ${category === cat.id ? 'active' : ''}`}
+                  onClick={() => setCategory(cat.id)}
+                >
+                  <span className="sidebarEmoji" aria-hidden="true">{cat.emoji}</span>
+                  <span className="sidebarLabel">{cat.label}</span>
+                  <span className="sidebarCount">{catCounts[cat.id]}</span>
+                </button>
+              ))}
+            </nav>
+          </>
+        )}
+
+        {!sidebarOpen && (
+          <nav className="sidebarNavCollapsed" aria-label="Icon categories">
+            {CATEGORIES.map(cat => (
+              <button
+                key={cat.id}
+                type="button"
+                className={`sidebarItemCollapsed ${category === cat.id ? 'active' : ''}`}
+                onClick={() => setCategory(cat.id)}
+                title={cat.label}
+              >
+                <span aria-hidden="true">{cat.emoji}</span>
+              </button>
+            ))}
+          </nav>
+        )}
+      </aside>
+
+      {/* Main content */}
+      <div className={`galleryContent ${bg === 'dark' ? 'isDark' : 'isLight'}`}>
+        {/* Controls bar */}
+        <div className="galleryControls">
           <label className="control">
             <span className="controlLabel">Search</span>
             <input
               className="input"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="e.g. Sankofa, Ghana..."
+              onChange={e => setQuery(e.target.value)}
+              placeholder="e.g. Sankofa, Ghana…"
               spellCheck={false}
             />
           </label>
-
           <label className="control">
             <span className="controlLabel">Size: {size}px</span>
             <input
@@ -85,10 +390,9 @@ function App() {
               min={12}
               max={256}
               value={size}
-              onChange={(e) => setSize(Number(e.target.value))}
+              onChange={e => setSize(Number(e.target.value))}
             />
           </label>
-
           <label className="control">
             <span className="controlLabel">Color</span>
             <div className="colorRow">
@@ -96,49 +400,45 @@ function App() {
                 className="color"
                 type="color"
                 value={color}
-                onChange={(e) => setColor(e.target.value)}
+                onChange={e => setColor(e.target.value)}
                 aria-label="Icon color"
               />
               <input
                 className="input mono"
                 value={color}
-                onChange={(e) => setColor(e.target.value)}
+                onChange={e => setColor(e.target.value)}
                 aria-label="Icon color hex"
               />
             </div>
           </label>
-
           <div className="control">
             <span className="controlLabel">Background</span>
             <div className="segmented">
               <button
                 type="button"
                 className={`segBtn ${bg === 'light' ? 'active' : ''}`}
-                onClick={() => setBg('light')}
-              >
-                Light
-              </button>
+                onClick={() => window.dispatchEvent(new CustomEvent('ghicons:setbg', { detail: 'light' }))}
+              >Light</button>
               <button
                 type="button"
                 className={`segBtn ${bg === 'dark' ? 'active' : ''}`}
-                onClick={() => setBg('dark')}
-              >
-                Dark
-              </button>
+                onClick={() => window.dispatchEvent(new CustomEvent('ghicons:setbg', { detail: 'dark' }))}
+              >Dark</button>
             </div>
           </div>
         </div>
-      </header>
 
-      <main className="demoMain">
+        {/* Meta row */}
         <div className="metaRow">
-          <div className="badge">{filtered.length} icons</div>
+          <div className="badge">{filtered.length} icon{filtered.length !== 1 ? 's' : ''}</div>
           <div className="hint">Click a tile to preview it on the right.</div>
         </div>
 
+        {/* Two-column: grid + preview */}
         <div className="twoCol">
           <section className="grid" aria-label="Icon gallery">
-            {filtered.map(([name, Icon]) => {
+            {filtered.map(entry => {
+              const { name, component: Icon } = entry
               const isSelected = name === selectedName
               return (
                 <button
@@ -155,6 +455,9 @@ function App() {
                 </button>
               )
             })}
+            {filtered.length === 0 && (
+              <div className="emptyState">No icons match your search.</div>
+            )}
           </section>
 
           <aside className="previewPanel" aria-label="Selected icon preview">
@@ -163,7 +466,6 @@ function App() {
                 <div className="previewTitle">{selectedName || 'Select an icon'}</div>
                 <div className="previewSub">Live preview updates as you change size/color.</div>
               </div>
-
               <div className="previewActions">
                 <div className="previewCode mono" title={usageCode} aria-label="Usage code">
                   {usageCode}
@@ -175,9 +477,9 @@ function App() {
             </div>
 
             <div className="previewStage" aria-label="Preview stage">
-              {selectedIcon ? (
+              {SelectedIcon ? (
                 <div className="previewIcon">
-                  {React.createElement(selectedIcon, { size, color })}
+                  {React.createElement(SelectedIcon, { size, color })}
                 </div>
               ) : (
                 <div className="previewEmpty">No icon selected.</div>
@@ -189,9 +491,67 @@ function App() {
             </div>
           </aside>
         </div>
-      </main>
+      </div>
     </div>
   )
 }
 
-export default App
+// ──────────────────────────────────────────────────────────────────────────────
+// Root App — global nav + routing
+// ──────────────────────────────────────────────────────────────────────────────
+export default function App() {
+  const hash = useHash()
+  const [bg, setBg] = React.useState<'light' | 'dark'>('light')
+
+  // Allow GalleryPage controls to bubble bg changes up
+  React.useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent<'light' | 'dark'>).detail
+      setBg(detail)
+    }
+    window.addEventListener('ghicons:setbg', handler)
+    return () => window.removeEventListener('ghicons:setbg', handler)
+  }, [])
+
+  const isDocsPage = hash === '#/docs'
+
+  return (
+    <div className={`appShell ${bg === 'dark' ? 'isDark' : 'isLight'}`}>
+      {/* Global header */}
+      <header className="appHeader">
+        <a href="#/" className="appLogo">
+          <span className="appLogoSymbol" aria-hidden="true">✦</span>
+          <span className="appLogoText">ghicons</span>
+        </a>
+
+        <nav className="appNav" aria-label="Site navigation">
+          <a href="#/" className={`appNavLink ${!isDocsPage ? 'active' : ''}`}>
+            Gallery
+          </a>
+          <a href="#/docs" className={`appNavLink ${isDocsPage ? 'active' : ''}`}>
+            Docs
+          </a>
+          <a
+            href="https://www.npmjs.com/package/ghicons"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="appNavLink external"
+          >
+            npm ↗
+          </a>
+          <a
+            href="https://github.com/ProfessorBlackman/ghicons"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="appNavLink external"
+          >
+            GitHub ↗
+          </a>
+        </nav>
+      </header>
+
+      {/* Page */}
+      {isDocsPage ? <DocsPage bg={bg} /> : <GalleryPage bg={bg} />}
+    </div>
+  )
+}
