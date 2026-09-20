@@ -111,7 +111,7 @@ For larger changes, please open an issue to discuss the approach first.
 
 ## Need Help?
 
-Open a [Discussion](../../discussions) or leave a comment on any issue. We're a friendly community and happy to help new contributors get started.
+Open a [Discussion](https://github.com/ProfessorBlackman/ghicons/discussions) or leave a comment on any issue. We're a friendly community and happy to help new contributors get started.
 
 ---
 

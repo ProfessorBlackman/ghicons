@@ -21,11 +21,13 @@ Have questions or ideas? Join the conversation in [GitHub Discussions](https://g
 
 ## 📚 Documentation
 
-For general usage and library overview, see our [General Documentation](DOCUMENTATION.md).
+For general usage and library overview, see our [General Documentation](docs/DOCUMENTATION.md).
 
 ## 📖 Contributor Guide
 
-If you're looking to contribute or understand the project's internals, please check out our [Contributor's Guide](CONTRIBUTING.md).
+If you're looking to contribute or understand the project's internals, please check out our [Contributor's Guide](docs/CONTRIBUTING.md) and the [Project Structure & Architecture](docs/ARCHITECTURE.md) guide.
+
+All documentation lives in the [`docs/`](docs) folder — see the [docs index](docs/README.md).
 
 ## Installation
 

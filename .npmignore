@@ -20,4 +20,4 @@ vite.config.ts
  /src/index.css
  /index.html
 /.idea/
-/DEVELOPMENT.md
+/docs/
