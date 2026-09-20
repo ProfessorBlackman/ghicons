@@ -93,16 +93,17 @@ Everything else keeps its relative order. The stability work that used to define
 
 ### Bring the collection up to spec
 
-- [ ] Normalise the 103 icons carrying a hardcoded `fill='#fff'` to `currentColor`
-- [ ] Re-scope `GhanaCedisIcon` from `0 0 345 511.44` to the 24×24 canvas — it renders cropped today
-- [ ] Resolve `Sankofa` / `Sankofa1` naming
-- [ ] Rename `GhanaCedisIcon` → `GhanaCedi`
-- [ ] Validate the **entire** collection in CI, not only changed files
+- [x] Normalise the 103 icons carrying a hardcoded `fill='#fff'` to `currentColor`
+- [x] Re-scope `GhanaCedisIcon` from `0 0 345 511.44` to the 24×24 canvas — it rendered cropped in every release
+- [ ] Resolve `Sankofa` / `Sankofa1` naming — needs a decision on whether these are two symbols or two variants
+- [x] Rename `GhanaCedisIcon` → `GhanaCedi`
+- [x] Validate the **entire** collection in CI, not only changed files (`pnpm run validate`)
 
 ### Repository hygiene
 
-- [ ] Add the missing `LICENSE` file
-- [ ] Clean up package entry fields (`types` points at `.d.js`; `main` at raw `tsc` output)
+- [x] Add the missing `LICENSE` file
+- [x] Fix the `types` entry field (pointed at `.d.js`)
+- [ ] Point `main` at the bundle rather than raw `tsc` output — deferred to the package restructure
 - [ ] Ensure build output contains only intended package artifacts
 
 ---

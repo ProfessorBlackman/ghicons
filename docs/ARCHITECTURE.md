@@ -129,11 +129,12 @@ ghicons/
 │                                 meanings, keywords, aliases, references
 │
 ├── tools/                      ← The pipeline. Framework-neutral.
-│   ├── validate.mjs              Spec enforcement (local + CI)
+│   ├── validate.mjs              Spec enforcement (local + CI)     ✅ built
 │   ├── canonical.mjs             SVG → canonical icon representation
 │   ├── registry.mjs              Canonical icons → registry.json
 │   └── generators/
 │       └── react.mjs             Canonical icons → .tsx components
+│                                 (today: custom_scripts/build_components.cjs)
 │
 ├── packages/
 │   ├── core/                   → npm: ghicons
@@ -462,11 +463,11 @@ This document describes the architecture GHIcons is being restructured into. Bei
 | Repo shape | Single package, `src/` is React | pnpm monorepo, `packages/core` + `packages/react` |
 | `ghicons` on npm | The React package (`0.0.1`) | The framework-agnostic core (`0.1.0`) |
 | React package | — | `@ghicons/react` |
-| Pipeline | One script: SVGO + React templating inline | Staged: validate → optimise → normalise → registry → generate |
+| Pipeline | Validation is a real standalone stage (`tools/validate.mjs`); optimise/normalise/generate are still one inline script | Staged: validate → optimise → normalise → registry → generate |
 | Registry | None; category derived ad hoc, playground hardcodes its own map | Generated `registry.json` shipped in the core |
 | Barrel | Append-only; stale exports survive deletions | Rebuilt from source every run |
-| Validation | Changed files only, PRs to `dev` | Whole collection, every PR |
-| Collection | 103/106 icons off-spec (`fill='#fff'`); `GhanaCedisIcon` off-canvas | Fully spec-conformant |
+| Validation | ✅ Whole collection, every PR, via `pnpm run validate` | — |
+| Collection | ✅ Spec-conformant, bar one tracked naming exception (`Sankofa1`) | Fully spec-conformant |
 | Raw SVG distribution | Not available | Shipped in the core package |
 
 Progress against this table is tracked in the [Roadmap](wiki/Roadmap.md).

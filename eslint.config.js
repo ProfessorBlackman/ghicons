@@ -9,7 +9,10 @@ export default tseslint.config(
     ignores: [
       'dist',
       'storybook-static',
-        '.storybook',
+      '.storybook',
+      // Separate git repository with its own eslint config — linting it from
+      // here reports on code this repo does not own.
+      'ghicons_website',
     ],
   },
   {
