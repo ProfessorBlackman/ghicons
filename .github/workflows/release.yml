@@ -31,6 +31,9 @@ jobs:
       - name: Lint
         run: pnpm run lint
 
+      - name: Validate the icon collection
+        run: pnpm run validate
+
       - name: Generate Icons
         run: pnpm run generate:icons --overwrite
 
@@ -60,6 +63,9 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Validate the icon collection
+        run: pnpm run validate
 
       - name: Generate Icons
         run: pnpm run generate:icons --overwrite

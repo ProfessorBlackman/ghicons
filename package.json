@@ -7,7 +7,7 @@
   "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.js",
-  "types": "dist/index.d.js",
+  "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -34,10 +34,11 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "pnpm run generate:icons --overwrite && tsc -p tsconfig.build.json && vite build",
+    "build": "pnpm run validate && pnpm run generate:icons --overwrite && tsc -p tsconfig.build.json && vite build",
     "prepare": "pnpm run build",
     "prepublishOnly": "pnpm run lint",
-    "test": "vitest run",
+    "test": "vitest run --passWithNoTests",
+    "validate": "node tools/validate.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
