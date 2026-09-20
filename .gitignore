@@ -29,3 +29,12 @@ storybook-static/
 /storybook-static
 src/icons/components/
 src/stories/
+
+# Captured script output
+.output.txt
+
+# Generated barrel file (rebuilt by generate:icons)
+src/index.ts
+
+# Website lives in its own git repository
+ghicons_website/
