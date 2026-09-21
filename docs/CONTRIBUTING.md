@@ -48,7 +48,7 @@ Corrected proportions, cleaner paths, better legibility at small sizes, a more f
 
 ### 🇬🇭 Cultural research
 
-Meanings, context, references and corrections for symbols already in the collection. You do not need to draw anything — accurate documentation is a real contribution, and one the project genuinely needs.
+Meanings, context, references and corrections for symbols already in the collection. You do not need to draw anything — accurate documentation is a real contribution, and one the project genuinely needs. `pnpm run validate` prints how many icons have a documented meaning; the gap is large. Add one file under `metadata/`, or open an issue with the research and a maintainer will record it — see [Add metadata](#6-add-metadata-optional-but-valuable).
 
 ### 📝 Documentation
 
@@ -163,7 +163,25 @@ The filename becomes the identifier in every integration and the slug in the reg
 
 ### 6. Add metadata (optional but valuable)
 
-Meanings, keywords and references go in `metadata/`. This is what powers search and the symbol descriptions on the website.
+Meanings, keywords, aliases and references go in `metadata/`, one file per icon, mirroring the icon's path. This is what powers search and the symbol descriptions on the website.
+
+```text
+svg/adinkra/Sankofa.svg          the artwork
+metadata/adinkra/Sankofa.json    what is known about it
+```
+
+```json
+{
+  "meaning": "…",
+  "keywords": ["…"],
+  "aliases": ["…"],
+  "references": ["…"]
+}
+```
+
+Every field is optional and the file can arrive later than the icon — but a `meaning` must come with the `references` it was taken from, or validation fails. Field rules: [ICON-SPEC.md](ICON-SPEC.md#authoring-metadata). What counts as a reliable source: [Cultural Guidelines](wiki/Cultural-Guidelines.md).
+
+You can also document a symbol that is **already in the collection** without drawing anything — most of them have no recorded meaning yet, and that is the contribution the project most needs.
 
 ---
 

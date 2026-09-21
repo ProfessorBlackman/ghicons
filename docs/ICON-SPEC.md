@@ -267,13 +267,35 @@ The SVG is authoritative for the **artwork**. Everything else a tool needs to kn
 
 ```json
 {
+  "version": "0.1.0",
+  "count": 106,
+  "categories": ["adinkra", "general", "national"],
+  "icons": [ … ]
+}
+```
+
+| Envelope field | Meaning |
+|---|---|
+| `version` | The `ghicons` release this index was generated for |
+| `count` | Number of icons in `icons` |
+| `categories` | Every category present, sorted |
+
+And one entry per icon:
+
+```json
+{
   "name": "GyeNyame",
   "slug": "gye-nyame",
   "category": "adinkra",
   "viewBox": "0 0 24 24",
   "file": "svg/adinkra/GyeNyame.svg",
-  "meaning": "Except God — the supremacy of God",
-  "keywords": ["god", "supremacy", "faith", "omnipotence"]
+  "meaning": "Except God — the omnipotence and supremacy of God in all affairs",
+  "keywords": ["god", "supremacy", "omnipotence", "faith"],
+  "aliases": ["Gye Nyame"],
+  "references": [
+    "Willis, W. Bruce. The Adinkra Dictionary: A Visual Primer on the Language of Adinkra (1998)",
+    "https://www.adinkrasymbols.org/symbols/gye-nyame/"
+  ]
 }
 ```
 
@@ -287,13 +309,60 @@ The SVG is authoritative for the **artwork**. Everything else a tool needs to kn
 | `viewBox` | Read from the SVG | ✅ |
 | `file` | Path within the published package | ✅ |
 | `meaning` | Human-authored, culturally researched | Optional |
+| `note` | Human-authored — longer context, variations, contested readings | Optional |
 | `keywords` | Human-authored | Optional |
 | `aliases` | Human-authored | Optional |
-| `references` | Human-authored source citations | Optional |
+| `references` | Human-authored source citations | With a `meaning` or `note` |
 
 Everything required is derived automatically, so a contributor adding an SVG gets a valid registry entry for free. Authored fields are additive and can arrive later.
 
-Authored metadata lives beside the icon, never inside the generated index — the index is rebuilt from scratch on every run and hand edits to it are lost.
+### Authoring metadata
+
+Authored metadata lives in `metadata/`, one file per icon, mirroring the icon's path. It is never written into the generated index — that is rebuilt from scratch on every run, so a hand edit to it is silently destroyed.
+
+```text
+svg/adinkra/GyeNyame.svg          the artwork
+metadata/adinkra/GyeNyame.json    what is known about it
+```
+
+One file per icon rather than one index for the collection: a symbol's research is reviewed as a unit, and two people documenting two symbols never touch the same lines.
+
+```json
+{
+  "meaning": "Except God — the omnipotence and supremacy of God in all affairs",
+  "note": "Regional readings differ in emphasis; see the references.",
+  "keywords": ["god", "supremacy", "omnipotence", "faith"],
+  "aliases": ["Gye Nyame"],
+  "references": [
+    "Willis, W. Bruce. The Adinkra Dictionary: A Visual Primer on the Language of Adinkra (1998)",
+    "https://www.adinkrasymbols.org/symbols/gye-nyame/"
+  ]
+}
+```
+
+Every field is optional, and a file with none of them should not exist. The rules:
+
+| Field | Rule |
+|---|---|
+| `meaning` | One line, at most 240 characters. The concise gloss, not the essay |
+| `note` | At most 1200 characters. Origin, variations, or a reading that is contested |
+| `keywords` | Lowercase words, digits, spaces and hyphens; at most 24, each at most 32 characters. Search terms, not prose |
+| `aliases` | Other names for the symbol — the spaced form, the English name, a vernacular one. Never the icon's own name |
+| `references` | Where the meaning came from. **Required wherever `meaning` or `note` is present** |
+
+Two rules are absolute, and validation enforces both:
+
+- **A derived field in a metadata file is an error.** `name`, `slug`, `category`, `viewBox` and `file` come from the collection. Restating one invites the two to disagree.
+- **A claim about meaning must cite a source.** An unsourced meaning propagates everywhere the icon does — into the registry, the website, every picker and every project that installs GHIcons. Wikipedia alone is flagged; see [Cultural Guidelines](wiki/Cultural-Guidelines.md) for what counts as a reliable source.
+
+An unknown field is also an error rather than being ignored, because research that looks committed and is silently absent from the registry is worse than research that was never written.
+
+```bash
+pnpm run validate                              # the whole collection, metadata included
+node tools/validate.mjs metadata/adinkra/GyeNyame.json   # just this icon
+```
+
+A metadata file with no icon beside it — left behind by a rename, or misfiled — fails validation too. Nothing else in the pipeline reads `metadata/`, so an orphan would otherwise sit there looking done.
 
 ### Cultural metadata
 

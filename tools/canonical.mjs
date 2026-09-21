@@ -13,12 +13,15 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { optimize } from 'svgo';
+import { loadMetadata, sidecarFor } from './metadata.mjs';
 
 /** Repo root, so every tool works regardless of the directory it runs from. */
 export const ROOT = fileURLToPath(new URL('..', import.meta.url));
 export const fromRoot = (...p) => path.join(ROOT, ...p);
 
 export const SVG_DIR = fromRoot('svg');
+/** Authored research, one file per icon, mirroring svg/. See tools/metadata.mjs. */
+export const META_DIR = fromRoot('metadata');
 export const CANVAS = '0 0 24 24';
 
 /**
@@ -59,12 +62,18 @@ function walk(dir, out = []) {
 /**
  * Build the canonical representation of every icon in the collection.
  *
+ * Authored metadata — meaning, note, keywords, aliases, references — is read
+ * from each icon's JSON sidecar and attached as `metadata`, so every generator
+ * gets the research along with the artwork rather than reaching for it
+ * separately.
+ *
  * @returns {Array<{
  *   name: string, slug: string, category: string, viewBox: string,
- *   body: string, svg: string, sourcePath: string, file: string
+ *   body: string, svg: string, sourcePath: string, file: string,
+ *   metadata: Record<string, unknown>
  * }>} sorted by name
  */
-export function loadIcons(svgDir = SVG_DIR) {
+export function loadIcons(svgDir = SVG_DIR, metaDir = META_DIR) {
     const icons = walk(svgDir).map((sourcePath) => {
         const name = path.basename(sourcePath, '.svg');
         const category = path
@@ -86,6 +95,17 @@ export function loadIcons(svgDir = SVG_DIR) {
 
         if (!body) throw new Error(`${sourcePath}: no drawable content after optimisation`);
 
+        // The build refuses a malformed sidecar rather than dropping the fields
+        // silently and shipping an icon whose research looks unwritten.
+        const { data: metadata, problems } = loadMetadata(sourcePath, { name, svgDir, metaDir });
+        const errors = problems.filter((p) => p.level === 'error');
+        if (errors.length) {
+            throw new Error(
+                `${sidecarFor(sourcePath, { svgDir, metaDir })}: ${errors.map((e) => e.message).join('; ')}\n` +
+                `Run \`pnpm run validate\` for the full report.`
+            );
+        }
+
         return {
             name,
             slug: toSlug(name),
@@ -95,6 +115,7 @@ export function loadIcons(svgDir = SVG_DIR) {
             svg: renderSvg({ viewBox, body }),
             sourcePath: sourcePath.split(path.sep).join('/'),
             file: `svg/${category}/${name}.svg`,
+            metadata,
         };
     });
 

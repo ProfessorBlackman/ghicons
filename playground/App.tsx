@@ -1,6 +1,7 @@
 import * as React from 'react'
 import './App.css'
 import * as Icons from '@ghicons/react'
+import { icons as registry, categories as registryCategories } from 'ghicons'
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Types
@@ -13,40 +14,47 @@ type IconComponent = React.ComponentType<{
   style?: React.CSSProperties
 }>
 
-type Category = 'all' | 'adinkra' | 'general' | 'national'
+type Category = 'all' | (string & {})
 
 interface IconEntry {
   name: string
   component: IconComponent
-  category: Category
+  category: string
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
-// Map every export to its category.
+// Driven by the icon registry.
 //
-// These sets are duplicated data: the real category is the SVG's directory in
-// svg/, and nothing keeps them in step with it. They go away once the generated
-// icon registry ships and the playground can read the category from there —
-// see docs/wiki/Roadmap.md (v0.2). Until then, anything not listed is adinkra.
+// This used to be two hardcoded sets of names, with anything unlisted assumed
+// to be adinkra — duplicated data that nothing kept in step with the real
+// category, which is the SVG's directory in svg/. The registry ships that
+// mapping now, so the playground reads it and a new category needs no change
+// here at all.
 // ──────────────────────────────────────────────────────────────────────────────
-const GENERAL_NAMES = new Set(['GhanaCedi'])
-const NATIONAL_NAMES = new Set(['BlackStar', 'GhanaFlag'])
+const components = Icons as unknown as Record<string, IconComponent | undefined>
 
-const ALL_ICONS: IconEntry[] = Object.entries(Icons)
-  .filter(([, v]) => typeof v === 'function')
-  .map(([name, v]) => {
-    let category: Category = 'adinkra'
-    if (GENERAL_NAMES.has(name)) category = 'general'
-    else if (NATIONAL_NAMES.has(name)) category = 'national'
-    return { name, component: v as IconComponent, category }
+const ALL_ICONS: IconEntry[] = registry
+  .map(({ name, category }) => {
+    const component = components[name]
+    return component ? { name, component, category } : null
   })
+  .filter((entry): entry is IconEntry => entry !== null)
   .sort((a, b) => a.name.localeCompare(b.name))
+
+/** Display names and marks for the categories the registry reports. */
+const CATEGORY_STYLE: Record<string, { label: string; emoji: string }> = {
+  adinkra: { label: 'Adinkra', emoji: '✦' },
+  general: { label: 'General', emoji: '◈' },
+  national: { label: 'National', emoji: '⚑' },
+}
 
 const CATEGORIES: { id: Category; label: string; emoji: string }[] = [
   { id: 'all', label: 'All Icons', emoji: '⊞' },
-  { id: 'adinkra', label: 'Adinkra', emoji: '✦' },
-  { id: 'general', label: 'General', emoji: '◈' },
-  { id: 'national', label: 'National', emoji: '⚑' },
+  ...registryCategories.map((id) => ({
+    id,
+    label: CATEGORY_STYLE[id]?.label ?? id,
+    emoji: CATEGORY_STYLE[id]?.emoji ?? '◆',
+  })),
 ]
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -298,7 +306,8 @@ function GalleryPage({ bg }: { bg: 'light' | 'dark' }) {
   }
 
   const catCounts = React.useMemo(() => {
-    const counts: Record<Category, number> = { all: ALL_ICONS.length, adinkra: 0, general: 0, national: 0 }
+    const counts: Record<string, number> = { all: ALL_ICONS.length }
+    for (const id of registryCategories) counts[id] = 0
     ALL_ICONS.forEach(e => { counts[e.category]++ })
     return counts
   }, [])

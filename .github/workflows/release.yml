@@ -31,6 +31,9 @@ jobs:
       - name: Lint
         run: pnpm run lint
 
+      - name: Pipeline tests
+        run: pnpm test
+
       # `build` runs validate -> generate -> build for every package.
       - name: Build
         run: pnpm run build

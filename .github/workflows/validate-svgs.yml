@@ -38,3 +38,8 @@ jobs:
       # Rules live in docs/ICON-SPEC.md.
       - name: Validate the icon collection
         run: pnpm run validate
+
+      # The pipeline's own contracts — what counts as valid authored metadata,
+      # and that it reaches the canonical representation intact.
+      - name: Pipeline tests
+        run: pnpm test

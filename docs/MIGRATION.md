@@ -108,7 +108,7 @@ Icons use `currentColor`, so inlining one lets CSS colour it:
 import registry from "ghicons/registry.json";
 
 const adinkra = registry.icons.filter(i => i.category === "adinkra");
-// { name, slug, category, viewBox, file, meaning?, keywords? }
+// { name, slug, category, viewBox, file, meaning?, note?, keywords?, aliases?, references? }
 ```
 
 See [DOCUMENTATION.md](DOCUMENTATION.md) for the full guide.

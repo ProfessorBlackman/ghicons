@@ -152,9 +152,20 @@ registry.icons.find(i => i.slug === "gye-nyame");
 //   category: "adinkra",
 //   viewBox: "0 0 24 24",
 //   file: "svg/adinkra/GyeNyame.svg",
-//   meaning: "Except God — the supremacy of God",
-//   keywords: ["god", "supremacy", "faith"]
+//   meaning: "Except God — the omnipotence and supremacy of God in all affairs",
+//   keywords: ["god", "supremacy", "omnipotence", "faith"],
+//   aliases: ["Gye Nyame"],
+//   references: ["Willis, W. Bruce. The Adinkra Dictionary (1998)", "…"]
 // }
+```
+
+`name`, `slug`, `category`, `viewBox` and `file` are always present. The rest is
+researched, so it appears per icon as the research lands — `meaning` and `note`
+always arrive with the `references` they came from. Write code that treats them
+as optional:
+
+```js
+const label = icon.meaning ?? icon.name;
 ```
 
 Use it to build an icon picker, a search interface, a documentation page, or your own code generator:

@@ -79,10 +79,18 @@ Use it to build an icon picker, a search interface, a docs page, or your own cod
 | `viewBox` | ✅ | Always `0 0 24 24` |
 | `file` | ✅ | Path to the SVG inside this package |
 | `meaning` | | Documented meaning, where researched |
+| `note` | | Longer context: origin, variations, or a contested reading |
 | `keywords` | | Search keywords |
 | `aliases` | | Alternate and vernacular names |
+| `references` | | Where the meaning came from. Present wherever a meaning is |
 
-Optional fields are being filled in across the collection.
+The index itself carries `version`, `count` and `categories` alongside `icons`.
+
+Optional fields are being filled in across the collection. Most icons have no
+documented meaning yet: these are cultural symbols, so a meaning ships only once
+it has been researched and sourced, and
+[that research](https://github.com/ProfessorBlackman/ghicons/blob/master/docs/wiki/Cultural-Guidelines.md)
+is the contribution the project most needs.
 
 ## Why this package exists
 

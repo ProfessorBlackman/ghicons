@@ -115,6 +115,9 @@ importers:
       '@ghicons/react':
         specifier: workspace:*
         version: link:../packages/react
+      ghicons:
+        specifier: workspace:*
+        version: link:../packages/core
 
 packages:
 

@@ -40,7 +40,7 @@ GHIcons is in active pre-1.0 development.
 
 **v0.1 is complete.** Both packages are published — `ghicons` `0.1.0` is now the core, `@ghicons/react` `0.1.0` is the React adapter — and the website runs on them rather than on the source. See [v0.1](#-v01--the-framework-agnostic-core).
 
-**v0.2 is the current milestone,** and authored metadata is the substantial piece of it: the registry still carries only derived fields, so no icon has a documented meaning yet. That work needs cultural research more than it needs code. See [v0.2](#-v02--pipeline--metadata).
+**v0.2 is the current milestone.** The pipeline work is done and the metadata mechanism now exists: research lives in `metadata/<category>/<Name>.json`, is validated on the way in, and is merged into the published registry. What remains is the research itself — **1 of 106 icons has a documented meaning.** That needs cultural sourcing rather than code, and it is the most useful contribution anyone can make to GHIcons right now. See [v0.2](#-v02--pipeline--metadata) and the [Cultural Guidelines](Cultural-Guidelines).
 
 ### A note on sequencing
 
@@ -115,7 +115,7 @@ Everything else keeps its relative order. The stability work that used to define
 
 **The current milestone.** With the core shipped, make the machinery behind it match the architecture.
 
-The pipeline half is done. What remains is metadata: deciding which fields are authored, then authoring them.
+The pipeline is done, and so is the machinery for authored metadata. What remains is writing the research.
 
 ### Pipeline
 
@@ -126,15 +126,17 @@ The pipeline half is done. What remains is metadata: deciding which fields are a
 - [x] Guarantee generated output is reproducible from source
 - [x] Add local validation tooling that mirrors CI exactly
 - [x] Document the generator contracts
+- [x] Merge authored metadata into the canonical representation, so every emitter gets the research with the artwork
 - [x] Remove the placeholder Cloudinary script and the unused SVGR config
 
 ### Metadata
 
-- [ ] Decide which fields are generated and which are authored
-- [ ] Author meanings and keywords for the collection, with cultural review
-- [ ] Add aliases and alternate names
-- [ ] Validate metadata alongside SVGs
-- [ ] Make the playground read the registry instead of its hardcoded category map
+- [x] Decide which fields are generated and which are authored — `meaning`, `note`, `keywords`, `aliases` and `references` are authored; everything else is derived
+- [x] A format for authored metadata — one file per icon at `metadata/<category>/<Name>.json`, merged into the registry
+- [x] Validate metadata alongside SVGs — unknown and derived fields rejected, a meaning without references rejected, orphaned files caught
+- [ ] Author meanings and keywords for the collection, with cultural review — **1 of 106**, and the project's largest open gap
+- [ ] Add aliases and alternate names — the field exists; the names do not
+- [x] Make the playground read the registry instead of its hardcoded category map
 - [x] Make the website consume the registry instead of parallel metadata
 
 ### React integration

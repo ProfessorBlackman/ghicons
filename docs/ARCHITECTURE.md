@@ -125,11 +125,13 @@ ghicons/
 │   ├── general/                  Everyday Ghanaian-context icons
 │   └── national/                 National emblems
 │
-├── metadata/                   ← Hand-authored icon metadata (PLANNED, v0.2)
-│                                 meanings, keywords, aliases, references
+├── metadata/                   ← Hand-authored icon research
+│   └── adinkra/GyeNyame.json     meaning, note, keywords, aliases, references
+│                                 one file per icon, mirroring svg/
 │
 ├── tools/                      ← The pipeline. Framework-neutral.
 │   ├── canonical.mjs             SVG → canonical icon representation
+│   ├── metadata.mjs              The authored-metadata contract and its checks
 │   ├── validate.mjs              Spec enforcement (local + CI)
 │   ├── build-core.mjs            Canonical icons → the ghicons package
 │   ├── verify-packages.mjs       Release gate: is this safe to publish?
@@ -277,6 +279,8 @@ The pipeline is deliberately staged, and every stage is framework-neutral except
     ┌──────────────────┐
     │  3. NORMALISE    │  Produce the canonical icon representation:
     └────────┬─────────┘  { name, slug, category, viewBox, body, metadata }
+             │            Authored metadata is merged in here, so every
+             │            emitter gets the research with the artwork.
              ▼
     ┌──────────────────┐
     │  4. REGISTRY     │  Rebuild registry.json from scratch.
@@ -305,6 +309,8 @@ Two properties the pipeline must hold:
 ```json
 {
   "version": "0.1.0",
+  "count": 106,
+  "categories": ["adinkra", "general", "national"],
   "icons": [
     {
       "name": "GyeNyame",
@@ -312,16 +318,18 @@ Two properties the pipeline must hold:
       "category": "adinkra",
       "viewBox": "0 0 24 24",
       "file": "svg/adinkra/GyeNyame.svg",
-      "meaning": "Except God — the supremacy of God",
-      "keywords": ["god", "supremacy", "faith"]
+      "meaning": "Except God — the omnipotence and supremacy of God in all affairs",
+      "keywords": ["god", "supremacy", "omnipotence", "faith"],
+      "aliases": ["Gye Nyame"],
+      "references": ["Willis, W. Bruce. The Adinkra Dictionary (1998)", "…"]
     }
   ]
 }
 ```
 
-Required fields are derived automatically from the filename, directory and SVG, so every icon gets a valid entry with no authoring effort. Optional fields come from `metadata/` and can arrive later.
+Required fields are derived automatically from the filename, directory and SVG, so every icon gets a valid entry with no authoring effort. Optional fields come from `metadata/`, are validated on the way in, and can arrive later — a meaning never without the references it came from.
 
-The registry is what lets one index serve the website's search, the CDN's manifest, the download pages, the docs, and every framework generator — instead of each of them re-deriving the collection independently. The playground currently hardcodes its own name-to-category map; that goes away once it reads the registry.
+The registry is what lets one index serve the website's search, the CDN's manifest, the download pages, the docs, the playground and every framework generator — instead of each of them re-deriving the collection independently.
 
 The registry describes icons. It never holds a second editable copy of the artwork. Full schema in [ICON-SPEC.md](ICON-SPEC.md#-the-icon-registry).
 
@@ -492,9 +500,9 @@ This document describes the architecture GHIcons is being restructured into. Bei
 | Reproducibility | ✅ Clean regeneration is byte-identical | — |
 | `ghicons` on npm | ✅ The framework-agnostic core, published at `0.1.0` | — |
 | `@ghicons/react` on npm | ✅ Published at `0.1.0` | — |
-| Authored metadata | ✗ Registry carries derived fields only | Meanings, keywords and aliases |
-| Playground categories | ✗ Still a hardcoded name map | Read from the registry |
-| Tests | ✗ None | Pipeline invariants covered |
+| Authored metadata | ⏳ Mechanism shipped — `metadata/**`, validated and merged into the registry | Meanings, keywords and aliases actually written |
+| Playground categories | ✅ Read from the registry | — |
+| Tests | ⏳ The metadata contract is covered | The rest of the pipeline's invariants |
 
 Progress against this table is tracked in the [Roadmap](wiki/Roadmap.md).
 
