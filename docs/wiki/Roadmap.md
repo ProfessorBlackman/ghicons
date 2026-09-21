@@ -40,7 +40,7 @@ GHIcons is in active pre-1.0 development.
 
 **v0.1 is complete.** Both packages are published — `ghicons` `0.1.0` is now the core, `@ghicons/react` `0.1.0` is the React adapter — and the website runs on them rather than on the source. See [v0.1](#-v01--the-framework-agnostic-core).
 
-**v0.2 is the current milestone.** The pipeline work is done and the metadata mechanism now exists: research lives in `metadata/<category>/<Name>.json`, is validated on the way in, and is merged into the published registry. What remains is the research itself — **10 of 106 icons have a documented meaning** at the time of writing; `pnpm run validate` prints the current number. That needs cultural sourcing rather than code, and it is the most useful contribution anyone can make to GHIcons right now. See [v0.2](#-v02--pipeline--metadata) and the [Cultural Guidelines](Cultural-Guidelines).
+**v0.2 is the current milestone.** The pipeline work is done and the metadata mechanism now exists: research lives in `metadata/<category>/<Name>.json`, is validated on the way in, and is merged into the published registry. What remains is the research itself — **44 of 106 icons have a documented meaning** at the time of writing; `pnpm run validate` prints the current number. That needs cultural sourcing rather than code, and it is the most useful contribution anyone can make to GHIcons right now. See [v0.2](#-v02--pipeline--metadata) and the [Cultural Guidelines](Cultural-Guidelines).
 
 ### A note on sequencing
 
@@ -134,8 +134,8 @@ The pipeline is done, and so is the machinery for authored metadata. What remain
 - [x] Decide which fields are generated and which are authored — `meaning`, `note`, `keywords`, `aliases` and `references` are authored; everything else is derived
 - [x] A format for authored metadata — one file per icon at `metadata/<category>/<Name>.json`, merged into the registry
 - [x] Validate metadata alongside SVGs — unknown and derived fields rejected, a meaning without references rejected, orphaned files caught
-- [ ] Author meanings and keywords for the collection, with cultural review — **10 of 106**, and the project's largest open gap
-- [ ] Add aliases and alternate names — the field exists; the names do not
+- [ ] Author meanings and keywords for the collection, with cultural review — **44 of 106**, and the project's largest open gap
+- [ ] Add aliases and alternate names — 20 icons carry them so far
 - [x] Make the playground read the registry instead of its hardcoded category map
 - [x] Make the website consume the registry instead of parallel metadata
 
