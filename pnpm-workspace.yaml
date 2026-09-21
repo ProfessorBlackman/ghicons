@@ -1,0 +1,6 @@
+# Build tooling lives in the root package so every workspace shares one
+# dependency set and one lockfile. Package manifests declare only what their
+# consumers need: runtime and peer dependencies, and publishing metadata.
+packages:
+  - 'packages/*'
+  - 'playground'

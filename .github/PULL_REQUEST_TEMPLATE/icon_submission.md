@@ -12,13 +12,17 @@
 <!-- Link to or attach a reference image so reviewers can verify accuracy -->
 
 ### SVG Checklist
-<!-- The SVG validation workflow will check these automatically, but please self-review first -->
+<!-- Run `pnpm run validate` to check these automatically, then self-review the rest.
+     Full rules: docs/ICON-SPEC.md -->
 - [ ] `viewBox` is `0 0 24 24`
-- [ ] `fill` is set to `currentColor` (no hardcoded colors)
+- [ ] `fill` is set to `currentColor` (no hardcoded colors — not even `#fff`)
 - [ ] Pure vector — no embedded images or base64 data
 - [ ] No `<script>` tags or external references
-- [ ] File name is PascalCase (e.g. `GyeNyame.svg`)
-- [ ] SVG file is placed in the `/svg` directory
+- [ ] File name is PascalCase, with no numeric suffix and no `Icon` suffix
+- [ ] SVG is in the right category: `svg/adinkra/`, `svg/general/` or `svg/national/`
+- [ ] `pnpm run validate` passes
+- [ ] Reviewed visually at 16px and 48px
+- [ ] No generated files committed
 
 ### Preview
 <!-- Optional: paste your SVG code here so reviewers can see it without downloading -->

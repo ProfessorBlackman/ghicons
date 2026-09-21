@@ -1,8 +1,14 @@
 blank_issues_enabled: false
 contact_links:
   - name: Documentation
-    url: https://github.com/ProfessorBlackman/ghicons/blob/master/DOCUMENTATION.md
+    url: https://github.com/ProfessorBlackman/ghicons/blob/master/docs/DOCUMENTATION.md
     about: Read the general usage documentation.
   - name: Contributor Guide
-    url: https://github.com/ProfessorBlackman/ghicons/blob/master/CONTRIBUTING.md
+    url: https://github.com/ProfessorBlackman/ghicons/blob/master/docs/CONTRIBUTING.md
     about: Learn how to contribute to GHIcons.
+  - name: Icon Specification
+    url: https://github.com/ProfessorBlackman/ghicons/blob/master/docs/ICON-SPEC.md
+    about: What makes a valid GHIcon — read this before submitting artwork.
+  - name: Discussions
+    url: https://github.com/ProfessorBlackman/ghicons/discussions
+    about: Suggest symbols, share cultural context, and ask questions.

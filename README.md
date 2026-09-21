@@ -1,69 +1,232 @@
-# GHIcons
+# GHIcons 🇬🇭
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/ProfessorBlackman/ghicons/ci.yml?branch=master&label=build)](https://github.com/ProfessorBlackman/ghicons/actions)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/ProfessorBlackman/ghicons/release.yml?branch=master&label=build)](https://github.com/ProfessorBlackman/ghicons/actions)
 [![npm version](https://img.shields.io/npm/v/ghicons)](https://www.npmjs.com/package/ghicons)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/ProfessorBlackman/ghicons/blob/master/LICENSE)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-GHIcons is a React icon library that provides high-quality Ghanaian icons and symbols (such as Adinkra symbols) for use in React projects.
+**Ghanaian cultural icons for developers.**
 
-## Features
+An open-source collection of Ghanaian symbols — Adinkra, national emblems and other cultural motifs — designed to make Ghanaian visual language easy to use in software.
 
-- **Adinkra Symbols**: A wide collection of traditional Adinkra symbols.
-- **Customizable**: Easy to change size, color, and apply custom styles.
-- **TypeScript Support**: Fully typed for a great developer experience.
-- **Lightweight**: Optimized SVG components.
-- **Storybook Integration**: Explore and test icons in isolation.
-- **Contributor Documentation**: Detailed guide for developers to understand the project structure and generation pipeline.
+The collection is maintained independently of any framework. **SVG files are the canonical source of truth**; every package is generated from them.
 
-## 💬 Community
+---
 
-Have questions or ideas? Join the conversation in [GitHub Discussions](https://github.com/ProfessorBlackman/ghicons/discussions).
+## 📦 Packages
 
-## 📚 Documentation
+| Package | Install | What it is |
+|---|---|---|
+| **`ghicons`** | `npm install ghicons` | The framework-agnostic core — optimised SVGs and a machine-readable registry. No dependencies. Works with anything. |
+| **`@ghicons/react`** | `npm install @ghicons/react` | React components with full TypeScript types. |
 
-For general usage and library overview, see our [General Documentation](DOCUMENTATION.md).
+Vue, Svelte, Web Components and Flutter adapters are planned — see the [Roadmap](docs/wiki/Roadmap.md).
 
-## 📖 Contributor Guide
+> ⚠️ **`ghicons` used to be the React package.** As of `0.1.0` the name belongs to the core, and React moved to `@ghicons/react`. See the [migration guide](docs/MIGRATION.md).
 
-If you're looking to contribute or understand the project's internals, please check out our [Contributor's Guide](CONTRIBUTING.md).
+---
 
-## Installation
+## 🚀 Quick start
+
+### Any framework, or none
 
 ```bash
 npm install ghicons
-# or
-pnpm add ghicons
-# or
-yarn add ghicons
 ```
 
-## Usage
+```html
+<img src="node_modules/ghicons/svg/adinkra/GyeNyame.svg" alt="Gye Nyame">
+```
+
+Icons use `currentColor`, so an inlined SVG takes its colour from CSS:
+
+```css
+.icon { color: #b8860b; }
+```
+
+Every icon is also described in the registry:
+
+```js
+import registry from "ghicons/registry.json";
+
+const adinkra = registry.icons.filter(i => i.category === "adinkra");
+// { name, slug, category, viewBox, file, meaning?, keywords? }
+```
+
+### React
+
+```bash
+npm install @ghicons/react
+```
 
 ```tsx
-import { GyeNyame, GhanaCedisIcon } from 'ghicons';
+import { GyeNyame, Sankofa } from "@ghicons/react";
 
 function App() {
   return (
     <div>
-      <GyeNyame size={48} color="gold" />
-      <GhanaCedisIcon size="2rem" color="green" />
+      <GyeNyame />
+      <Sankofa size={40} color="gold" />
     </div>
   );
 }
 ```
 
-### Props
+Icons inherit the surrounding text colour by default:
 
-All icons accept the following props:
+```tsx
+<div style={{ color: "gold" }}>
+  <GyeNyame />
+</div>
+```
 
-| Prop        | Type                  | Default          | Description                                           |
-|-------------|-----------------------|------------------|-------------------------------------------------------|
-| `size`      | `number \| string`    | `24`             | The size of the icon (numbers are treated as pixels). |
-| `color`     | `string`              | `'currentColor'` | The color of the icon.                                |
-| `viewBox`   | `string`              | `'0 0 24 24'`    | The SVG viewBox attribute.                            |
-| `className` | `string`              | `undefined`      | Additional CSS classes.                               |
-| `style`     | `React.CSSProperties` | `undefined`      | Inline styles.                                        |
+---
 
-## License
+## 🎛️ React props
 
-MIT © [Methuselah Nwodobeh](https://github.com/ProfessorBlackman/ghicons)
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `size` | `number \| string` | `24` | Icon size. Numbers are pixels; strings take any CSS unit. |
+| `color` | `string` | `currentColor` | Icon colour. |
+| `viewBox` | `string` | `0 0 24 24` | SVG viewBox. |
+| `className` | `string` | — | Additional CSS classes. |
+| `style` | `React.CSSProperties` | — | Inline styles. |
+
+Standard SVG attributes pass through:
+
+```tsx
+<GyeNyame size="2rem" color="#b8860b" role="img" aria-label="Gye Nyame symbol" />
+```
+
+Full guide: [DOCUMENTATION.md](docs/DOCUMENTATION.md).
+
+---
+
+## 🧿 The collection
+
+100+ Adinkra symbols plus general and national icons, organised by category:
+
+```text
+svg/
+├── adinkra/     Traditional Adinkra symbols
+├── general/     Everyday Ghanaian-context icons
+└── national/    National emblems
+```
+
+A few of them:
+
+- **Gye Nyame** — the supremacy of God
+- **Sankofa** — learning from the past
+- **Duafe** — beauty and cleanliness
+- **Dwennimmen** — humility together with strength
+- **Ghana Cedi** — the national currency symbol
+
+The collection grows as symbols are researched, drawn and contributed.
+
+---
+
+## 🧠 Built around SVGs
+
+The most important decision in GHIcons: **the SVG collection is the source of truth.** An icon is not defined by its React component.
+
+```text
+              Canonical SVG
+                    │
+            Icon Specification
+                    │
+              Icon Registry
+                    │
+             Generation Pipeline
+                    │
+   ┌──────────┬─────┴─────┬──────────┐
+   ▼          ▼           ▼          ▼
+Raw SVG     React    Future adapters CDN
+```
+
+One contribution reaches every platform GHIcons supports, and no two platforms can drift apart, because none of them owns the artwork.
+
+Read the [Architecture](docs/ARCHITECTURE.md) and the [Icon Specification](docs/ICON-SPEC.md).
+
+---
+
+## 🛠️ Development
+
+```bash
+git clone https://github.com/ProfessorBlackman/ghicons.git
+cd ghicons
+pnpm install
+
+pnpm run validate     # check the collection against the spec
+pnpm run generate     # build the registry and all framework outputs
+pnpm run dev          # icon browser playground
+pnpm run storybook    # React component reference
+pnpm run build        # build every package
+pnpm run lint
+```
+
+Generated components, stories and the registry are derived from `svg/` and must never be edited by hand.
+
+Full workflow: [DEVELOPMENT.md](docs/DEVELOPMENT.md).
+
+---
+
+## 🤝 Contributing
+
+The most valuable contribution is an icon. You only need to produce an SVG — the pipeline handles every framework.
+
+You can also contribute cultural research, corrections to existing icons, pipeline and tooling work, documentation, accessibility improvements, or help build a future framework adapter.
+
+Read the [Icon Specification](docs/ICON-SPEC.md) before submitting artwork, then [CONTRIBUTING.md](docs/CONTRIBUTING.md) for the process.
+
+---
+
+## 🗺️ Roadmap
+
+GHIcons is pre-1.0.
+
+| Phase | Goal |
+|---|---|
+| **v0.1** | Framework-agnostic core: raw SVG + registry, monorepo, collection on-spec |
+| **v0.2** | Staged pipeline, authored metadata, registry-driven tooling |
+| **v1.0** | Stable icon contract, registry schema and React API |
+| **v1.x** | Collection growth, search and downloads, CDN, multicolour support |
+| **v2.x** | Web Components, Vue, Svelte, Flutter |
+
+Full detail: [Roadmap](docs/wiki/Roadmap.md).
+
+---
+
+## 📚 Documentation
+
+| Document | Description |
+|---|---|
+| [Documentation](docs/DOCUMENTATION.md) | Using GHIcons |
+| [Icon Specification](docs/ICON-SPEC.md) | What makes a valid GHIcon |
+| [Architecture](docs/ARCHITECTURE.md) | How the project is structured |
+| [Development](docs/DEVELOPMENT.md) | Development workflow and tooling |
+| [Contributing](docs/CONTRIBUTING.md) | How to contribute |
+| [Migration](docs/MIGRATION.md) | Upgrading from `ghicons` 0.0.x |
+| [Roadmap](docs/wiki/Roadmap.md) | Direction and milestones |
+| [Release Process](docs/wiki/Release-Process.md) | Versioning and releases |
+| [SVG Style Guide](docs/wiki/SVG-Style-Guide.md) | Drawing and preparing icons |
+
+---
+
+## 💬 Community
+
+Suggest symbols, discuss cultural context, request integrations, ask questions: [GitHub Discussions](https://github.com/ProfessorBlackman/ghicons/discussions).
+
+For bugs and specific implementation problems: [open an issue](https://github.com/ProfessorBlackman/ghicons/issues).
+
+---
+
+## 📄 License
+
+MIT © [Methuselah Nwodobeh](https://github.com/ProfessorBlackman)
+
+---
+
+## 🇬🇭 One icon. Everywhere.
+
+The framework a developer uses should not determine whether Ghanaian visual language is available to them.
+
+**One canonical symbol. One contribution. Available everywhere.**
