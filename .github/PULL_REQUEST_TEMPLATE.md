@@ -11,7 +11,7 @@
 ## Checklist
 - [ ] My branch is up to date with `dev`
 - [ ] I have tested my changes locally
-- [ ] I have read the [CONTRIBUTING.md](../blob/dev/CONTRIBUTING.md)
+- [ ] I have read the [CONTRIBUTING.md](../blob/dev/docs/CONTRIBUTING.md)
 
 ## Additional Notes
 <!-- Anything reviewers should know -->

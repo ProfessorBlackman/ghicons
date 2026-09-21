@@ -1,0 +1,50 @@
+{
+  "name": "@ghicons/react",
+  "version": "0.1.0",
+  "description": "React components for GHIcons \u2014 Ghanaian cultural icons, fully typed.",
+  "keywords": [
+    "icons",
+    "react",
+    "svg",
+    "ghana",
+    "ghanaian",
+    "adinkra",
+    "african",
+    "culture",
+    "react-components"
+  ],
+  "author": "Methuselah Nwodobeh",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ProfessorBlackman/ghicons",
+    "directory": "packages/react"
+  },
+  "bugs": {
+    "url": "https://github.com/ProfessorBlackman/ghicons/issues"
+  },
+  "homepage": "ghicons.methuselah.site",
+  "type": "module",
+  "main": "./dist/index.umd.js",
+  "module": "./dist/index.es.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.umd.js"
+    }
+  },
+  "scripts": {
+    "prepack": "node ../../tools/verify-packages.mjs"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  }
+}
