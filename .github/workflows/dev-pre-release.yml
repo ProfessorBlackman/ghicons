@@ -45,8 +45,13 @@ jobs:
       # reviewers install is byte-for-byte what a release would publish.
       - name: Pack the packages
         run: |
-          pnpm --filter ghicons pack --pack-destination .
-          pnpm --filter @ghicons/react pack --pack-destination .
+          # `pnpm pack` is not a recursive command, so --filter fails with
+          # "Unknown option: 'recursive'". Use -C to target a package, and an
+          # absolute destination, because --pack-destination resolves relative
+          # to -C rather than to the working directory.
+          pnpm -C packages/core  pack --pack-destination "$PWD"
+          pnpm -C packages/react pack --pack-destination "$PWD"
+          ls -l ./*.tgz
 
       - name: Create pre-release
         env:

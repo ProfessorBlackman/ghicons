@@ -40,5 +40,8 @@ packages/react/stories/
 # Captured script output
 .output.txt
 
+# Packed tarballs from `pnpm pack`
+*.tgz
+
 # Website lives in its own git repository
 ghicons_website/
