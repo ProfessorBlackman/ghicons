@@ -348,7 +348,7 @@ Every field is optional, and a file with none of them should not exist. The rule
 | `note` | At most 1200 characters. Origin, variations, or a reading that is contested |
 | `keywords` | Lowercase words, digits, spaces and hyphens; at most 24, each at most 32 characters. Search terms, not prose |
 | `aliases` | Other names for the symbol — the spaced form, the English name, a vernacular one. Never the icon's own name |
-| `references` | Where the meaning came from. **Required wherever `meaning` or `note` is present** |
+| `references` | Where the meaning came from, one citation per entry, each at most 300 characters. **Required wherever `meaning` or `note` is present** |
 
 Two rules are absolute, and validation enforces both:
 

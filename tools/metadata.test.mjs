@@ -87,6 +87,12 @@ describe('checkMetadata', () => {
         expect(errors({ aliases: ['Gye Nyame', 'gye nyame'] })).toEqual([expect.stringContaining('repeats')]);
     });
 
+    it('allows a citation with an author, a title and a URL', () => {
+        const long = `Eglash, R., Bennett, A., Babbitt, W., Lachney, M., Reinhardt, M., Hussein, F. Adinkra Mathematics: A Study of Ethnocomputing in Ghana, ${'x'.repeat(100)}`;
+        expect(long.length).toBeGreaterThan(200);
+        expect(errors({ meaning: 'Except God', references: [long] })).toEqual([]);
+    });
+
     it('rejects an empty list rather than treating it as absent', () => {
         expect(errors({ keywords: [] })).toEqual([expect.stringContaining('omit it instead')]);
     });

@@ -33,6 +33,8 @@ const MEANING_MAX = 240;
 const NOTE_MAX = 1200;
 const KEYWORD_MAX = 32;
 const KEYWORDS_MAX = 24;
+/** Author, title, edition and a URL in one line adds up. */
+const REFERENCE_MAX = 300;
 
 /** Lowercase words, digits, spaces and hyphens: search terms, not prose. */
 const KEYWORD_PATTERN = /^[a-z0-9][a-z0-9 -]*$/;
@@ -172,7 +174,9 @@ export function checkMetadata(data, { name } = {}) {
     const documented = typeof data.meaning === 'string' || typeof data.note === 'string';
 
     if ('references' in data) {
-        const references = checkStringArray(data.references, 'references', problems);
+        const references = checkStringArray(data.references, 'references', problems, {
+            maxLength: REFERENCE_MAX,
+        });
         // Cultural-Guidelines.md: "A Wikipedia link alone is not sufficient."
         // A warning, not an error: it should be visible without blocking someone
         // part-way through their research.
