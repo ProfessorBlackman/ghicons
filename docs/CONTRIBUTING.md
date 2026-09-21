@@ -1,6 +1,6 @@
 # Contributing to GHIcons 🇬🇭
 
-Thank you for wanting to contribute. GHIcons exists to bring Ghanaian cultural symbols — Adinkra, national emblems and more — into software everywhere, and it grows through contributions.
+Thank you for wanting to contribute. GHIcons gathers Ghanaian symbols in one place and standardises them — Adinkra and other tribal symbols, the currency, national and state emblems, the marks of Ghanaian movements and organisations — so developers stop hunting for a usable copy of each one. It grows through contributions.
 
 **The most important thing to know:** contributing an icon means contributing an **SVG**. You never need to write React, Vue or any framework code. The pipeline generates every output from your SVG.
 
@@ -169,7 +169,7 @@ Meanings, keywords and references go in `metadata/`. This is what powers search 
 
 ## 🇬🇭 Cultural Accuracy
 
-GHIcons represents real cultural symbols, which makes accuracy part of quality.
+Many GHIcons are real cultural symbols, which makes accuracy part of quality.
 
 **Research before drawing.** Use reliable references.
 

@@ -2,7 +2,7 @@
   "name": "ghicons-workspace",
   "private": true,
   "type": "module",
-  "description": "Monorepo for GHIcons \u2014 Ghanaian cultural icons for developers.",
+  "description": "Monorepo for GHIcons \u2014 Ghanaian symbols, gathered and standardised for developers.",
   "license": "MIT",
   "author": "Methuselah Nwodobeh",
   "repository": {
@@ -12,7 +12,7 @@
   "bugs": {
     "url": "https://github.com/ProfessorBlackman/ghicons/issues"
   },
-  "homepage": "ghicons.methuselah.site",
+  "homepage": "https://ghicons.methuselah.site",
   "scripts": {
     "validate": "node tools/validate.mjs",
     "generate": "pnpm run generate:core && pnpm run generate:react && pnpm run generate:stories",

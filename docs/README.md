@@ -6,7 +6,7 @@ All project documentation lives here. The root [`README.md`](../README.md) stays
 
 ## Start here
 
-**GHIcons is a collection of Ghanaian cultural symbols.** The SVG files in `svg/` are the canonical source of truth; every package — the framework-agnostic core, the React adapter, and every future integration — is generated from them.
+**GHIcons gathers Ghanaian symbols in one place and standardises them** — Adinkra and other tribal symbols, the currency, national and state emblems, and eventually the marks of Ghanaian organisations and brands. The SVG files in `svg/` are the canonical source of truth; every package — the framework-agnostic core, the React adapter, and every future integration — is generated from them.
 
 If you read one document, make it [ICON-SPEC.md](ICON-SPEC.md). Everything else describes machinery built around it.
 

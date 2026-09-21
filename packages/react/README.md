@@ -1,8 +1,8 @@
 # @ghicons/react 🇬🇭
 
-**Ghanaian cultural icons as React components.**
+**Ghanaian symbols as React components.**
 
-Adinkra symbols, national emblems and other Ghanaian motifs — fully typed, tree-shakeable, and generated from the [`ghicons`](https://www.npmjs.com/package/ghicons) canonical SVG collection.
+Adinkra and other tribal symbols, the currency, national emblems and more — fully typed, tree-shakeable, and generated from the [`ghicons`](https://www.npmjs.com/package/ghicons) canonical SVG collection.
 
 > ⚠️ **Moved from `ghicons`.** Through `0.0.1` these components were published as `ghicons`. That name now belongs to the framework-agnostic core. See the [migration guide](https://github.com/ProfessorBlackman/ghicons/blob/master/docs/MIGRATION.md).
 
@@ -84,7 +84,7 @@ Install [`ghicons`](https://www.npmjs.com/package/ghicons) for the raw SVGs and 
 
 - [Documentation](https://github.com/ProfessorBlackman/ghicons/blob/master/docs/DOCUMENTATION.md)
 - [Contributing](https://github.com/ProfessorBlackman/ghicons/blob/master/docs/CONTRIBUTING.md)
-- [Browse the icons](https://ghicons.methuselah.site)
+- [Browse the icons](https://ghicons.methuselah.site/icons)
 
 ## License
 

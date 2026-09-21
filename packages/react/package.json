@@ -1,7 +1,7 @@
 {
   "name": "@ghicons/react",
   "version": "0.1.0",
-  "description": "React components for GHIcons \u2014 Ghanaian cultural icons, fully typed.",
+  "description": "React components for GHIcons \u2014 Ghanaian symbols, fully typed. Adinkra, currency, national emblems and more.",
   "keywords": [
     "icons",
     "react",
@@ -23,7 +23,7 @@
   "bugs": {
     "url": "https://github.com/ProfessorBlackman/ghicons/issues"
   },
-  "homepage": "ghicons.methuselah.site",
+  "homepage": "https://ghicons.methuselah.site",
   "type": "module",
   "main": "./dist/index.umd.js",
   "module": "./dist/index.es.js",

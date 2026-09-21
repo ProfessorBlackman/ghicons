@@ -1,6 +1,6 @@
 # Contributing to GHIcons — How You Can Help
 
-GHIcons is a community-driven project. Its goal is to bring Ghanaian cultural symbols — Adinkra, national emblems, and more — into software everywhere, whatever framework developers happen to use. The collection grows through contributions from people like you.
+GHIcons is a community-driven project. Its goal is to gather Ghanaian symbols — Adinkra and other tribal symbols, the currency, national and state emblems, the marks of Ghanaian movements and organisations — in one place, standardised, and available whatever framework developers happen to use. The collection grows through contributions from people like you.
 
 You don't need to be an expert developer to contribute. There are meaningful roles for designers, researchers, cultural enthusiasts, and coders of all experience levels.
 
