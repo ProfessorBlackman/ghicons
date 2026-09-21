@@ -402,10 +402,14 @@ pnpm run validate && pnpm run generate
 
 **Check what would be published**
 ```bash
-pnpm --filter ghicons pack --pack-destination /tmp
-pnpm --filter @ghicons/react pack --pack-destination /tmp
-tar tzf /tmp/ghicons-*.tgz
+pnpm -C packages/core  pack --pack-destination /tmp
+pnpm -C packages/react pack --pack-destination /tmp
+tar tzf /tmp/ghicons-0.1.0.tgz
 ```
+
+`pack` is not one of pnpm's recursive commands, so `--filter` fails with
+`Unknown option: 'recursive'`. Use `-C`, and note that `--pack-destination`
+resolves relative to `-C`, not to your working directory.
 
 ---
 
