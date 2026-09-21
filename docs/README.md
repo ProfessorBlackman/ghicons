@@ -17,7 +17,7 @@ If you read one document, make it [ICON-SPEC.md](ICON-SPEC.md). Everything else 
 | Document | What's in it |
 |---|---|
 | [DOCUMENTATION.md](DOCUMENTATION.md) | Installation, usage with and without React, the registry, props, accessibility, FAQ |
-| [MIGRATION.md](MIGRATION.md) | Upgrading from `ghicons` 0.0.x, when the package name meant React |
+| [MIGRATION.md](MIGRATION.md) | Index of the migration guides, one per breaking release |
 
 ## For contributors
 

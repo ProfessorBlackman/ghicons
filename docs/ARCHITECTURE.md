@@ -226,7 +226,7 @@ import registry from "ghicons/registry.json";
 
 This package is what makes the "framework-agnostic" claim real rather than aspirational. It is also what the CDN, the download pages, the website search and every future adapter are built on.
 
-> **`ghicons` used to be the React package.** As of `0.1.0` the name belongs to the core, and React moved to `@ghicons/react`. See [MIGRATION.md](MIGRATION.md).
+> **`ghicons` used to be the React package.** As of `0.1.0` the name belongs to the core, and React moved to `@ghicons/react`. See [MIGRATION_v1.md](MIGRATION_v1.md).
 
 ### `@ghicons/react` — the React integration
 
@@ -462,7 +462,7 @@ It deploys itself — a static Next.js export published to GitHub Pages by a wor
 
 **`ghicons` names the core, not React.**
 The headline name should mean the icon collection, because that is what the project is. Leaving it attached to React would have kept the old framing alive in the most visible place.
-*Cost:* a real breaking change for existing installs. Taken deliberately while the number was still small, rather than after 1.0 when it would be expensive. See [MIGRATION.md](MIGRATION.md).
+*Cost:* a real breaking change for existing installs. Taken deliberately while the number was still small, rather than after 1.0 when it would be expensive. See [MIGRATION_v1.md](MIGRATION_v1.md).
 
 **Generate components instead of committing them.**
 A hundred near-identical `.tsx` files would swamp every diff and invite hand-edits that drift from the SVG. Keeping them git-ignored makes `svg/` unambiguously authoritative.
@@ -544,5 +544,5 @@ The guiding rule:
 - [ICON-SPEC.md](ICON-SPEC.md) — what makes a valid GHIcon
 - [DEVELOPMENT.md](DEVELOPMENT.md) — commands and day-to-day workflow
 - [CONTRIBUTING.md](CONTRIBUTING.md) — how to submit icons and code
-- [MIGRATION.md](MIGRATION.md) — moving from `ghicons` 0.0.x to the new packages
+- [MIGRATION.md](MIGRATION.md) — the index of migration guides; [MIGRATION_v1.md](MIGRATION_v1.md) covers `ghicons` 0.0.x → 0.1.0
 - [Roadmap](wiki/Roadmap.md) — what is planned and in what order

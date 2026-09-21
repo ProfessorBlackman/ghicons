@@ -23,7 +23,7 @@ The collection is maintained independently of any framework. **SVG files are the
 
 Vue, Svelte, Web Components and Flutter adapters are planned — see the [Roadmap](docs/wiki/Roadmap.md).
 
-> ⚠️ **`ghicons` used to be the React package.** As of `0.1.0` the name belongs to the core, and React moved to `@ghicons/react`. See the [migration guide](docs/MIGRATION.md).
+> ⚠️ **`ghicons` used to be the React package.** As of `0.1.0` the name belongs to the core, and React moved to `@ghicons/react`. See the [migration guide](docs/MIGRATION_v1.md).
 
 ---
 
@@ -208,7 +208,7 @@ Full detail: [Roadmap](docs/wiki/Roadmap.md).
 | [Architecture](docs/ARCHITECTURE.md) | How the project is structured |
 | [Development](docs/DEVELOPMENT.md) | Development workflow and tooling |
 | [Contributing](docs/CONTRIBUTING.md) | How to contribute |
-| [Migration](docs/MIGRATION.md) | Upgrading from `ghicons` 0.0.x |
+| [Migration](docs/MIGRATION.md) | Upgrading between releases — one guide per breaking change |
 | [Roadmap](docs/wiki/Roadmap.md) | Direction and milestones |
 | [Release Process](docs/wiki/Release-Process.md) | Versioning and releases |
 | [SVG Style Guide](docs/wiki/SVG-Style-Guide.md) | Drawing and preparing icons |

@@ -68,7 +68,7 @@ These are **outputs of the icon system**, never separate sources of truth.
 | Anything else — Vue, Svelte, Angular, Astro, Django, Laravel, WordPress, plain HTML | `ghicons` |
 | A design tool, docs site, or your own generator | `ghicons` (for the registry) |
 
-> ⚠️ **`ghicons` used to be the React package.** As of `0.1.0` it is the framework-agnostic core. Upgrading from `0.0.x`? See [MIGRATION.md](MIGRATION.md).
+> ⚠️ **`ghicons` used to be the React package.** As of `0.1.0` it is the framework-agnostic core. Upgrading from `0.0.x`? See [MIGRATION_v1.md](MIGRATION_v1.md).
 
 ---
 

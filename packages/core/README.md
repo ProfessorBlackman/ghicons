@@ -6,7 +6,7 @@ Adinkra and other tribal symbols, the currency, national emblems and more, as pl
 
 Building with React? Install [`@ghicons/react`](https://www.npmjs.com/package/@ghicons/react) instead — it wraps these same icons as typed components.
 
-> ⚠️ **`ghicons` used to be the React package.** As of `0.1.0` this name is the framework-agnostic core and React moved to `@ghicons/react`. See the [migration guide](https://github.com/ProfessorBlackman/ghicons/blob/master/docs/MIGRATION.md).
+> ⚠️ **`ghicons` used to be the React package.** As of `0.1.0` this name is the framework-agnostic core and React moved to `@ghicons/react`. See the [migration guide](https://github.com/ProfessorBlackman/ghicons/blob/master/docs/MIGRATION_v1.md).
 
 ---
 
