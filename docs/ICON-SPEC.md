@@ -35,7 +35,7 @@ Framework integrations consume icons that conform to this specification. They mu
 
 ## 🎯 Purpose
 
-GHIcons is a collection of Ghanaian cultural symbols intended for use across software projects and platforms.
+GHIcons is a collection of Ghanaian symbols — cultural, national, commercial and civic — intended for use across software projects and platforms.
 
 This specification exists so that every icon:
 
@@ -297,7 +297,7 @@ Authored metadata lives beside the icon, never inside the generated index — th
 
 ### Cultural metadata
 
-`meaning` and `references` describe real cultural symbols. They must come from reliable research, not invention. Where an interpretation is contested or uncertain, say so rather than presenting one reading as settled fact. See [Cultural Guidelines](wiki/Cultural-Guidelines.md).
+Where a symbol is a cultural one, `meaning` and `references` describe something real. They must come from reliable research, not invention. Where an interpretation is contested or uncertain, say so rather than presenting one reading as settled fact. See [Cultural Guidelines](wiki/Cultural-Guidelines.md).
 
 ### What the registry must not become
 

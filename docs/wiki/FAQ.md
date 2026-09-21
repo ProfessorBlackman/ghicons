@@ -126,7 +126,7 @@ Or use the `color` prop directly:
 A few things to check:
 - Make sure you are importing from `'@ghicons/react'` — importing components from `'ghicons'` stopped working at `0.1.0`, see the [migration guide](../blob/dev/docs/MIGRATION.md)
 - Check that the icon name is spelled correctly and is PascalCase — e.g. `GyeNyame`, not `gyeNyame` or `gye-nyame`
-- Browse the [icon preview](https://ghicons.methuselah.site) to confirm the icon exists in the library
+- Browse the [icon gallery](https://ghicons.methuselah.site/icons) to confirm the icon exists in the library
 - If the icon exists but the import fails, it may not be exported from the main entry point — [open a bug report](../issues/new?template=bug_report.md)
 
 ---

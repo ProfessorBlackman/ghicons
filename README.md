@@ -4,9 +4,11 @@
 [![npm version](https://img.shields.io/npm/v/ghicons)](https://www.npmjs.com/package/ghicons)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-**Ghanaian cultural icons for developers.**
+**Ghanaian symbols, gathered and standardised for developers.**
 
-An open-source collection of Ghanaian symbols — Adinkra, national emblems and other cultural motifs — designed to make Ghanaian visual language easy to use in software.
+Ghanaian symbols are scattered across the web in whatever format someone happened to upload — a PNG here, a hand-traced SVG there, all different sizes and weights. GHIcons collects them in one place and puts them on the same footing, so every symbol installs the same way and behaves the same way.
+
+The scope is every symbol that is Ghanaian or belongs to Ghanaian life: Adinkra and other tribal symbols, the currency, national and state emblems, the marks of Ghanaian movements and organisations, and in time Ghanaian brands.
 
 The collection is maintained independently of any framework. **SVG files are the canonical source of truth**; every package is generated from them.
 
@@ -120,6 +122,8 @@ A few of them:
 - **Dwennimmen** — humility together with strength
 - **Ghana Cedi** — the national currency symbol
 
+**[Browse all of them at ghicons.methuselah.site/icons](https://ghicons.methuselah.site/icons)** — filter by category, preview at any size and colour, and copy the code or the raw SVG.
+
 The collection grows as symbols are researched, drawn and contributed.
 
 ---
@@ -208,6 +212,8 @@ Full detail: [Roadmap](docs/wiki/Roadmap.md).
 | [Roadmap](docs/wiki/Roadmap.md) | Direction and milestones |
 | [Release Process](docs/wiki/Release-Process.md) | Versioning and releases |
 | [SVG Style Guide](docs/wiki/SVG-Style-Guide.md) | Drawing and preparing icons |
+
+The website also carries an [about page](https://ghicons.methuselah.site/about) covering what Adinkra symbols are and how the project handles their meanings.
 
 ---
 

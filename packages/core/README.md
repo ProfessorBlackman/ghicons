@@ -1,8 +1,8 @@
 # ghicons 🇬🇭
 
-**Ghanaian cultural icons — optimised SVGs and a machine-readable registry.**
+**Ghanaian symbols — optimised SVGs and a machine-readable registry.**
 
-Adinkra symbols, national emblems and other Ghanaian motifs, as plain SVG files with no dependencies and no framework. Use them with anything: Vue, Svelte, Angular, Astro, Django, Laravel, WordPress, plain HTML, or your own tooling.
+Adinkra and other tribal symbols, the currency, national emblems and more, as plain SVG files with no dependencies and no framework. Gathered in one place and standardised so every symbol behaves the same. Use them with anything: Vue, Svelte, Angular, Astro, Django, Laravel, WordPress, plain HTML, or your own tooling.
 
 Building with React? Install [`@ghicons/react`](https://www.npmjs.com/package/@ghicons/react) instead — it wraps these same icons as typed components.
 
@@ -93,7 +93,7 @@ The SVG collection is GHIcons' source of truth — every framework package is ge
 - [Documentation](https://github.com/ProfessorBlackman/ghicons/blob/master/docs/DOCUMENTATION.md)
 - [Icon specification](https://github.com/ProfessorBlackman/ghicons/blob/master/docs/ICON-SPEC.md)
 - [Contributing](https://github.com/ProfessorBlackman/ghicons/blob/master/docs/CONTRIBUTING.md)
-- [Browse the icons](https://ghicons.methuselah.site)
+- [Browse the icons](https://ghicons.methuselah.site/icons)
 
 ## License
 

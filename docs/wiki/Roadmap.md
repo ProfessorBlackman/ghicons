@@ -2,7 +2,7 @@
 
 Where GHIcons is heading, in what order, and why.
 
-GHIcons began as a React icon library. It is becoming a framework-independent icon system for Ghanaian cultural symbols.
+GHIcons began as a React icon library. It is becoming a framework-independent icon system for Ghanaian symbols of every kind — cultural, national, commercial and civic.
 
 > **Contribute an icon once. Make it available everywhere GHIcons is supported.**
 
@@ -61,7 +61,7 @@ Everything else keeps its relative order. The stability work that used to define
 
 **Prove the abstraction before multiplying it.** One non-React consumer proves the collection is genuinely portable. Four half-maintained adapters prove nothing.
 
-**Cultural accuracy over icon count.** These are cultural symbols, not decorative shapes. A smaller accurate set beats a larger questionable one.
+**Accuracy over icon count.** Many of these are cultural symbols rather than decorative shapes, and the rest represent real institutions. A smaller accurate set beats a larger questionable one.
 
 **Automation over duplication.** Adding an icon once should make it available to every supported target without manual copies.
 
@@ -190,7 +190,7 @@ The system is stable; now make the collection bigger and easier to find things i
 
 ### Expand the collection
 
-**National symbols** — Coat of Arms, Independence Arch, national monuments, selected state symbols.
+**National and state symbols** — Coat of Arms, Independence Arch, national monuments, the symbols of government.
 *Black Star and Ghana Flag already ship.*
 
 **Currency and trade** — Cedi variants, cocoa motifs, market and trade symbols.
@@ -199,7 +199,11 @@ The system is stable; now make the collection bigger and easier to find things i
 
 **Textile and pattern** — selected Kente-inspired motifs, tileable patterns where appropriate.
 
-All subject to the icon specification and cultural review. Several of these are inherently multicolour, so they depend on the multicolour extension below.
+**Movements and organisations** — the marks of Ghanaian institutions, movements and civic bodies. New ground for the collection, and the point at which "is this a cultural symbol?" stops being the right question and "would someone building for Ghana want it?" becomes it.
+
+**Ghanaian brands** — a longer-term ambition, deliberately last. Trademarks belong to their owners, so this needs a clear policy on permission, attribution and removal before a single mark is added. Not started, and not to be started casually.
+
+All subject to the icon specification and, where a symbol is cultural, cultural review. Several of these are inherently multicolour, so they depend on the multicolour extension below.
 
 ### Website and discovery
 
@@ -337,7 +341,7 @@ Use [GitHub Issues](https://github.com/ProfessorBlackman/ghicons/issues) or [Dis
 
 GHIcons started as a way to use Ghanaian symbols in React projects. It is growing into something broader:
 
-> **A reliable, open, developer-friendly home for Ghanaian cultural symbols in software.**
+> **A reliable, open, developer-friendly home for every Ghanaian symbol in software.**
 
 The framework a developer uses should not determine whether Ghanaian visual language is available to them.
 

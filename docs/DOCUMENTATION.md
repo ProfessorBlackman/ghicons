@@ -1,8 +1,10 @@
 # GHIcons Documentation
 
-**GHIcons** is an open-source collection of Ghanaian cultural symbols and icons for developers.
+**GHIcons** gathers Ghanaian symbols in one place and standardises them, so developers stop hunting across the web for a usable copy of each one.
 
-> **Define a cultural icon once. Make it available everywhere.**
+The scope is every symbol that is Ghanaian or belongs to Ghanaian life: Adinkra and other tribal symbols, the currency, national and state emblems, the marks of Ghanaian movements and organisations, and in time Ghanaian brands.
+
+> **Define a symbol once. Make it available everywhere.**
 
 The canonical source for every GHIcon is an SVG. Framework packages and other distribution formats are generated from those assets — so you can use GHIcons with React, with any other framework, or with no framework at all.
 
@@ -37,7 +39,7 @@ Three parts that fit together.
 
 ### 1. The collection
 
-SVG representations of Ghanaian cultural symbols — the **canonical source of truth** for the whole project.
+SVG representations of Ghanaian symbols — the **canonical source of truth** for the whole project.
 
 ```text
 svg/
@@ -295,7 +297,7 @@ Note that several national symbols are multicolour in real life. GHIcons is mono
 
 **Framework independence** — the canonical icon knows nothing about React, Vue or Flutter. Platform behaviour belongs in the integration.
 
-**Cultural accuracy** — these are real cultural symbols. Meanings are researched and documented, never inferred or invented.
+**Cultural accuracy** — many of these are real cultural symbols. Where one is, its meaning is researched and documented, never inferred or invented.
 
 ---
 
@@ -359,7 +361,7 @@ If you are proposing a cultural symbol, reliable context and references help a g
 
 ## 🇬🇭 The bigger picture
 
-GHIcons started as a React icon library. The goal is broader: **to make Ghanaian cultural symbols easy to use anywhere software is built.**
+GHIcons started as a React icon library. The goal is broader: **to make Ghanaian symbols — all of them, not only the cultural ones — easy to use anywhere software is built.**
 
 The SVG collection is the foundation. React, raw SVG, and every future integration are just different ways of consuming it.
 

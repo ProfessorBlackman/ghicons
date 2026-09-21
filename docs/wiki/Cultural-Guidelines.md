@@ -1,6 +1,8 @@
 # Cultural Guidelines
 
-GHIcons exists to represent Ghanaian cultural heritage accurately and respectfully. This page explains how to research symbols, verify their accuracy, and handle edge cases where symbols are contested or have multiple interpretations.
+GHIcons collects Ghanaian symbols of every kind. Many of them — Adinkra above all — are cultural heritage, and this page is about those: how to research them, verify their accuracy, and handle cases where a symbol is contested or carries several interpretations.
+
+Not every icon in the collection is a cultural symbol. A currency sign or an institutional mark is a matter of accuracy rather than heritage. The standards below apply wherever a symbol carries cultural meaning.
 
 Cultural accuracy is as important as technical quality. An SVG with perfect paths but the wrong meaning — or the wrong name — does more harm than good.
 
