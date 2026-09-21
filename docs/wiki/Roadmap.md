@@ -31,13 +31,16 @@ GHIcons is in active pre-1.0 development.
 **Shipped:**
 
 - 100+ Adinkra symbols plus general and national icons
+- The framework-agnostic core — optimised SVGs plus the registry, zero dependencies
 - React component generation with full TypeScript types
 - Storybook integration
 - SVG validation in CI
 - npm distribution and automated release workflows
-- A public icon browser
+- A public icon browser with search, category filters and a page per icon
 
-**Built, not yet published — the framework-agnostic core.** The monorepo, both packages, the registry and the pipeline are done and verified; publishing waits on the npm organisation. See [v0.1](#-v01--the-framework-agnostic-core).
+**v0.1 is complete.** Both packages are published — `ghicons` `0.1.0` is now the core, `@ghicons/react` `0.1.0` is the React adapter — and the website runs on them rather than on the source. See [v0.1](#-v01--the-framework-agnostic-core).
+
+**v0.2 is the current milestone,** and authored metadata is the substantial piece of it: the registry still carries only derived fields, so no icon has a documented meaning yet. That work needs cultural research more than it needs code. See [v0.2](#-v02--pipeline--metadata).
 
 ### A note on sequencing
 
@@ -67,16 +70,16 @@ Everything else keeps its relative order. The stability work that used to define
 
 ---
 
-## 🔲 v0.1 — The Framework-Agnostic Core
+## ✅ v0.1 — The Framework-Agnostic Core
 
-**The current milestone.** GHIcons becomes usable without React.
+**Complete.** GHIcons is usable without React.
 
 ### Packaging
 
 - [x] Restructure into a pnpm monorepo
 - [x] `ghicons` becomes the framework-agnostic core — optimised SVGs + registry, zero dependencies
 - [x] React moves to `@ghicons/react`
-- [ ] Publish `@ghicons/*` under the `ghicons` npm organisation — built and verified, awaiting the org
+- [x] Publish `ghicons` and `@ghicons/react` to npm under the `ghicons` organisation
 - [x] Document the breaking change and the upgrade path
 
 ### Raw SVG distribution
@@ -108,9 +111,11 @@ Everything else keeps its relative order. The stability work that used to define
 
 ---
 
-## 🔲 v0.2 — Pipeline & Metadata
+## 🚧 v0.2 — Pipeline & Metadata
 
-With the core shipped, make the machinery behind it match the architecture.
+**The current milestone.** With the core shipped, make the machinery behind it match the architecture.
+
+The pipeline half is done. What remains is metadata: deciding which fields are authored, then authoring them.
 
 ### Pipeline
 
@@ -130,7 +135,7 @@ With the core shipped, make the machinery behind it match the architecture.
 - [ ] Add aliases and alternate names
 - [ ] Validate metadata alongside SVGs
 - [ ] Make the playground read the registry instead of its hardcoded category map
-- [ ] Make the website consume the registry instead of parallel metadata
+- [x] Make the website consume the registry instead of parallel metadata
 
 ### React integration
 
@@ -207,20 +212,24 @@ All subject to the icon specification and, where a symbol is cultural, cultural 
 
 ### Website and discovery
 
-- [ ] Search by name and keyword
-- [ ] Filter by category
-- [ ] Individual icon pages
-- [ ] Display meanings and cultural context
-- [ ] Copy SVG / download SVG
-- [ ] Copy framework usage examples
-- [ ] Related icons
+Mostly shipped ahead of schedule, because the registry made it cheap: the site
+reads it rather than keeping its own list, so each of these fell out of the
+`0.1.0` release rather than needing its own build.
+
+- [x] Search by name and keyword
+- [x] Filter by category
+- [x] Individual icon pages — `/icons/<slug>/`, one per registry entry
+- [x] Display meanings and cultural context — the pages show a meaning where there is one, and ask for the research where there is not. Writing them is [v0.2](#-v02--pipeline--metadata)
+- [x] Copy SVG / download SVG
+- [x] Copy framework usage examples — React and plain HTML
+- [x] Related icons
 - [ ] Category packs and a full icon pack
 
 ### Distribution
 
-- [ ] Per-icon downloads
+- [x] Per-icon downloads — from each icon's page
 - [ ] Category ZIPs
-- [ ] CDN with versioned, immutable, cache-friendly URLs
+- [ ] CDN with versioned, immutable, cache-friendly URLs — unpkg serves the published package today, pinned to a version, and that is what the site links. A project-owned CDN on the URL below is still open
 - [ ] A registry/manifest endpoint
 
 ```html
@@ -299,14 +308,14 @@ React remains important. It is one integration among several.
 
 ## 📊 Milestone Summary
 
-| Phase | Primary goal |
-|---|---|
-| `v0.1` | Framework-agnostic core: raw SVG + registry, monorepo, collection on-spec |
-| `v0.2` | Staged pipeline, authored metadata, registry-driven tooling |
-| `v1.0` | Stable icon contract, registry schema and React API |
-| `v1.x` | Expand the collection; search, downloads, CDN; multicolour support |
-| `v2.x` | Web Components, Vue, Svelte, Flutter; API and developer tooling |
-| `v3.x` | Carefully explore broader African cultural coverage |
+| Phase | Primary goal | Status |
+|---|---|---|
+| `v0.1` | Framework-agnostic core: raw SVG + registry, monorepo, collection on-spec | ✅ Shipped in `0.1.0` |
+| `v0.2` | Staged pipeline, authored metadata, registry-driven tooling | 🚧 Pipeline done; metadata open |
+| `v1.0` | Stable icon contract, registry schema and React API | Next |
+| `v1.x` | Expand the collection; search, downloads, CDN; multicolour support | Discovery largely shipped early |
+| `v2.x` | Web Components, Vue, Svelte, Flutter; API and developer tooling | Planned |
+| `v3.x` | Carefully explore broader African cultural coverage | Exploratory |
 
 ---
 

@@ -122,7 +122,7 @@ A few of them:
 - **Dwennimmen** — humility together with strength
 - **Ghana Cedi** — the national currency symbol
 
-**[Browse all of them at ghicons.methuselah.site/icons](https://ghicons.methuselah.site/icons)** — filter by category, preview at any size and colour, and copy the code or the raw SVG.
+**[Browse all of them at ghicons.methuselah.site/icons](https://ghicons.methuselah.site/icons)** — search and filter by category, preview at any size and colour, and copy the code or the raw SVG. Every symbol also has its own page, with its metadata, a download and usage snippets.
 
 The collection grows as symbols are researched, drawn and contributed.
 

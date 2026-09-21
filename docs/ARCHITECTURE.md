@@ -440,7 +440,9 @@ Validation enforces the spec: `viewBox` exactly `0 0 24 24`, no colour but `curr
 
 It consumes GHIcons as a published npm dependency, not a workspace link, so a library change reaches it only after a release and a dependency bump.
 
-Once the registry ships, the site consumes it directly instead of maintaining parallel metadata — that is what unlocks search, meanings, per-icon pages and downloads. The website is a consumer of the collection, never a source of truth for it.
+The gallery is driven by `registry.json` rather than by parallel metadata, which is what makes search, category filters, the per-icon pages and the SVG downloads fall out of a release automatically: add an icon here, and the site grows a page for it on its next dependency bump. The website is a consumer of the collection, never a source of truth for it.
+
+It deploys itself — a static Next.js export published to GitHub Pages by a workflow in its own repository. Nothing in this repository builds or releases it.
 
 ---
 
@@ -488,17 +490,19 @@ This document describes the architecture GHIcons is being restructured into. Bei
 | Collection | ✅ Fully spec-conformant — no known exceptions | — |
 | Raw SVG distribution | ✅ Shipped in the core package | — |
 | Reproducibility | ✅ Clean regeneration is byte-identical | — |
-| `ghicons` on npm | ⏳ Still the React package (`0.0.1`) — `0.1.0` is built but unpublished | The framework-agnostic core |
-| `@ghicons/react` on npm | ⏳ Built and verified, not yet published | Published |
+| `ghicons` on npm | ✅ The framework-agnostic core, published at `0.1.0` | — |
+| `@ghicons/react` on npm | ✅ Published at `0.1.0` | — |
 | Authored metadata | ✗ Registry carries derived fields only | Meanings, keywords and aliases |
 | Playground categories | ✗ Still a hardcoded name map | Read from the registry |
 | Tests | ✗ None | Pipeline invariants covered |
 
 Progress against this table is tracked in the [Roadmap](wiki/Roadmap.md).
 
-> **Nothing is published yet.** The working tree contains breaking changes —
-> two renamed icons, a re-scoped `GhanaCedi`, and the `ghicons` name changing
-> meaning. They must land together as `0.1.0`, or consumers break twice.
+> **`0.1.0` is published.** The breaking changes — two renamed icons, a
+> re-scoped `GhanaCedi`, and the `ghicons` name changing meaning — landed
+> together in that one release, so consumers absorb them once. Anything that
+> breaks the icon contract again needs the same treatment: see
+> [MIGRATION.md](MIGRATION.md) and the [release process](wiki/Release-Process.md).
 
 ---
 
