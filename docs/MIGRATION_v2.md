@@ -1,11 +1,7 @@
 # Migration v2 — `0.1.x` → `0.2.0`
 
-> **Status: unreleased.** `0.1.0` is the current release on npm. This guide
-> describes what changes when `0.2.0` ships, and is written as the changes land
-> rather than afterwards.
->
-> The `v2` is the second guide in the series, not a GHIcons version. See the
-> [index](MIGRATION.md).
+> The `v2` is the second guide in the series, not a GHIcons version. Whether
+> `0.2.0` has reached npm yet is recorded in the [index](MIGRATION.md).
 
 **Nothing about the icons or the components changes.** No renames, no artwork
 changes, no props changes. If you render icons and never read the registry, you

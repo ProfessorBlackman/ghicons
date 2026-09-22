@@ -39,7 +39,7 @@ GHIcons is in active pre-1.0 development.
 - A public icon browser with search, category filters and a page per icon
 - A sourced meaning, keywords and references for every icon in the collection
 
-**v0.1 is complete.** Both packages are published — `ghicons` `0.1.0` is now the core, `@ghicons/react` `0.1.0` is the React adapter — and the website runs on them rather than on the source. See [v0.1](#-v01--the-framework-agnostic-core).
+**v0.1 is complete.** Both packages are published: `ghicons` is the framework-agnostic core, `@ghicons/react` is the React adapter, and the website runs on them rather than on the source. The name changed meaning at `0.1.0` — see [v0.1](#-v01--the-framework-agnostic-core) and the [migration guide](../MIGRATION_v1.md).
 
 **v0.2 is the current milestone.** The pipeline work is done and the metadata mechanism now exists: research lives in `metadata/<category>/<Name>.json`, is validated on the way in, and is merged into the published registry. Every icon in the collection now carries a sourced meaning, keywords and references. What remains is **cultural review**: the entries were compiled from Willis, Arthur, Rattray and institutional sources, and they have not been checked by a reader who knows these symbols first-hand. That needs cultural sourcing rather than code, and it is the most useful contribution anyone can make to GHIcons right now. See [v0.2](#-v02--pipeline--metadata) and the [Cultural Guidelines](Cultural-Guidelines).
 

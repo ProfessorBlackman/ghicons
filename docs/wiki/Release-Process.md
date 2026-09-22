@@ -149,6 +149,14 @@ Backwards-compatible fixes:
 - fixing an SVG technical issue
 - correcting generated output
 - documentation and packaging fixes
+- **authored metadata** — adding, correcting or re-sourcing a `meaning`, `note`, `keywords`, `aliases` or `references`
+
+**Metadata is a patch, not a minor.** A new *field* in the registry is a minor
+release, because consumers gain something to read. A new *value* in a field that
+already exists changes no schema and breaks nothing: an icon that had no
+documented meaning simply has one. Research lands continuously and by
+contribution, and it must never wait for a minor release or need a migration
+guide to reach anyone.
 
 ---
 
@@ -222,6 +230,7 @@ npm
 - [ ] Icon specification matches what validation enforces
 - [ ] Breaking changes documented with an upgrade path
 - [ ] A new `MIGRATION_v<n>.md` for this release, if it breaks anything, and a row added to `MIGRATION.md`
+- [ ] The `(unreleased)` marker cleared from that guide's row in `MIGRATION.md` once the publish succeeds
 - [ ] Release notes drafted
 
 ### Release
