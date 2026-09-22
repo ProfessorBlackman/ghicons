@@ -181,7 +181,7 @@ metadata/adinkra/Sankofa.json    what is known about it
 
 Every field is optional and the file can arrive later than the icon — but a `meaning` must come with the `references` it was taken from, or validation fails. Field rules: [ICON-SPEC.md](ICON-SPEC.md#authoring-metadata). What counts as a reliable source: [Cultural Guidelines](wiki/Cultural-Guidelines.md).
 
-You can also document a symbol that is **already in the collection** without drawing anything — most of them have no recorded meaning yet, and that is the contribution the project most needs.
+You can also correct a symbol **already in the collection** without drawing anything. Every icon now carries a meaning, but they are not equally well sourced: some rest on a single reference site, and a correction citing Willis, Arthur, Rattray or a Ghanaian institution is a real improvement. So is fixing a translation, adding a proverb, or telling us an entry is simply wrong.
 
 ---
 

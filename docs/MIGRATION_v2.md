@@ -57,9 +57,10 @@ icon.meaning;     // "Except God — the omnipotence and supremacy of God in all
 icon.references;  // ["Willis, W. Bruce. The Adinkra Dictionary …", "…"]
 ```
 
-**Every one of these fields is still optional, and most icons do not have them
-yet.** These are cultural symbols, so a meaning ships only once it has been
-researched and sourced. Write code that copes with their absence:
+**Every one of these fields is still optional in the schema**, even though
+`0.2.0` ships a `meaning`, `keywords` and `references` for all 106 icons. A
+symbol added later arrives with derived fields first and its research after, so
+write code that copes with their absence:
 
 ```js
 const label = icon.meaning ?? icon.name;
@@ -92,9 +93,9 @@ icon has been renamed away fails too. The field rules are in
 [ICON-SPEC.md](ICON-SPEC.md#authoring-metadata); what counts as a reliable
 source is in the [Cultural Guidelines](wiki/Cultural-Guidelines.md).
 
-Documenting a symbol already in the collection needs no drawing and no code, and
-it is the contribution the project most needs — `pnpm run validate` prints how
-many icons still have no recorded meaning.
+Correcting a symbol already in the collection needs no drawing and no code. The
+entries are not equally well sourced — some rest on a single reference site — so
+a correction citing a published or institutional source is a real improvement.
 
 ---
 

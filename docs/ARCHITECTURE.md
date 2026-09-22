@@ -500,7 +500,7 @@ This document describes the architecture GHIcons is being restructured into. Bei
 | Reproducibility | ✅ Clean regeneration is byte-identical | — |
 | `ghicons` on npm | ✅ The framework-agnostic core, published at `0.1.0` | — |
 | `@ghicons/react` on npm | ✅ Published at `0.1.0` | — |
-| Authored metadata | ⏳ Mechanism shipped — `metadata/**`, validated and merged into the registry | Meanings, keywords and aliases actually written |
+| Authored metadata | ✅ 106/106 meanings, keywords and references, validated and merged into the registry | Cultural review of what is written |
 | Playground categories | ✅ Read from the registry | — |
 | Tests | ⏳ The metadata contract is covered | The rest of the pipeline's invariants |
 

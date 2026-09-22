@@ -86,11 +86,12 @@ Use it to build an icon picker, a search interface, a docs page, or your own cod
 
 The index itself carries `version`, `count` and `categories` alongside `icons`.
 
-Optional fields are being filled in across the collection. Most icons have no
-documented meaning yet: these are cultural symbols, so a meaning ships only once
-it has been researched and sourced, and
-[that research](https://github.com/ProfessorBlackman/ghicons/blob/master/docs/wiki/Cultural-Guidelines.md)
-is the contribution the project most needs.
+Every icon carries a `meaning`, `keywords` and the `references` the meaning was
+taken from; most also carry a `note` and the alternate spellings people search
+for. These are cultural symbols, so a meaning ships only once it is sourced —
+corrections and better sources are always welcome, and the standards they are
+held to are in the
+[cultural guidelines](https://github.com/ProfessorBlackman/ghicons/blob/master/docs/wiki/Cultural-Guidelines.md).
 
 ## Why this package exists
 

@@ -37,10 +37,11 @@ GHIcons is in active pre-1.0 development.
 - SVG validation in CI
 - npm distribution and automated release workflows
 - A public icon browser with search, category filters and a page per icon
+- A sourced meaning, keywords and references for every icon in the collection
 
 **v0.1 is complete.** Both packages are published — `ghicons` `0.1.0` is now the core, `@ghicons/react` `0.1.0` is the React adapter — and the website runs on them rather than on the source. See [v0.1](#-v01--the-framework-agnostic-core).
 
-**v0.2 is the current milestone.** The pipeline work is done and the metadata mechanism now exists: research lives in `metadata/<category>/<Name>.json`, is validated on the way in, and is merged into the published registry. What remains is the research itself — **44 of 106 icons have a documented meaning** at the time of writing; `pnpm run validate` prints the current number. That needs cultural sourcing rather than code, and it is the most useful contribution anyone can make to GHIcons right now. See [v0.2](#-v02--pipeline--metadata) and the [Cultural Guidelines](Cultural-Guidelines).
+**v0.2 is the current milestone.** The pipeline work is done and the metadata mechanism now exists: research lives in `metadata/<category>/<Name>.json`, is validated on the way in, and is merged into the published registry. Every icon in the collection now carries a sourced meaning, keywords and references. What remains is **cultural review**: the entries were compiled from Willis, Arthur, Rattray and institutional sources, and they have not been checked by a reader who knows these symbols first-hand. That needs cultural sourcing rather than code, and it is the most useful contribution anyone can make to GHIcons right now. See [v0.2](#-v02--pipeline--metadata) and the [Cultural Guidelines](Cultural-Guidelines).
 
 ### A note on sequencing
 
@@ -134,8 +135,9 @@ The pipeline is done, and so is the machinery for authored metadata. What remain
 - [x] Decide which fields are generated and which are authored — `meaning`, `note`, `keywords`, `aliases` and `references` are authored; everything else is derived
 - [x] A format for authored metadata — one file per icon at `metadata/<category>/<Name>.json`, merged into the registry
 - [x] Validate metadata alongside SVGs — unknown and derived fields rejected, a meaning without references rejected, orphaned files caught
-- [ ] Author meanings and keywords for the collection, with cultural review — **44 of 106**, and the project's largest open gap
-- [ ] Add aliases and alternate names — 20 icons carry them so far
+- [x] Author meanings and keywords for the collection — 106 of 106, each with the references it rests on
+- [x] Add aliases and alternate names — 68 icons carry the spaced, vernacular or scholarly spellings people actually search for
+- [ ] Cultural review of the authored meanings — they are sourced but unreviewed, and the weakest rest on a single reference site
 - [x] Make the playground read the registry instead of its hardcoded category map
 - [x] Make the website consume the registry instead of parallel metadata
 

@@ -1,5 +1,5 @@
 /**
- * Authored icon metadata: the contract for what a human may record about an
+ * Authored icon metadata: the contract for what a person may record about an
  * icon, and the checks that keep it honest.
  *
  * Everything the pipeline can work out for itself — name, slug, category,

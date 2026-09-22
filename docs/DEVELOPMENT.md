@@ -229,8 +229,10 @@ source is in the [Cultural Guidelines](wiki/Cultural-Guidelines.md).
 node tools/validate.mjs metadata/adinkra/Sankofa.json
 ```
 
-`pnpm run validate` prints how many icons have a documented meaning, which is
-currently the collection's largest gap.
+`pnpm run validate` prints how many icons have a documented meaning. Every icon
+in the collection has one today, so the work now is correcting and strengthening
+them rather than filling blanks — an entry resting on a weaker source is worth
+replacing with one that cites Willis, Arthur, Rattray or an institution.
 
 ### Renaming and deleting
 
