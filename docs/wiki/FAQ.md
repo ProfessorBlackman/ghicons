@@ -21,7 +21,7 @@ npm install ghicons
 
 > ⚠️ **`ghicons` changed meaning at `0.1.0`.** It used to be the React package; it is
 > now the framework-agnostic core. Upgrading from `0.0.x`? See the
-> [migration guide](../blob/dev/docs/MIGRATION.md).
+> [migration guide](../blob/dev/docs/MIGRATION_v1.md).
 
 ---
 
@@ -124,9 +124,9 @@ Or use the `color` prop directly:
 **Why is my icon not showing up after installing?**
 
 A few things to check:
-- Make sure you are importing from `'@ghicons/react'` — importing components from `'ghicons'` stopped working at `0.1.0`, see the [migration guide](../blob/dev/docs/MIGRATION.md)
+- Make sure you are importing from `'@ghicons/react'` — importing components from `'ghicons'` stopped working at `0.1.0`, see the [migration guide](../blob/dev/docs/MIGRATION_v1.md)
 - Check that the icon name is spelled correctly and is PascalCase — e.g. `GyeNyame`, not `gyeNyame` or `gye-nyame`
-- Browse the [icon preview](https://ghicons.methuselah.site) to confirm the icon exists in the library
+- Browse the [icon gallery](https://ghicons.methuselah.site/icons) to confirm the icon exists in the library
 - If the icon exists but the import fails, it may not be exported from the main entry point — [open a bug report](../issues/new?template=bug_report.md)
 
 ---

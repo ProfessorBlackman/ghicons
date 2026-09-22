@@ -2,7 +2,7 @@
 
 Where GHIcons is heading, in what order, and why.
 
-GHIcons began as a React icon library. It is becoming a framework-independent icon system for Ghanaian cultural symbols.
+GHIcons began as a React icon library. It is becoming a framework-independent icon system for Ghanaian symbols of every kind — cultural, national, commercial and civic.
 
 > **Contribute an icon once. Make it available everywhere GHIcons is supported.**
 
@@ -31,13 +31,17 @@ GHIcons is in active pre-1.0 development.
 **Shipped:**
 
 - 100+ Adinkra symbols plus general and national icons
+- The framework-agnostic core — optimised SVGs plus the registry, zero dependencies
 - React component generation with full TypeScript types
 - Storybook integration
 - SVG validation in CI
 - npm distribution and automated release workflows
-- A public icon browser
+- A public icon browser with search, category filters and a page per icon
+- A sourced meaning, keywords and references for every icon in the collection
 
-**Built, not yet published — the framework-agnostic core.** The monorepo, both packages, the registry and the pipeline are done and verified; publishing waits on the npm organisation. See [v0.1](#-v01--the-framework-agnostic-core).
+**v0.1 is complete.** Both packages are published: `ghicons` is the framework-agnostic core, `@ghicons/react` is the React adapter, and the website runs on them rather than on the source. The name changed meaning at `0.1.0` — see [v0.1](#-v01--the-framework-agnostic-core) and the [migration guide](../MIGRATION_v1.md).
+
+**v0.2 is the current milestone.** The pipeline work is done and the metadata mechanism now exists: research lives in `metadata/<category>/<Name>.json`, is validated on the way in, and is merged into the published registry. Every icon in the collection now carries a sourced meaning, keywords and references. What remains is **cultural review**: the entries were compiled from Willis, Arthur, Rattray and institutional sources, and they have not been checked by a reader who knows these symbols first-hand. That needs cultural sourcing rather than code, and it is the most useful contribution anyone can make to GHIcons right now. See [v0.2](#-v02--pipeline--metadata) and the [Cultural Guidelines](Cultural-Guidelines).
 
 ### A note on sequencing
 
@@ -61,22 +65,22 @@ Everything else keeps its relative order. The stability work that used to define
 
 **Prove the abstraction before multiplying it.** One non-React consumer proves the collection is genuinely portable. Four half-maintained adapters prove nothing.
 
-**Cultural accuracy over icon count.** These are cultural symbols, not decorative shapes. A smaller accurate set beats a larger questionable one.
+**Accuracy over icon count.** Many of these are cultural symbols rather than decorative shapes, and the rest represent real institutions. A smaller accurate set beats a larger questionable one.
 
 **Automation over duplication.** Adding an icon once should make it available to every supported target without manual copies.
 
 ---
 
-## 🔲 v0.1 — The Framework-Agnostic Core
+## ✅ v0.1 — The Framework-Agnostic Core
 
-**The current milestone.** GHIcons becomes usable without React.
+**Complete.** GHIcons is usable without React.
 
 ### Packaging
 
 - [x] Restructure into a pnpm monorepo
 - [x] `ghicons` becomes the framework-agnostic core — optimised SVGs + registry, zero dependencies
 - [x] React moves to `@ghicons/react`
-- [ ] Publish `@ghicons/*` under the `ghicons` npm organisation — built and verified, awaiting the org
+- [x] Publish `ghicons` and `@ghicons/react` to npm under the `ghicons` organisation
 - [x] Document the breaking change and the upgrade path
 
 ### Raw SVG distribution
@@ -108,9 +112,11 @@ Everything else keeps its relative order. The stability work that used to define
 
 ---
 
-## 🔲 v0.2 — Pipeline & Metadata
+## 🚧 v0.2 — Pipeline & Metadata
 
-With the core shipped, make the machinery behind it match the architecture.
+**The current milestone.** With the core shipped, make the machinery behind it match the architecture.
+
+The pipeline is done, and so is the machinery for authored metadata. What remains is writing the research.
 
 ### Pipeline
 
@@ -121,16 +127,19 @@ With the core shipped, make the machinery behind it match the architecture.
 - [x] Guarantee generated output is reproducible from source
 - [x] Add local validation tooling that mirrors CI exactly
 - [x] Document the generator contracts
+- [x] Merge authored metadata into the canonical representation, so every emitter gets the research with the artwork
 - [x] Remove the placeholder Cloudinary script and the unused SVGR config
 
 ### Metadata
 
-- [ ] Decide which fields are generated and which are authored
-- [ ] Author meanings and keywords for the collection, with cultural review
-- [ ] Add aliases and alternate names
-- [ ] Validate metadata alongside SVGs
-- [ ] Make the playground read the registry instead of its hardcoded category map
-- [ ] Make the website consume the registry instead of parallel metadata
+- [x] Decide which fields are generated and which are authored — `meaning`, `note`, `keywords`, `aliases` and `references` are authored; everything else is derived
+- [x] A format for authored metadata — one file per icon at `metadata/<category>/<Name>.json`, merged into the registry
+- [x] Validate metadata alongside SVGs — unknown and derived fields rejected, a meaning without references rejected, orphaned files caught
+- [x] Author meanings and keywords for the collection — 106 of 106, each with the references it rests on
+- [x] Add aliases and alternate names — 68 icons carry the spaced, vernacular or scholarly spellings people actually search for
+- [ ] Cultural review of the authored meanings — they are sourced but unreviewed, and the weakest rest on a single reference site
+- [x] Make the playground read the registry instead of its hardcoded category map
+- [x] Make the website consume the registry instead of parallel metadata
 
 ### React integration
 
@@ -190,7 +199,7 @@ The system is stable; now make the collection bigger and easier to find things i
 
 ### Expand the collection
 
-**National symbols** — Coat of Arms, Independence Arch, national monuments, selected state symbols.
+**National and state symbols** — Coat of Arms, Independence Arch, national monuments, the symbols of government.
 *Black Star and Ghana Flag already ship.*
 
 **Currency and trade** — Cedi variants, cocoa motifs, market and trade symbols.
@@ -199,24 +208,32 @@ The system is stable; now make the collection bigger and easier to find things i
 
 **Textile and pattern** — selected Kente-inspired motifs, tileable patterns where appropriate.
 
-All subject to the icon specification and cultural review. Several of these are inherently multicolour, so they depend on the multicolour extension below.
+**Movements and organisations** — the marks of Ghanaian institutions, movements and civic bodies. New ground for the collection, and the point at which "is this a cultural symbol?" stops being the right question and "would someone building for Ghana want it?" becomes it.
+
+**Ghanaian brands** — a longer-term ambition, deliberately last. Trademarks belong to their owners, so this needs a clear policy on permission, attribution and removal before a single mark is added. Not started, and not to be started casually.
+
+All subject to the icon specification and, where a symbol is cultural, cultural review. Several of these are inherently multicolour, so they depend on the multicolour extension below.
 
 ### Website and discovery
 
-- [ ] Search by name and keyword
-- [ ] Filter by category
-- [ ] Individual icon pages
-- [ ] Display meanings and cultural context
-- [ ] Copy SVG / download SVG
-- [ ] Copy framework usage examples
-- [ ] Related icons
+Mostly shipped ahead of schedule, because the registry made it cheap: the site
+reads it rather than keeping its own list, so each of these fell out of the
+`0.1.0` release rather than needing its own build.
+
+- [x] Search by name and keyword
+- [x] Filter by category
+- [x] Individual icon pages — `/icons/<slug>/`, one per registry entry
+- [x] Display meanings and cultural context — the pages show a meaning where there is one, and ask for the research where there is not. Writing them is [v0.2](#-v02--pipeline--metadata)
+- [x] Copy SVG / download SVG
+- [x] Copy framework usage examples — React and plain HTML
+- [x] Related icons
 - [ ] Category packs and a full icon pack
 
 ### Distribution
 
-- [ ] Per-icon downloads
+- [x] Per-icon downloads — from each icon's page
 - [ ] Category ZIPs
-- [ ] CDN with versioned, immutable, cache-friendly URLs
+- [ ] CDN with versioned, immutable, cache-friendly URLs — unpkg serves the published package today, pinned to a version, and that is what the site links. A project-owned CDN on the URL below is still open
 - [ ] A registry/manifest endpoint
 
 ```html
@@ -295,14 +312,14 @@ React remains important. It is one integration among several.
 
 ## 📊 Milestone Summary
 
-| Phase | Primary goal |
-|---|---|
-| `v0.1` | Framework-agnostic core: raw SVG + registry, monorepo, collection on-spec |
-| `v0.2` | Staged pipeline, authored metadata, registry-driven tooling |
-| `v1.0` | Stable icon contract, registry schema and React API |
-| `v1.x` | Expand the collection; search, downloads, CDN; multicolour support |
-| `v2.x` | Web Components, Vue, Svelte, Flutter; API and developer tooling |
-| `v3.x` | Carefully explore broader African cultural coverage |
+| Phase | Primary goal | Status |
+|---|---|---|
+| `v0.1` | Framework-agnostic core: raw SVG + registry, monorepo, collection on-spec | ✅ Shipped in `0.1.0` |
+| `v0.2` | Staged pipeline, authored metadata, registry-driven tooling | 🚧 Pipeline done; metadata open |
+| `v1.0` | Stable icon contract, registry schema and React API | Next |
+| `v1.x` | Expand the collection; search, downloads, CDN; multicolour support | Discovery largely shipped early |
+| `v2.x` | Web Components, Vue, Svelte, Flutter; API and developer tooling | Planned |
+| `v3.x` | Carefully explore broader African cultural coverage | Exploratory |
 
 ---
 
@@ -337,7 +354,7 @@ Use [GitHub Issues](https://github.com/ProfessorBlackman/ghicons/issues) or [Dis
 
 GHIcons started as a way to use Ghanaian symbols in React projects. It is growing into something broader:
 
-> **A reliable, open, developer-friendly home for Ghanaian cultural symbols in software.**
+> **A reliable, open, developer-friendly home for every Ghanaian symbol in software.**
 
 The framework a developer uses should not determine whether Ghanaian visual language is available to them.
 

@@ -1,12 +1,12 @@
 # ghicons 🇬🇭
 
-**Ghanaian cultural icons — optimised SVGs and a machine-readable registry.**
+**Ghanaian symbols — optimised SVGs and a machine-readable registry.**
 
-Adinkra symbols, national emblems and other Ghanaian motifs, as plain SVG files with no dependencies and no framework. Use them with anything: Vue, Svelte, Angular, Astro, Django, Laravel, WordPress, plain HTML, or your own tooling.
+Adinkra and other tribal symbols, the currency, national emblems and more, as plain SVG files with no dependencies and no framework. Gathered in one place and standardised so every symbol behaves the same. Use them with anything: Vue, Svelte, Angular, Astro, Django, Laravel, WordPress, plain HTML, or your own tooling.
 
 Building with React? Install [`@ghicons/react`](https://www.npmjs.com/package/@ghicons/react) instead — it wraps these same icons as typed components.
 
-> ⚠️ **`ghicons` used to be the React package.** As of `0.1.0` this name is the framework-agnostic core and React moved to `@ghicons/react`. See the [migration guide](https://github.com/ProfessorBlackman/ghicons/blob/master/docs/MIGRATION.md).
+> ⚠️ **`ghicons` used to be the React package.** As of `0.1.0` this name is the framework-agnostic core and React moved to `@ghicons/react`. See the [migration guide](https://github.com/ProfessorBlackman/ghicons/blob/master/docs/MIGRATION_v1.md).
 
 ---
 
@@ -79,10 +79,19 @@ Use it to build an icon picker, a search interface, a docs page, or your own cod
 | `viewBox` | ✅ | Always `0 0 24 24` |
 | `file` | ✅ | Path to the SVG inside this package |
 | `meaning` | | Documented meaning, where researched |
+| `note` | | Longer context: origin, variations, or a contested reading |
 | `keywords` | | Search keywords |
 | `aliases` | | Alternate and vernacular names |
+| `references` | | Where the meaning came from. Present wherever a meaning is |
 
-Optional fields are being filled in across the collection.
+The index itself carries `version`, `count` and `categories` alongside `icons`.
+
+Every icon carries a `meaning`, `keywords` and the `references` the meaning was
+taken from; most also carry a `note` and the alternate spellings people search
+for. These are cultural symbols, so a meaning ships only once it is sourced —
+corrections and better sources are always welcome, and the standards they are
+held to are in the
+[cultural guidelines](https://github.com/ProfessorBlackman/ghicons/blob/master/docs/wiki/Cultural-Guidelines.md).
 
 ## Why this package exists
 
@@ -93,7 +102,7 @@ The SVG collection is GHIcons' source of truth — every framework package is ge
 - [Documentation](https://github.com/ProfessorBlackman/ghicons/blob/master/docs/DOCUMENTATION.md)
 - [Icon specification](https://github.com/ProfessorBlackman/ghicons/blob/master/docs/ICON-SPEC.md)
 - [Contributing](https://github.com/ProfessorBlackman/ghicons/blob/master/docs/CONTRIBUTING.md)
-- [Browse the icons](https://ghicons.methuselah.site)
+- [Browse the icons](https://ghicons.methuselah.site/icons)
 
 ## License
 

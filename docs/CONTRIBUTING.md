@@ -1,6 +1,6 @@
 # Contributing to GHIcons 🇬🇭
 
-Thank you for wanting to contribute. GHIcons exists to bring Ghanaian cultural symbols — Adinkra, national emblems and more — into software everywhere, and it grows through contributions.
+Thank you for wanting to contribute. GHIcons gathers Ghanaian symbols in one place and standardises them — Adinkra and other tribal symbols, the currency, national and state emblems, the marks of Ghanaian movements and organisations — so developers stop hunting for a usable copy of each one. It grows through contributions.
 
 **The most important thing to know:** contributing an icon means contributing an **SVG**. You never need to write React, Vue or any framework code. The pipeline generates every output from your SVG.
 
@@ -48,7 +48,7 @@ Corrected proportions, cleaner paths, better legibility at small sizes, a more f
 
 ### 🇬🇭 Cultural research
 
-Meanings, context, references and corrections for symbols already in the collection. You do not need to draw anything — accurate documentation is a real contribution, and one the project genuinely needs.
+Meanings, context, references and corrections for symbols already in the collection. You do not need to draw anything — accurate documentation is a real contribution, and one the project genuinely needs. `pnpm run validate` prints how many icons have a documented meaning; the gap is large. Add one file under `metadata/`, or open an issue with the research and a maintainer will record it — see [Add metadata](#6-add-metadata-optional-but-valuable).
 
 ### 📝 Documentation
 
@@ -163,13 +163,31 @@ The filename becomes the identifier in every integration and the slug in the reg
 
 ### 6. Add metadata (optional but valuable)
 
-Meanings, keywords and references go in `metadata/`. This is what powers search and the symbol descriptions on the website.
+Meanings, keywords, aliases and references go in `metadata/`, one file per icon, mirroring the icon's path. This is what powers search and the symbol descriptions on the website.
+
+```text
+svg/adinkra/Sankofa.svg          the artwork
+metadata/adinkra/Sankofa.json    what is known about it
+```
+
+```json
+{
+  "meaning": "…",
+  "keywords": ["…"],
+  "aliases": ["…"],
+  "references": ["…"]
+}
+```
+
+Every field is optional and the file can arrive later than the icon — but a `meaning` must come with the `references` it was taken from, or validation fails. Field rules: [ICON-SPEC.md](ICON-SPEC.md#authoring-metadata). What counts as a reliable source: [Cultural Guidelines](wiki/Cultural-Guidelines.md).
+
+You can also correct a symbol **already in the collection** without drawing anything. Every icon now carries a meaning, but they are not equally well sourced: some rest on a single reference site, and a correction citing Willis, Arthur, Rattray or a Ghanaian institution is a real improvement. So is fixing a translation, adding a proverb, or telling us an entry is simply wrong.
 
 ---
 
 ## 🇬🇭 Cultural Accuracy
 
-GHIcons represents real cultural symbols, which makes accuracy part of quality.
+Many GHIcons are real cultural symbols, which makes accuracy part of quality.
 
 **Research before drawing.** Use reliable references.
 

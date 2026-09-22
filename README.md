@@ -4,9 +4,11 @@
 [![npm version](https://img.shields.io/npm/v/ghicons)](https://www.npmjs.com/package/ghicons)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-**Ghanaian cultural icons for developers.**
+**Ghanaian symbols, gathered and standardised for developers.**
 
-An open-source collection of Ghanaian symbols — Adinkra, national emblems and other cultural motifs — designed to make Ghanaian visual language easy to use in software.
+Ghanaian symbols are scattered across the web in whatever format someone happened to upload — a PNG here, a hand-traced SVG there, all different sizes and weights. GHIcons collects them in one place and puts them on the same footing, so every symbol installs the same way and behaves the same way.
+
+The scope is every symbol that is Ghanaian or belongs to Ghanaian life: Adinkra and other tribal symbols, the currency, national and state emblems, the marks of Ghanaian movements and organisations, and in time Ghanaian brands.
 
 The collection is maintained independently of any framework. **SVG files are the canonical source of truth**; every package is generated from them.
 
@@ -21,7 +23,7 @@ The collection is maintained independently of any framework. **SVG files are the
 
 Vue, Svelte, Web Components and Flutter adapters are planned — see the [Roadmap](docs/wiki/Roadmap.md).
 
-> ⚠️ **`ghicons` used to be the React package.** As of `0.1.0` the name belongs to the core, and React moved to `@ghicons/react`. See the [migration guide](docs/MIGRATION.md).
+> ⚠️ **`ghicons` used to be the React package.** As of `0.1.0` the name belongs to the core, and React moved to `@ghicons/react`. See the [migration guide](docs/MIGRATION_v1.md).
 
 ---
 
@@ -49,7 +51,7 @@ Every icon is also described in the registry:
 import registry from "ghicons/registry.json";
 
 const adinkra = registry.icons.filter(i => i.category === "adinkra");
-// { name, slug, category, viewBox, file, meaning?, keywords? }
+// { name, slug, category, viewBox, file, meaning?, note?, keywords?, aliases?, references? }
 ```
 
 ### React
@@ -119,6 +121,8 @@ A few of them:
 - **Duafe** — beauty and cleanliness
 - **Dwennimmen** — humility together with strength
 - **Ghana Cedi** — the national currency symbol
+
+**[Browse all of them at ghicons.methuselah.site/icons](https://ghicons.methuselah.site/icons)** — search and filter by category, preview at any size and colour, and copy the code or the raw SVG. Every symbol also has its own page, with its metadata, a download and usage snippets.
 
 The collection grows as symbols are researched, drawn and contributed.
 
@@ -204,10 +208,12 @@ Full detail: [Roadmap](docs/wiki/Roadmap.md).
 | [Architecture](docs/ARCHITECTURE.md) | How the project is structured |
 | [Development](docs/DEVELOPMENT.md) | Development workflow and tooling |
 | [Contributing](docs/CONTRIBUTING.md) | How to contribute |
-| [Migration](docs/MIGRATION.md) | Upgrading from `ghicons` 0.0.x |
+| [Migration](docs/MIGRATION.md) | Upgrading between releases — one guide per breaking change |
 | [Roadmap](docs/wiki/Roadmap.md) | Direction and milestones |
 | [Release Process](docs/wiki/Release-Process.md) | Versioning and releases |
 | [SVG Style Guide](docs/wiki/SVG-Style-Guide.md) | Drawing and preparing icons |
+
+The website also carries an [about page](https://ghicons.methuselah.site/about) covering what Adinkra symbols are and how the project handles their meanings.
 
 ---
 

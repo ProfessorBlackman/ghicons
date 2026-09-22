@@ -1,7 +1,7 @@
 {
   "name": "ghicons",
-  "version": "0.1.0",
-  "description": "Ghanaian cultural icons \u2014 optimised SVGs and a machine-readable registry. Framework-agnostic, zero dependencies.",
+  "version": "0.2.0",
+  "description": "Ghanaian symbols \u2014 optimised SVGs and a machine-readable registry. Adinkra, currency, national emblems and more. Framework-agnostic, zero dependencies.",
   "keywords": [
     "icons",
     "svg",
@@ -23,7 +23,7 @@
   "bugs": {
     "url": "https://github.com/ProfessorBlackman/ghicons/issues"
   },
-  "homepage": "ghicons.methuselah.site",
+  "homepage": "https://ghicons.methuselah.site",
   "type": "module",
   "main": "./index.cjs",
   "module": "./index.js",

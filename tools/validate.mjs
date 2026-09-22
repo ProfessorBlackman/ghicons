@@ -2,11 +2,13 @@
 /**
  * GHIcons icon validator.
  *
- * Enforces docs/ICON-SPEC.md against the canonical SVG collection.
+ * Enforces docs/ICON-SPEC.md against the canonical SVG collection and the
+ * authored metadata sidecars beside it.
  *
- *   node tools/validate.mjs                      validate every icon
- *   node tools/validate.mjs svg/adinkra/New.svg  validate specific files
- *   node tools/validate.mjs --json               machine-readable output
+ *   node tools/validate.mjs                       validate every icon
+ *   node tools/validate.mjs svg/adinkra/New.svg   validate specific files
+ *   node tools/validate.mjs metadata/adinkra/New.json   the icon it documents
+ *   node tools/validate.mjs --json                machine-readable output
  *
  * Exits non-zero if any icon fails. When GITHUB_STEP_SUMMARY is set, also
  * writes a results table to the workflow summary.
@@ -19,8 +21,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { optimize } from 'svgo';
+import { iconFor, loadMetadata, META_DIR, SVG_DIR } from './metadata.mjs';
 
-const SVG_DIR = 'svg';
 const SPEC = 'docs/ICON-SPEC.md';
 
 /**
@@ -38,7 +40,12 @@ const KNOWN_EXCEPTIONS = {
 
 const args = process.argv.slice(2);
 const jsonOutput = args.includes('--json');
-const targets = args.filter((a) => !a.startsWith('-'));
+// A metadata file is validated as part of its icon, so naming one is the same
+// as naming the SVG — and the metadata file is what a contributor researching a
+// symbol has just been editing.
+const targets = args
+    .filter((a) => !a.startsWith('-'))
+    .map((a) => (a.endsWith('.json') ? iconFor(a) : a));
 
 // ─── Rules ────────────────────────────────────────────────────────────────────
 
@@ -165,6 +172,22 @@ function collect(dir, out = []) {
     return out;
 }
 
+/**
+ * Metadata files with no icon: a rename that moved the SVG and left the research
+ * behind, or a typo in a path. Either way the pipeline will never read the file,
+ * and research that looks committed is nowhere in the registry — which is the
+ * failure worth catching, since nothing else in the build looks at metadata/.
+ */
+function collectOrphans(dir, out = []) {
+    if (!fs.existsSync(dir)) return out;
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        const full = path.join(dir, entry.name);
+        if (entry.isDirectory()) collectOrphans(full, out);
+        else if (entry.name.endsWith('.json') && !fs.existsSync(iconFor(full))) out.push(full);
+    }
+    return out;
+}
+
 const files = (targets.length ? targets : collect(SVG_DIR)).map((f) => f.split(path.sep).join('/')).sort();
 
 if (!files.length) {
@@ -192,15 +215,41 @@ for (const file of files) {
         const message = rule.check(src, file);
         if (!message) continue;
         const excused = KNOWN_EXCEPTIONS[file]?.includes(rule.id);
-        (excused ? warnings : errors).push({ rule: rule.id, message });
+        (excused ? warnings : errors).push({ rule: rule.id, message, excused });
     }
 
-    results.push({ file, errors, warnings });
+    // Authored metadata, where the icon has any. The rules live in
+    // tools/metadata.mjs so the build and the validator cannot disagree about
+    // what a valid sidecar is.
+    const { path: sidecar, data, problems } = loadMetadata(file, { name: path.basename(file, '.svg') });
+    for (const problem of problems) {
+        const entry = { rule: 'metadata/sidecar', message: `${path.basename(sidecar)}: ${problem.message}` };
+        (problem.level === 'warn' ? warnings : errors).push(entry);
+    }
+
+    results.push({ file, errors, warnings, documented: typeof data.meaning === 'string' });
+}
+
+for (const orphan of targets.length ? [] : collectOrphans(META_DIR)) {
+    const file = orphan.split(path.sep).join('/');
+    results.push({
+        file,
+        errors: [{
+            rule: 'metadata/orphan',
+            message: `documents no icon — expected ${iconFor(file).split(path.sep).join('/')}`,
+        }],
+        warnings: [],
+    });
 }
 
 const failed = results.filter((r) => r.errors.length);
 const warned = results.filter((r) => !r.errors.length && r.warnings.length);
-const passed = results.length - failed.length;
+// An orphaned metadata file is a result row but not an icon, so it is counted
+// separately rather than making the icon totals fail to add up.
+const orphaned = failed.filter((r) => !r.file.endsWith('.svg')).length;
+const icons = results.filter((r) => r.file.endsWith('.svg')).length;
+const passed = icons - (failed.length - orphaned);
+const documented = results.filter((r) => r.documented).length;
 
 // ─── Report ───────────────────────────────────────────────────────────────────
 
@@ -219,17 +268,22 @@ if (jsonOutput) {
     for (const res of warned) {
         console.log(y(`! ${res.file}`));
         for (const w of res.warnings) {
-            console.log(`    ${dim('known exception:')} ${w.message} ${dim(`[${w.rule}]`)}`);
+            const prefix = w.excused ? `${dim('known exception:')} ` : '';
+            console.log(`    ${prefix}${w.message} ${dim(`[${w.rule}]`)}`);
         }
     }
 
     console.log();
     console.log(
-        `${results.length} icon${results.length === 1 ? '' : 's'} checked — ` +
+        `${icons} icon${icons === 1 ? '' : 's'} checked — ` +
         `${g(`${passed} passed`)}` +
-        `${failed.length ? `, ${r(`${failed.length} failed`)}` : ''}` +
-        `${warned.length ? `, ${y(`${warned.length} known exception${warned.length === 1 ? '' : 's'}`)}` : ''}`
+        `${failed.length - orphaned ? `, ${r(`${failed.length - orphaned} failed`)}` : ''}` +
+        `${warned.length ? `, ${y(`${warned.length} flagged`)}` : ''}` +
+        `${orphaned ? `, ${r(`${orphaned} metadata file${orphaned === 1 ? '' : 's'} documenting no icon`)}` : ''}`
     );
+    // The collection's real gap is research, not geometry, so the validator
+    // says where that stands rather than leaving it to be counted by hand.
+    console.log(dim(`${documented} of ${icons} with a documented meaning`));
     if (failed.length) console.log(dim(`\nThe rules are defined in ${SPEC}`));
 }
 
@@ -243,6 +297,7 @@ if (process.env.GITHUB_STEP_SUMMARY) {
         ['No scripts', 'safety/no-scripts'],
         ['No remote refs', 'safety/no-remote'],
         ['Naming', 'naming/'],
+        ['Metadata', 'metadata/'],
     ];
     const mark = (res, prefix) => {
         if (res.errors.some((e) => e.rule.startsWith(prefix))) return '❌';
@@ -252,7 +307,8 @@ if (process.env.GITHUB_STEP_SUMMARY) {
 
     let md = '## Icon Validation\n\n';
     md += `**${passed} passed** &nbsp;|&nbsp; **${failed.length} failed** &nbsp;|&nbsp; `;
-    md += `**${warned.length} known exception${warned.length === 1 ? '' : 's'}** &nbsp;|&nbsp; **${results.length} total**\n\n`;
+    md += `**${warned.length} flagged** &nbsp;|&nbsp; **${icons} icons**\n\n`;
+    md += `**${documented} of ${icons}** icons have a documented meaning.\n\n`;
     md += `_Validated against [\`${SPEC}\`](../blob/HEAD/${SPEC}) — the whole collection, not only changed files._\n\n`;
 
     const shown = [...failed, ...warned];
@@ -266,7 +322,7 @@ if (process.env.GITHUB_STEP_SUMMARY) {
         for (const res of shown) {
             md += `**\`${res.file}\`**\n`;
             for (const e of res.errors) md += `- ❌ ${e.message}\n`;
-            for (const w of res.warnings) md += `- ⚠️ known exception: ${w.message}\n`;
+            for (const w of res.warnings) md += `- ⚠️ ${w.excused ? 'known exception: ' : ''}${w.message}\n`;
             md += '\n';
         }
     } else {

@@ -1,8 +1,10 @@
 # GHIcons Documentation
 
-**GHIcons** is an open-source collection of Ghanaian cultural symbols and icons for developers.
+**GHIcons** gathers Ghanaian symbols in one place and standardises them, so developers stop hunting across the web for a usable copy of each one.
 
-> **Define a cultural icon once. Make it available everywhere.**
+The scope is every symbol that is Ghanaian or belongs to Ghanaian life: Adinkra and other tribal symbols, the currency, national and state emblems, the marks of Ghanaian movements and organisations, and in time Ghanaian brands.
+
+> **Define a symbol once. Make it available everywhere.**
 
 The canonical source for every GHIcon is an SVG. Framework packages and other distribution formats are generated from those assets — so you can use GHIcons with React, with any other framework, or with no framework at all.
 
@@ -37,7 +39,7 @@ Three parts that fit together.
 
 ### 1. The collection
 
-SVG representations of Ghanaian cultural symbols — the **canonical source of truth** for the whole project.
+SVG representations of Ghanaian symbols — the **canonical source of truth** for the whole project.
 
 ```text
 svg/
@@ -66,7 +68,7 @@ These are **outputs of the icon system**, never separate sources of truth.
 | Anything else — Vue, Svelte, Angular, Astro, Django, Laravel, WordPress, plain HTML | `ghicons` |
 | A design tool, docs site, or your own generator | `ghicons` (for the registry) |
 
-> ⚠️ **`ghicons` used to be the React package.** As of `0.1.0` it is the framework-agnostic core. Upgrading from `0.0.x`? See [MIGRATION.md](MIGRATION.md).
+> ⚠️ **`ghicons` used to be the React package.** As of `0.1.0` it is the framework-agnostic core. Upgrading from `0.0.x`? See [MIGRATION_v1.md](MIGRATION_v1.md).
 
 ---
 
@@ -150,9 +152,20 @@ registry.icons.find(i => i.slug === "gye-nyame");
 //   category: "adinkra",
 //   viewBox: "0 0 24 24",
 //   file: "svg/adinkra/GyeNyame.svg",
-//   meaning: "Except God — the supremacy of God",
-//   keywords: ["god", "supremacy", "faith"]
+//   meaning: "Except God — the omnipotence and supremacy of God in all affairs",
+//   keywords: ["god", "supremacy", "omnipotence", "faith"],
+//   aliases: ["Gye Nyame"],
+//   references: ["Willis, W. Bruce. The Adinkra Dictionary (1998)", "…"]
 // }
+```
+
+`name`, `slug`, `category`, `viewBox` and `file` are always present. The rest is
+researched, so it appears per icon as the research lands — `meaning` and `note`
+always arrive with the `references` they came from. Write code that treats them
+as optional:
+
+```js
+const label = icon.meaning ?? icon.name;
 ```
 
 Use it to build an icon picker, a search interface, a documentation page, or your own code generator:
@@ -295,7 +308,7 @@ Note that several national symbols are multicolour in real life. GHIcons is mono
 
 **Framework independence** — the canonical icon knows nothing about React, Vue or Flutter. Platform behaviour belongs in the integration.
 
-**Cultural accuracy** — these are real cultural symbols. Meanings are researched and documented, never inferred or invented.
+**Cultural accuracy** — many of these are real cultural symbols. Where one is, its meaning is researched and documented, never inferred or invented.
 
 ---
 
@@ -359,7 +372,7 @@ If you are proposing a cultural symbol, reliable context and references help a g
 
 ## 🇬🇭 The bigger picture
 
-GHIcons started as a React icon library. The goal is broader: **to make Ghanaian cultural symbols easy to use anywhere software is built.**
+GHIcons started as a React icon library. The goal is broader: **to make Ghanaian symbols — all of them, not only the cultural ones — easy to use anywhere software is built.**
 
 The SVG collection is the foundation. React, raw SVG, and every future integration are just different ways of consuming it.
 

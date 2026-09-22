@@ -5,6 +5,7 @@
   "description": "Development-only icon browser. Never published.",
   "type": "module",
   "dependencies": {
-    "@ghicons/react": "workspace:*"
+    "@ghicons/react": "workspace:*",
+    "ghicons": "workspace:*"
   }
 }
