@@ -200,14 +200,52 @@ pnpm run generate
 pnpm run dev
 ```
 
+### Documenting an icon
+
+What a symbol means, what else it is called, and what someone would search for
+goes in `metadata/`, mirroring the icon's path:
+
+```text
+svg/adinkra/Sankofa.svg          the artwork
+metadata/adinkra/Sankofa.json    what is known about it
+```
+
+```json
+{
+  "meaning": "…",
+  "keywords": ["…"],
+  "aliases": ["…"],
+  "references": ["…"]
+}
+```
+
+Every field is optional, but a `meaning` without `references` fails validation:
+these are cultural symbols, and an unsourced claim propagates into every project
+that installs GHIcons. The rules are in
+[ICON-SPEC.md](ICON-SPEC.md#authoring-metadata); what counts as a reliable
+source is in the [Cultural Guidelines](wiki/Cultural-Guidelines.md).
+
+```bash
+node tools/validate.mjs metadata/adinkra/Sankofa.json
+```
+
+`pnpm run validate` prints how many icons have a documented meaning. Every icon
+in the collection has one today, so the work now is correcting and strengthening
+them rather than filling blanks — an entry resting on a weaker source is worth
+replacing with one that cites Willis, Arthur, Rattray or an institution.
+
 ### Renaming and deleting
 
 Both are **breaking changes** — generated identifiers and published asset paths derive from the filename.
 
 ```bash
 git mv svg/adinkra/OldName.svg svg/adinkra/NewName.svg
+git mv metadata/adinkra/OldName.json metadata/adinkra/NewName.json   # if it has any
 pnpm run generate
 ```
+
+Move the metadata with the artwork. Validation fails on a metadata file whose
+icon no longer exists, rather than letting the research go quietly unread.
 
 Because generated indexes are rebuilt from source rather than appended to, a rename or deletion propagates cleanly. If you find a stale export surviving a regeneration, that is a bug in the generator — report it rather than deleting the entry by hand.
 

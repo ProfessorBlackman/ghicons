@@ -125,11 +125,13 @@ ghicons/
 │   ├── general/                  Everyday Ghanaian-context icons
 │   └── national/                 National emblems
 │
-├── metadata/                   ← Hand-authored icon metadata (PLANNED, v0.2)
-│                                 meanings, keywords, aliases, references
+├── metadata/                   ← Hand-authored icon research
+│   └── adinkra/GyeNyame.json     meaning, note, keywords, aliases, references
+│                                 one file per icon, mirroring svg/
 │
 ├── tools/                      ← The pipeline. Framework-neutral.
 │   ├── canonical.mjs             SVG → canonical icon representation
+│   ├── metadata.mjs              The authored-metadata contract and its checks
 │   ├── validate.mjs              Spec enforcement (local + CI)
 │   ├── build-core.mjs            Canonical icons → the ghicons package
 │   ├── verify-packages.mjs       Release gate: is this safe to publish?
@@ -224,7 +226,7 @@ import registry from "ghicons/registry.json";
 
 This package is what makes the "framework-agnostic" claim real rather than aspirational. It is also what the CDN, the download pages, the website search and every future adapter are built on.
 
-> **`ghicons` used to be the React package.** As of `0.1.0` the name belongs to the core, and React moved to `@ghicons/react`. See [MIGRATION.md](MIGRATION.md).
+> **`ghicons` used to be the React package.** As of `0.1.0` the name belongs to the core, and React moved to `@ghicons/react`. See [MIGRATION_v1.md](MIGRATION_v1.md).
 
 ### `@ghicons/react` — the React integration
 
@@ -277,6 +279,8 @@ The pipeline is deliberately staged, and every stage is framework-neutral except
     ┌──────────────────┐
     │  3. NORMALISE    │  Produce the canonical icon representation:
     └────────┬─────────┘  { name, slug, category, viewBox, body, metadata }
+             │            Authored metadata is merged in here, so every
+             │            emitter gets the research with the artwork.
              ▼
     ┌──────────────────┐
     │  4. REGISTRY     │  Rebuild registry.json from scratch.
@@ -305,6 +309,8 @@ Two properties the pipeline must hold:
 ```json
 {
   "version": "0.1.0",
+  "count": 106,
+  "categories": ["adinkra", "general", "national"],
   "icons": [
     {
       "name": "GyeNyame",
@@ -312,16 +318,18 @@ Two properties the pipeline must hold:
       "category": "adinkra",
       "viewBox": "0 0 24 24",
       "file": "svg/adinkra/GyeNyame.svg",
-      "meaning": "Except God — the supremacy of God",
-      "keywords": ["god", "supremacy", "faith"]
+      "meaning": "Except God — the omnipotence and supremacy of God in all affairs",
+      "keywords": ["god", "supremacy", "omnipotence", "faith"],
+      "aliases": ["Gye Nyame"],
+      "references": ["Willis, W. Bruce. The Adinkra Dictionary (1998)", "…"]
     }
   ]
 }
 ```
 
-Required fields are derived automatically from the filename, directory and SVG, so every icon gets a valid entry with no authoring effort. Optional fields come from `metadata/` and can arrive later.
+Required fields are derived automatically from the filename, directory and SVG, so every icon gets a valid entry with no authoring effort. Optional fields come from `metadata/`, are validated on the way in, and can arrive later — a meaning never without the references it came from.
 
-The registry is what lets one index serve the website's search, the CDN's manifest, the download pages, the docs, and every framework generator — instead of each of them re-deriving the collection independently. The playground currently hardcodes its own name-to-category map; that goes away once it reads the registry.
+The registry is what lets one index serve the website's search, the CDN's manifest, the download pages, the docs, the playground and every framework generator — instead of each of them re-deriving the collection independently.
 
 The registry describes icons. It never holds a second editable copy of the artwork. Full schema in [ICON-SPEC.md](ICON-SPEC.md#-the-icon-registry).
 
@@ -454,7 +462,7 @@ It deploys itself — a static Next.js export published to GitHub Pages by a wor
 
 **`ghicons` names the core, not React.**
 The headline name should mean the icon collection, because that is what the project is. Leaving it attached to React would have kept the old framing alive in the most visible place.
-*Cost:* a real breaking change for existing installs. Taken deliberately while the number was still small, rather than after 1.0 when it would be expensive. See [MIGRATION.md](MIGRATION.md).
+*Cost:* a real breaking change for existing installs. Taken deliberately while the number was still small, rather than after 1.0 when it would be expensive. See [MIGRATION_v1.md](MIGRATION_v1.md).
 
 **Generate components instead of committing them.**
 A hundred near-identical `.tsx` files would swamp every diff and invite hand-edits that drift from the SVG. Keeping them git-ignored makes `svg/` unambiguously authoritative.
@@ -490,11 +498,11 @@ This document describes the architecture GHIcons is being restructured into. Bei
 | Collection | ✅ Fully spec-conformant — no known exceptions | — |
 | Raw SVG distribution | ✅ Shipped in the core package | — |
 | Reproducibility | ✅ Clean regeneration is byte-identical | — |
-| `ghicons` on npm | ✅ The framework-agnostic core, published at `0.1.0` | — |
-| `@ghicons/react` on npm | ✅ Published at `0.1.0` | — |
-| Authored metadata | ✗ Registry carries derived fields only | Meanings, keywords and aliases |
-| Playground categories | ✗ Still a hardcoded name map | Read from the registry |
-| Tests | ✗ None | Pipeline invariants covered |
+| `ghicons` on npm | ✅ The framework-agnostic core — the name changed meaning at `0.1.0` | — |
+| `@ghicons/react` on npm | ✅ Published, versioned in lockstep with the core | — |
+| Authored metadata | ✅ 106/106 meanings, keywords and references, validated and merged into the registry | Cultural review of what is written |
+| Playground categories | ✅ Read from the registry | — |
+| Tests | ⏳ The metadata contract is covered | The rest of the pipeline's invariants |
 
 Progress against this table is tracked in the [Roadmap](wiki/Roadmap.md).
 
@@ -536,5 +544,5 @@ The guiding rule:
 - [ICON-SPEC.md](ICON-SPEC.md) — what makes a valid GHIcon
 - [DEVELOPMENT.md](DEVELOPMENT.md) — commands and day-to-day workflow
 - [CONTRIBUTING.md](CONTRIBUTING.md) — how to submit icons and code
-- [MIGRATION.md](MIGRATION.md) — moving from `ghicons` 0.0.x to the new packages
+- [MIGRATION.md](MIGRATION.md) — the index of migration guides; [MIGRATION_v1.md](MIGRATION_v1.md) covers `ghicons` 0.0.x → 0.1.0
 - [Roadmap](wiki/Roadmap.md) — what is planned and in what order

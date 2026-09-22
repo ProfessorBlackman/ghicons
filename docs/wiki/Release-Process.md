@@ -63,7 +63,7 @@ A release publishes only when that pipeline completes end to end. That is what g
 | *Future* | `@ghicons/vue`, `@ghicons/svelte`, `@ghicons/web-components` | Generated adapters |
 | *Future* | pub.dev | Flutter package |
 
-> **`ghicons` changed meaning at `0.1.0`.** It was the React package through `0.0.1`; it is now the framework-agnostic core. React moved to `@ghicons/react`. See [MIGRATION.md](../MIGRATION.md).
+> **`ghicons` changed meaning at `0.1.0`.** It was the React package through `0.0.1`; it is now the framework-agnostic core. React moved to `@ghicons/react`. See [MIGRATION_v1.md](../MIGRATION_v1.md).
 
 **Publish order is adapters first, then the core.**
 
@@ -149,6 +149,14 @@ Backwards-compatible fixes:
 - fixing an SVG technical issue
 - correcting generated output
 - documentation and packaging fixes
+- **authored metadata** — adding, correcting or re-sourcing a `meaning`, `note`, `keywords`, `aliases` or `references`
+
+**Metadata is a patch, not a minor.** A new *field* in the registry is a minor
+release, because consumers gain something to read. A new *value* in a field that
+already exists changes no schema and breaks nothing: an icon that had no
+documented meaning simply has one. Research lands continuously and by
+contribution, and it must never wait for a minor release or need a migration
+guide to reach anyone.
 
 ---
 
@@ -221,6 +229,8 @@ npm
 - [ ] README reflects the current API
 - [ ] Icon specification matches what validation enforces
 - [ ] Breaking changes documented with an upgrade path
+- [ ] A new `MIGRATION_v<n>.md` for this release, if it breaks anything, and a row added to `MIGRATION.md`
+- [ ] The `(unreleased)` marker cleared from that guide's row in `MIGRATION.md` once the publish succeeds
 - [ ] Release notes drafted
 
 ### Release
@@ -308,6 +318,18 @@ A breaking change must ship with:
 2. Why it changed
 3. What consumers must do
 4. A copy-pasteable before/after
+
+And with **its own migration guide**: `docs/MIGRATION_v<n>.md`, where `<n>` is
+the next number in the series, plus a row in [MIGRATION.md](../MIGRATION.md)
+saying which versions it moves between.
+
+Never edit an existing guide to describe a new release. Someone on an old
+version needs the instructions that were written for their jump, and a guide
+that has been rewritten twice serves nobody. The number is a guide number, not a
+package version — `MIGRATION_v2.md` is the second guide, not a GHIcons `2.0`.
+
+Guides are pruned only when the version they migrate *from* has fallen out of
+use, and pruning is called out in the release that does it.
 
 ### Example
 

@@ -39,7 +39,7 @@ The technical documentation lives with the code so it stays in step with it.
 | [Development Guide](../blob/dev/docs/DEVELOPMENT.md) | Setup, commands, generation, building, troubleshooting |
 | [Contributing](../blob/dev/docs/CONTRIBUTING.md) | The contribution process |
 | [Usage Documentation](../blob/dev/docs/DOCUMENTATION.md) | Using GHIcons in a project |
-| [Migration Guide](../blob/dev/docs/MIGRATION.md) | Upgrading from `ghicons` 0.0.x |
+| [Migration Guides](../blob/dev/docs/MIGRATION.md) | Upgrading between releases — one guide per breaking change |
 
 ---
 
@@ -52,7 +52,7 @@ The technical documentation lives with the code so it stays in step with it.
 
 Vue, Svelte, Web Components and Flutter adapters are planned. See the [Roadmap](Roadmap).
 
-> ⚠️ **`ghicons` changed meaning at `0.1.0`.** It was the React package; it is now the core. React moved to `@ghicons/react`. See the [migration guide](../blob/dev/docs/MIGRATION.md).
+> ⚠️ **`ghicons` changed meaning at `0.1.0`.** It was the React package; it is now the core. React moved to `@ghicons/react`. See the [migration guide](../blob/dev/docs/MIGRATION_v1.md).
 
 ---
 

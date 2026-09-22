@@ -4,7 +4,7 @@
 
 Adinkra and other tribal symbols, the currency, national emblems and more — fully typed, tree-shakeable, and generated from the [`ghicons`](https://www.npmjs.com/package/ghicons) canonical SVG collection.
 
-> ⚠️ **Moved from `ghicons`.** Through `0.0.1` these components were published as `ghicons`. That name now belongs to the framework-agnostic core. See the [migration guide](https://github.com/ProfessorBlackman/ghicons/blob/master/docs/MIGRATION.md).
+> ⚠️ **Moved from `ghicons`.** Through `0.0.1` these components were published as `ghicons`. That name now belongs to the framework-agnostic core. See the [migration guide](https://github.com/ProfessorBlackman/ghicons/blob/master/docs/MIGRATION_v1.md).
 
 ---
 

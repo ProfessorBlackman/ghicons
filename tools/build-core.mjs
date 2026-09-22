@@ -37,17 +37,25 @@ for (const icon of icons) {
 
 // Metadata only. The artwork stays in the SVG files so the index remains small
 // enough to ship to a browser and query cheaply.
-const entries = icons.map(({ name, slug, category, viewBox, file }) => ({
+//
+// Derived fields are written first and the authored ones spread over them, so
+// the shape is predictable; a sidecar cannot overwrite a derived field because
+// validation rejects one that names it.
+const entries = icons.map(({ name, slug, category, viewBox, file, metadata }) => ({
     name,
     slug,
     category,
     viewBox,
     file,
+    ...metadata,
 }));
 
 const registry = {
     version: pkg.version,
-    generated: entries.length,
+    // Was `generated`, which held the icon count — a field named for a
+    // timestamp it never carried. A real timestamp would break reproducible
+    // regeneration, so the count stays and the name now matches it.
+    count: entries.length,
     categories: [...new Set(entries.map((e) => e.category))].sort(),
     icons: entries,
 };
@@ -115,15 +123,20 @@ export interface Icon {
   file: string;
   /** Documented meaning of the symbol, where it has been researched. */
   meaning?: string;
+  /** Longer context: origin, variations, or a contested reading. */
+  note?: string;
   /** Search keywords. */
   keywords?: string[];
   /** Alternate and vernacular names. */
   aliases?: string[];
+  /** Sources the meaning was taken from. Present wherever a meaning is. */
+  references?: string[];
 }
 
 export interface Registry {
   version: string;
-  generated: number;
+  /** Number of icons in the collection. */
+  count: number;
   categories: string[];
   icons: Icon[];
 }
@@ -137,7 +150,14 @@ export declare function iconsByCategory(category: string): Icon[];
 );
 
 const bytes = icons.reduce((n, i) => n + i.svg.length, 0);
+const documented = entries.filter((e) => e.meaning).length;
 console.log(
     `ghicons core: ${icons.length} icons in ${registry.categories.length} categories ` +
     `(${(bytes / 1024).toFixed(1)} KB of SVG), registry.json + entry points written to ${OUT}/`
+);
+// Printed every build because it is the project's most useful open number, and
+// the one nobody goes looking for.
+console.log(
+    `  ${documented}/${icons.length} have a documented meaning` +
+    `${documented === icons.length ? '' : ' — see docs/wiki/Cultural-Guidelines.md'}`
 );

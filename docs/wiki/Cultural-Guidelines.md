@@ -45,21 +45,31 @@ Words someone might search for when looking for this symbol without knowing its 
 
 ## Where This Information Lives
 
-Cultural information is stored as structured metadata alongside the icon, and published in the registry that ships with the `ghicons` package:
+Cultural information is stored as one file per icon under `metadata/`, mirroring the icon's own path, and published in the registry that ships with the `ghicons` package:
+
+```text
+svg/adinkra/GyeNyame.svg          the artwork
+metadata/adinkra/GyeNyame.json    what is known about it
+```
 
 ```json
 {
-  "name": "GyeNyame",
-  "slug": "gye-nyame",
-  "category": "adinkra",
-  "meaning": "Except God — the supremacy of God",
-  "keywords": ["god", "supremacy", "faith", "omnipotence"],
+  "meaning": "Except God — the omnipotence and supremacy of God in all affairs",
+  "note": "Regional readings differ in emphasis; see the references.",
+  "keywords": ["god", "supremacy", "omnipotence", "faith"],
   "aliases": ["Gye Nyame"],
-  "references": ["…"]
+  "references": [
+    "Willis, W. Bruce. The Adinkra Dictionary: A Visual Primer on the Language of Adinkra (1998)",
+    "https://www.adinkrasymbols.org/symbols/gye-nyame/"
+  ]
 }
 ```
 
 You do not need to write JSON to contribute this — provide the information in your pull request or issue and a maintainer will record it. But knowing where it ends up explains why the sourcing standards below are strict.
+
+**The sourcing standard is enforced, not merely requested.** A `meaning` or `note` with no `references` fails validation and cannot be merged, and metadata resting on Wikipedia alone is flagged for a stronger source. Use `note` for a reading that is contested or regional, and cite each source you relied on — the point is that a reader can check the claim rather than take the registry's word for it.
+
+The full field rules are in [ICON-SPEC.md](../blob/HEAD/docs/ICON-SPEC.md#authoring-metadata).
 
 ---
 
