@@ -1,14 +1,12 @@
 # ghicons 🇬🇭
 
-**Ghanaian symbols — optimised SVGs and a machine-readable registry.**
+**Ghanaian symbols as optimised SVGs, with a machine-readable registry.**
 
-Adinkra and other tribal symbols, the currency, national emblems and more, as plain SVG files with no dependencies and no framework. Gathered in one place and standardised so every symbol behaves the same. Use them with anything: Vue, Svelte, Angular, Astro, Django, Laravel, WordPress, plain HTML, or your own tooling.
+Adinkra symbols, the currency, national emblems and more. No dependencies, no framework — use them with anything.
 
-Building with React? Install [`@ghicons/react`](https://www.npmjs.com/package/@ghicons/react) instead — it wraps these same icons as typed components.
+Using React? Install [`@ghicons/react`](https://www.npmjs.com/package/@ghicons/react) instead.
 
-> ⚠️ **`ghicons` used to be the React package.** As of `0.1.0` this name is the framework-agnostic core and React moved to `@ghicons/react`. See the [migration guide](https://github.com/ProfessorBlackman/ghicons/blob/master/docs/MIGRATION_v1.md).
-
----
+> ⚠️ Until `0.1.0` this package contained React components; they moved to `@ghicons/react`. See the [migration guide](https://github.com/ProfessorBlackman/ghicons/blob/master/docs/MIGRATION_v1.md).
 
 ## Install
 
@@ -16,93 +14,46 @@ Building with React? Install [`@ghicons/react`](https://www.npmjs.com/package/@g
 npm install ghicons
 ```
 
-## What's in the box
-
-```text
-ghicons/
-├── svg/
-│   ├── adinkra/GyeNyame.svg    …and 100+ more
-│   ├── general/
-│   └── national/
-├── registry.json               the index of the whole collection
-└── index.js / index.cjs        convenience accessors
-```
-
-## Use the SVG files
+## SVG files
 
 ```html
 <img src="node_modules/ghicons/svg/adinkra/GyeNyame.svg" alt="Gye Nyame">
 ```
 
-Paths are stable, so a build step can copy them reliably.
+Files live at `svg/<category>/<Name>.svg`. Every icon uses a `0 0 24 24` viewBox and `fill="currentColor"` — inline the SVG to set its colour with CSS, since `<img>` can't inherit it.
 
-Every icon is drawn on a `0 0 24 24` canvas and uses `fill="currentColor"`. **Inline the SVG** if you want CSS to control its colour — an `<img>` cannot inherit colour from the page:
-
-```css
-.icon { color: #b8860b; }
-```
-
-## Use the registry
+## Registry
 
 ```js
 import { icons, categories, getIcon, iconsByCategory } from 'ghicons';
+// or: import registry from 'ghicons/registry.json';
+// or: const { icons } = require('ghicons');
 
 getIcon('gye-nyame');
 // { name: 'GyeNyame', slug: 'gye-nyame', category: 'adinkra',
-//   viewBox: '0 0 24 24', file: 'svg/adinkra/GyeNyame.svg' }
+//   viewBox: '0 0 24 24', file: 'svg/adinkra/GyeNyame.svg', meaning: '…', … }
 
 iconsByCategory('national');   // [BlackStar, GhanaFlag]
-categories;                    // ['adinkra', 'general', 'national']
 ```
-
-CommonJS works too:
-
-```js
-const { icons } = require('ghicons');
-```
-
-Or read the JSON directly, from any language:
-
-```js
-import registry from 'ghicons/registry.json';
-```
-
-Use it to build an icon picker, a search interface, a docs page, or your own code generator.
-
-### Registry fields
 
 | Field | Always present | Description |
 |---|:---:|---|
-| `name` | ✅ | PascalCase name, and the identifier framework packages use |
-| `slug` | ✅ | Kebab-case identifier, stable across every channel |
-| `category` | ✅ | `adinkra`, `general`, `national`, … |
-| `viewBox` | ✅ | Always `0 0 24 24` |
-| `file` | ✅ | Path to the SVG inside this package |
-| `meaning` | | Documented meaning, where researched |
-| `note` | | Longer context: origin, variations, or a contested reading |
-| `keywords` | | Search keywords |
-| `aliases` | | Alternate and vernacular names |
-| `references` | | Where the meaning came from. Present wherever a meaning is |
+| `name` | ✅ | PascalCase name |
+| `slug` | ✅ | Kebab-case identifier |
+| `category` | ✅ | `adinkra`, `general`, `national` |
+| `viewBox` | ✅ | `0 0 24 24` |
+| `file` | ✅ | Path to the SVG in this package |
+| `meaning` | | Documented meaning |
+| `note` | | Origin, variations or contested readings |
+| `keywords` | | Search terms |
+| `aliases` | | Alternate names |
+| `references` | | Sources; present wherever a meaning is |
 
-The index itself carries `version`, `count` and `categories` alongside `icons`.
-
-Every icon carries a `meaning`, `keywords` and the `references` the meaning was
-taken from; most also carry a `note` and the alternate spellings people search
-for. These are cultural symbols, so a meaning ships only once it is sourced —
-corrections and better sources are always welcome, and the standards they are
-held to are in the
-[cultural guidelines](https://github.com/ProfessorBlackman/ghicons/blob/master/docs/wiki/Cultural-Guidelines.md).
-
-## Why this package exists
-
-The SVG collection is GHIcons' source of truth — every framework package is generated from it. This package ships that collection directly, so the framework you use never decides whether Ghanaian visual language is available to you.
+The registry also has `version`, `count` and `categories`. Meanings are sourced; corrections are welcome under the [cultural guidelines](https://github.com/ProfessorBlackman/ghicons/blob/master/docs/wiki/Cultural-Guidelines.md).
 
 ## Links
 
-- [Documentation](https://github.com/ProfessorBlackman/ghicons/blob/master/docs/DOCUMENTATION.md)
-- [Icon specification](https://github.com/ProfessorBlackman/ghicons/blob/master/docs/ICON-SPEC.md)
-- [Contributing](https://github.com/ProfessorBlackman/ghicons/blob/master/docs/CONTRIBUTING.md)
-- [Browse the icons](https://ghicons.methuselah.site/icons)
+[Documentation](https://github.com/ProfessorBlackman/ghicons/blob/master/docs/DOCUMENTATION.md) · [Icon specification](https://github.com/ProfessorBlackman/ghicons/blob/master/docs/ICON-SPEC.md) · [Contributing](https://github.com/ProfessorBlackman/ghicons/blob/master/docs/CONTRIBUTING.md) · [Browse icons](https://ghicons.methuselah.site/icons)
 
 ## License
 
