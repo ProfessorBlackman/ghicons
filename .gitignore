@@ -45,3 +45,6 @@ packages/react/stories/
 
 # Website lives in its own git repository
 ghicons_website/
+
+# GitHub wiki lives in its own git repository
+ghicons.wiki/
